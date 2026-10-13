@@ -14,7 +14,7 @@ A cidade e a central não podem ficar fixas no código. São dados administrados
 
 ### Piloto
 
-- Aplicativo do cliente para Android e iOS: cadastro/login, perfil, cidade/endereço, catálogo, carrinho, escolha de data e horário, pedido, acompanhamento, histórico e repetição do último pedido. No Android, gerar APK dedicado por empresa a partir da mesma base; distribuição direta fora das lojas. O processo de distribuição do iOS ainda precisa ser definido.
+- Aplicativo do cliente para Android e iOS: cadastro/login, perfil, cidade/endereço, catálogo, carrinho, escolha de data e horário, pedido, acompanhamento, histórico e repetição do último pedido. Usar a mesma base, com variantes de marca por empresa. APKs Android serão usados nos testes; para produção, Android será publicado na Play Store em AAB e iOS pela distribuição da Apple. O envio e a assinatura ficam para a etapa final, com revisão do arquiteto sênior indicado pelo proprietário.
 - Painel para o proprietário: administrar centrais, operadores, produtos, preços e visão geral.
 - Painel das centrais: pedidos, horários/capacidade, estoque, entregadores e registro operacional.
 - Notificações push de mudanças de status.
@@ -92,11 +92,11 @@ Princípios obrigatórios antes de qualquer migration:
 - O núcleo reutilizável será separado das regras específicas de cada ramo. O piloto implementa apenas gás e água; outra atividade exige módulo próprio, análise de segurança e aprovação de escopo.
 - O dono de cada negócio é administrador apenas do seu tenant. A existência de um administrador global da plataforma está fora do escopo atual.
 
-**Android — distribuição aprovada:** gerar um APK dedicado para cada empresa usando Flavors/variantes Flutter a partir da mesma base de código. Nome do app, ícone, cores, URL pública do logo e identificador de configuração da empresa poderão ser definidos no build a partir da configuração da empresa no banco. O pipeline só pode consumir campos públicos permitidos; APKs são inspecionáveis e nunca podem conter segredos. O identificador da empresa no APK serve para selecionar a configuração, não para autorizar acesso: login, associação à empresa e RLS no backend são a barreira de segurança. A distribuição será direta, fora das lojas.
+**Builds e distribuição aprovados:** gerar uma variante dedicada por empresa usando Flavors/variantes Flutter a partir da mesma base de código. Nome do app, ícone, cores, URL pública do logo e identificador de configuração poderão vir das configurações da empresa no banco. O pipeline só pode consumir campos públicos permitidos; APKs são inspecionáveis e nunca podem conter segredos. O identificador da empresa no app escolhe a configuração, mas não autoriza acesso: login, vínculo à empresa e RLS no backend são a barreira de segurança.
 
-Assinatura dos APKs, identificador exclusivo por empresa, local seguro de hospedagem e processo de atualização ainda precisam ser definidos antes de distribuir builds reais. Se uma marca mudar depois da compilação, decidir se é necessária uma nova versão ou se o logo público pode ser atualizado em tempo de execução.
+Durante desenvolvimento e testes, gerar APKs Android. Para produção, publicar na Google Play usando AAB. Para iOS, gerar o artefato exigido pelo fluxo da Apple e publicar pela App Store; APK e AAB são formatos Android. As atualizações de marca e a possibilidade de atualizar o logo sem recompilar ainda precisam ser definidas.
 
-**iOS — pendente:** APK é formato Android. A estratégia para iPhone precisa ser definida separadamente; o pedido original inclui Android e iOS, mas a decisão de APK direto cobre somente Android.
+A assinatura, os certificados e o envio às lojas ficam para a etapa final e serão revisados/realizados pelo arquiteto sênior indicado pelo proprietário. A arquitetura deve manter chaves e certificados fora do repositório e dos binários, em armazenamento seguro apropriado.
 
 ## 6. Fases propostas
 
