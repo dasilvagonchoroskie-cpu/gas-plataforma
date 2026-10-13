@@ -55,4 +55,4 @@ A assinatura e o envio às lojas ficam para a etapa final e serão revisados/rea
 
 - 2026-10-13 — Criado repositório privado e registrados os requisitos apresentados pelo proprietário; nenhuma implementação de aplicação ou banco iniciada.
 - 2026-10-13 — Aprovada a arquitetura multi-tenant white-label; modelo de isolamento por empresa registrado, sem início de migrations ou código de produto.
-- 2026-10-13 — Definidos APKs Android dedicados por empresa a partir de base compartilhada; fluxo iOS e operação segura de distribuição/atualização seguem pendentes.
+- 2026-10-13 — Definidos APKs Android para teste, AAB na Google Play e distribuição iOS pela App Store; assinatura e publicação ficam para a etapa final.
