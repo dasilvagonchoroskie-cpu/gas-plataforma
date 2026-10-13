@@ -1,0 +1,23 @@
+name: painel_proprietario
+description: Painel web white-label do proprietário da empresa.
+publish_to: none
+version: 0.1.0+1
+
+environment:
+  sdk: '>=3.5.0 <4.0.0'
+
+dependencies:
+  design_system:
+    path: ../../packages/design_system
+  flutter:
+    sdk: flutter
+  nucleo:
+    path: ../../packages/nucleo
+
+dev_dependencies:
+  flutter_lints: 5.0.0
+  flutter_test:
+    sdk: flutter
+
+flutter:
+  uses-material-design: true
