@@ -13,7 +13,10 @@
 - Adicionados testes para normalização, serialização e rejeição de dados inválidos (oito testes no pacote).
 - CI do GitHub Actions validado com sucesso no [run 38438819586](https://github.com/dasilvagonchoroskie-cpu/gas-plataforma/actions/runs/38438819586), commit `93079baf12dc149a7ff131bba02d6e8a2ce91c3f`: encontrou `packages/nucleo/pubspec.yaml`, instalou Flutter 3.47.7 e concluiu com sucesso a etapa de análise e testes do pacote, incluindo obtenção de dependências, checagem de formatação, `flutter analyze --fatal-infos` e `flutter test`.
 - Nenhum repositório antigo foi acessado ou alterado.
-- Nenhuma migration, ambiente Supabase ou integração de pagamento foi criado.
+- Nenhuma migration, projeto Supabase, credencial de serviço ou integração de pagamento foi criado. Os `README.md` em `supabase/` apenas preparam a estrutura e explicitam os critérios anteriores à conexão.
+- Criado `docs/IMPLEMENTACAO_E_HANDOFF.md` com arquitetura de referência, proposta de isolamento multi-tenant, ciclo de ambientes, gates de segurança e checklist para o arquiteto sênior.
+- Criados guias preparatórios em `apps/` e `supabase/`; não foi gerado template incompleto de app nem configuração que sugira conexão já existente.
+- Registradas como pendentes D-010 (modelo detalhado de tenant/RLS) e D-011 (provedor, ambientes e hospedagem) em `docs/DECISOES.md`.
 
 ## Falta
 
@@ -25,4 +28,4 @@
 
 ## Próximo passo
 
-Revisar com Evandro as decisões pendentes D-002 a D-007 e D-009 de `docs/DECISOES.md` antes de iniciar fluxos de negócio ou migrations.
+Revisar este handoff com Evandro e o arquiteto sênior; fechar D-002 a D-007, D-010 e D-011. Só então criar migrations e testes de RLS, mantendo Supabase ainda sem provisionamento e sem qualquer chave privilegiada no repositório.
