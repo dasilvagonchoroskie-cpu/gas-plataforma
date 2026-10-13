@@ -38,7 +38,13 @@ jobs:
         id: pacotes
         shell: bash
         run: |
-          if find apps packages -name pubspec.yaml -print -quit 2>/dev/null | grep -q .; then
+          pastas=()
+          for raiz in apps packages; do
+            if [[ -d "$raiz" ]]; then
+              pastas+=("$raiz")
+            fi
+          done
+          if [[ ${#pastas[@]} -gt 0 ]] && find "${pastas[@]}" -type f -name pubspec.yaml -print -quit | grep -q .; then
             echo 'existem=true' >> "$GITHUB_OUTPUT"
           else
             echo 'existem=false' >> "$GITHUB_OUTPUT"
@@ -56,7 +62,14 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          while IFS= read -r -d '' arquivo; do
+          pastas=()
+          for raiz in apps packages; do
+            if [[ -d "$raiz" ]]; then
+              pastas+=("$raiz")
+            fi
+          done
+          mapfile -d '' manifestos < <(find "${pastas[@]}" -type f -name pubspec.yaml -print0 | sort -z)
+          for arquivo in "${manifestos[@]}"; do
             pasta="$(dirname "$arquivo")"
             echo "::group::Validando $pasta"
             (
@@ -67,7 +80,7 @@ jobs:
               flutter test
             )
             echo '::endgroup::'
-          done < <(find apps packages -name pubspec.yaml -print0 | sort -z)
+          done
 
       - name: Informar que a estrutura dos apps ainda será criada
         if: steps.pacotes.outputs.existem != 'true'
