@@ -77,6 +77,7 @@ A stack proposta é Flutter/Dart, com Flutter Web para o painel, Flutter para o 
 - Supabase Realtime para eventos autorizados de pedidos; notificações push com conteúdo mínimo, sem endereço ou outros dados pessoais no texto da notificação.
 - Segredos apenas nos locais de segredo do provedor/CI; nenhuma chave privilegiada embutida nos apps ou no repositório.
 - Backups e exportação independente com procedimento de restauração testado antes do piloto.
+- O guia `IMPLEMENTACAO_E_HANDOFF.md` detalha a proposta de isolamento, ambientes e gates de revisão para o arquiteto sênior; propostas ainda pendentes não autorizam provisionamento ou migrations.
 
 ## 5. Reutilização: multi-tenant white-label
 
