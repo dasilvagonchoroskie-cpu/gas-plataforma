@@ -51,8 +51,17 @@ A mesma base de código produzirá uma variante dedicada por empresa usando Flav
 
 A assinatura e o envio às lojas ficam para a etapa final e serão revisados/realizados pelo arquiteto sênior indicado pelo proprietário. Antes dessa fase, deixar a arquitetura preparada para identificadores de aplicativo por empresa e armazenamento protegido de certificados/chaves fora do repositório e dos binários. Detalhes de contas das lojas, identificadores, gestão de chaves e atualização serão definidos com esse arquiteto.
 
+### D-010 — Modelo detalhado de tenant e autorização — PENDENTE
+
+A proposta técnica está em `IMPLEMENTACAO_E_HANDOFF.md`: identidade de login separada das associações a empresas; papéis de gestão/operação vinculados ao tenant; atribuição de operadores a centrais; pedidos do cliente vinculados ao usuário e à empresa; RLS por tenant, papel e central. Revisar papéis, convites, múltiplos vínculos e matriz de permissões com o arquiteto. Nenhuma migration deve ser criada até a aprovação explícita deste desenho e dos testes de isolamento.
+
+### D-011 — Provedor, ambientes e hospedagem — PENDENTE
+
+Supabase permanece como backend de referência no desenho atual, ainda sem projeto ou conta conectada. Definir contas responsáveis, região, custo/plano, backup e ambientes local/homologação/produção. Firestore e Render não foram selecionados; qualquer uso adicional ou troca exige decisão arquitetural e definição de fonte única de verdade.
+
 ## Registro de alterações
 
 - 2026-10-13 — Criado repositório privado e registrados os requisitos apresentados pelo proprietário; nenhuma implementação de aplicação ou banco iniciada.
 - 2026-10-13 — Aprovada a arquitetura multi-tenant white-label; modelo de isolamento por empresa registrado, sem início de migrations ou código de produto.
 - 2026-10-13 — Definidos APKs Android para teste, AAB na Google Play e distribuição iOS pela App Store; assinatura e publicação ficam para a etapa final.
+- 2026-10-13 — Adicionada proposta de modelo detalhado de acesso multi-tenant e ambientes de backend para revisão; sem provisionamento ou migrations.
