@@ -1,0 +1,114 @@
+name: Preparar plataformas Flutter e builds de teste
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/preparar_plataformas.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: preparar-plataformas-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  gerar-e-validar:
+    name: Gerar Android, iOS e Web e validar os apps
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - name: Baixar o repositório sem persistir credenciais
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+
+      - name: Instalar Flutter do projeto
+        uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2
+        with:
+          flutter-version: 3.47.7
+          cache: true
+
+      - name: Gerar plataformas mantendo o código dos apps
+        shell: bash
+        run: |
+          set -euo pipefail
+          backup="$(mktemp -d)"
+          apps=(cliente painel_proprietario painel_central)
+
+          for app in "${apps[@]}"; do
+            mkdir -p "$backup/$app"
+            for item in pubspec.yaml analysis_options.yaml README.md lib test; do
+              cp -a "apps/$app/$item" "$backup/$app/"
+            done
+          done
+
+          flutter create --no-pub --overwrite --platforms=android,ios --org com.example --project-name cliente apps/cliente
+          flutter create --no-pub --overwrite --platforms=web --org com.example --project-name painel_proprietario apps/painel_proprietario
+          flutter create --no-pub --overwrite --platforms=web --org com.example --project-name painel_central apps/painel_central
+
+          for app in "${apps[@]}"; do
+            for item in pubspec.yaml analysis_options.yaml README.md lib test; do
+              rm -rf "apps/$app/$item"
+              cp -a "$backup/$app/$item" "apps/$app/"
+            done
+          done
+
+      - name: Resolver dependências, formatar, analisar e testar
+        shell: bash
+        run: |
+          set -euo pipefail
+          pastas=()
+          for raiz in apps packages; do
+            if [[ -d "$raiz" ]]; then
+              pastas+=("$raiz")
+            fi
+          done
+          mapfile -d '' manifestos < <(find "${pastas[@]}" -type f -name pubspec.yaml -print0 | sort -z)
+          for arquivo in "${manifestos[@]}"; do
+            pasta="$(dirname "$arquivo")"
+            echo "::group::Validando $pasta"
+            (
+              cd "$pasta"
+              flutter pub get
+              dart format --output=none --set-exit-if-changed .
+              flutter analyze --fatal-infos
+              flutter test
+            )
+            echo '::endgroup::'
+          done
+
+      - name: Gerar APK Android de depuração
+        working-directory: apps/cliente
+        run: flutter build apk --debug --target-platform android-arm64
+
+      - name: Gerar builds Web dos painéis
+        shell: bash
+        run: |
+          set -euo pipefail
+          for app in painel_proprietario painel_central; do
+            (cd "apps/$app" && flutter build web --release)
+          done
+
+      - name: Separar plataformas e builds para inspeção
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p artefato/apps/cliente artefato/apps/painel_proprietario artefato/apps/painel_central
+          mkdir -p artefato/build/cliente artefato/build/painel_proprietario artefato/build/painel_central
+          cp -a apps/cliente/android apps/cliente/ios apps/cliente/.metadata artefato/apps/cliente/
+          cp -a apps/painel_proprietario/web apps/painel_proprietario/.metadata artefato/apps/painel_proprietario/
+          cp -a apps/painel_central/web apps/painel_central/.metadata artefato/apps/painel_central/
+          cp -a apps/cliente/build/app/outputs/flutter-apk/app-debug.apk artefato/build/cliente/app-debug.apk
+          cp -a apps/painel_proprietario/build/web artefato/build/painel_proprietario/
+          cp -a apps/painel_central/build/web artefato/build/painel_central/
+
+      - name: Disponibilizar scaffolds e builds de teste por 7 dias
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: plataformas-e-builds-de-teste
+          path: artefato/
+          if-no-files-found: error
+          retention-days: 7
