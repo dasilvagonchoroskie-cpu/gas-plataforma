@@ -43,11 +43,18 @@ O documento inicial prevê Flutter Web. Confirmar se o proprietário usará esse
 
 Definir prazo de retenção de endereços, pedidos, comprovantes e registros financeiros e como cumprir uma solicitação de exclusão sem apagar registros cuja retenção seja necessária.
 
-### D-008 — Marca e distribuição nas lojas
+### D-008 — Marca e distribuição — Android decidido; iOS pendente
 
-Definir se haverá um único aplicativo compartilhado com marca configurável após identificar a empresa ou uma listagem/aplicativo por empresa, reutilizando o mesmo código.
+No Android, haverá APK dedicado por empresa, gerado da mesma base de código usando Flavors/variantes. Nome, ícone, cores e URL pública do logo/configuração da empresa serão definidos no build a partir da configuração da empresa. A distribuição será direta, fora das lojas. O `empresa_id` embutido no app identifica a configuração, mas nunca é uma prova de autorização: o backend/RLS valida a empresa e o usuário. APKs não podem conter segredos.
+
+O caminho do iOS não está definido. APK é formato Android; não se deve presumir que a estratégia de distribuição direta de Android se aplica ao iOS.
+
+### D-009 — Assinatura, distribuição e atualização dos APKs
+
+Definir identificador exclusivo do aplicativo por empresa, propriedade e armazenamento seguro da chave de assinatura, processo de geração/assinatura, canal seguro para entregar os APKs e como clientes recebem atualizações. Chaves de assinatura ficam em segredos protegidos do pipeline, nunca no repositório.
 
 ## Registro de alterações
 
 - 2026-10-13 — Criado repositório privado e registrados os requisitos apresentados pelo proprietário; nenhuma implementação de aplicação ou banco iniciada.
 - 2026-10-13 — Aprovada a arquitetura multi-tenant white-label; modelo de isolamento por empresa registrado, sem início de migrations ou código de produto.
+- 2026-10-13 — Definidos APKs Android dedicados por empresa a partir de base compartilhada; fluxo iOS e operação segura de distribuição/atualização seguem pendentes.
