@@ -1,0 +1,74 @@
+name: Verificações Flutter
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.fvmrc'
+      - 'apps/**'
+      - 'packages/**'
+      - '.github/workflows/validacao.yml'
+  pull_request:
+    branches: [main]
+    paths:
+      - '.fvmrc'
+      - 'apps/**'
+      - 'packages/**'
+      - '.github/workflows/validacao.yml'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: verificacoes-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  flutter:
+    name: Análise e testes Dart/Flutter
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Baixar o código sem manter credenciais do Git
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+
+      - name: Verificar se há pacotes Flutter
+        id: pacotes
+        shell: bash
+        run: |
+          if find apps packages -name pubspec.yaml -print -quit 2>/dev/null | grep -q .; then
+            echo 'existem=true' >> "$GITHUB_OUTPUT"
+          else
+            echo 'existem=false' >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Instalar Flutter fixado pelo projeto
+        if: steps.pacotes.outputs.existem == 'true'
+        uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2
+        with:
+          flutter-version: 3.47.7
+          cache: true
+
+      - name: Analisar e testar cada pacote
+        if: steps.pacotes.outputs.existem == 'true'
+        shell: bash
+        run: |
+          set -euo pipefail
+          while IFS= read -r -d '' arquivo; do
+            pasta="$(dirname "$arquivo")"
+            echo "::group::Validando $pasta"
+            (
+              cd "$pasta"
+              flutter pub get
+              dart format --output=none --set-exit-if-changed .
+              flutter analyze --fatal-infos
+              flutter test
+            )
+            echo '::endgroup::'
+          done < <(find apps packages -name pubspec.yaml -print0 | sort -z)
+
+      - name: Informar que a estrutura dos apps ainda será criada
+        if: steps.pacotes.outputs.existem != 'true'
+        run: echo '::notice::A verificação automática está pronta; os testes Flutter serão executados quando os pacotes forem adicionados.'
