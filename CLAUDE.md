@@ -18,6 +18,7 @@ Leia este arquivo e os documentos em `docs/` antes de qualquer implementação. 
 - Valide entradas no servidor; não confie em preços, totais, central escolhida, permissões ou capacidade enviados pelo aplicativo.
 - Use políticas de acesso no banco para todas as tabelas e arquivos privados. Sem política explícita, sem acesso.
 - Proteja dados de localização, endereço, telefone e comprovantes de pagamento; registre apenas o necessário.
+- Configurações de marca e identificação de empresa embutidas em APKs são públicas; nunca coloque chaves ou segredos dentro do aplicativo. A autorização por empresa deve ser validada no backend/RLS, não confiada a um identificador enviado pelo app.
 - Mudanças de banco só por migrations versionadas. Nunca altere produção diretamente.
 - Se houver dúvida de segurança ou de escopo, pare e consulte Evandro antes de implementar.
 
