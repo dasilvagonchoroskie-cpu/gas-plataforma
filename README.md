@@ -1,6 +1,6 @@
 # Plataforma de pedidos de gás e água
 
-Produto para pedidos de gás e água, com operação por centrais, começando pelo piloto de Goiatuba. O repositório é privado e os projetos antigos do GitHub ficam fora do escopo.
+Produto multi-tenant white-label para pedidos de gás e água, com operação por centrais, começando pelo piloto de Goiatuba. Empresas compartilharão a plataforma com isolamento rigoroso de dados. O repositório é privado e os projetos antigos do GitHub ficam fora do escopo.
 
 ## Estado atual
 
