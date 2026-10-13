@@ -4,7 +4,7 @@ Produto multi-tenant white-label para pedidos de gás e água, com operação po
 
 ## Estado atual
 
-O trabalho está na definição conjunta da arquitetura. Ainda não há código de produto, banco, ambientes ou integrações configurados. Nenhuma função deve ser implementada até as decisões pendentes em `docs/DECISOES.md` serem discutidas e aprovadas.
+O modelo multi-tenant white-label foi aprovado, assim como APKs Android dedicados por empresa gerados da mesma base de código. Ainda não há código de produto, banco, ambientes ou integrações configurados. As decisões pendentes em `docs/DECISOES.md` precisam ser aprovadas antes das fases que dependem delas.
 
 ## Documentação
 
