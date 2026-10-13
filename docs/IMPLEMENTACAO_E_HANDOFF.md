@@ -54,7 +54,7 @@ A proposta mantém a identidade de login separada das permissões de negócio:
 - Realtime e notificações obedecem às mesmas permissões. Push e logs não devem incluir endereço, comprovante, telefone ou outros dados pessoais desnecessários.
 - Configuração de marca e logo podem ser públicas apenas quando não contêm credenciais, dados privados ou URLs assinadas de acesso temporário.
 
-Os papéis exatos, o ciclo de convite/desativação e os limites de cada central precisam ser aprovados antes de escrever a primeira migration.
+Os papéis exatos, o ciclo de convite/desativação e os limites de cada central precisam ser aprovados antes de escrever a primeira migration. A matriz proposta e os testes negativos estão detalhados em `MATRIZ_ACESSO_PROPOSTA.md`; ela também aguarda revisão e não deve ser tratada como autorização de implementação.
 
 ## 4. Supabase: integração e ambientes
 
