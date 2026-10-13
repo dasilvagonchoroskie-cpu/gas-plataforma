@@ -18,7 +18,10 @@ void main() {
       );
 
       expect(find.text('Relatórios'), findsOneWidget);
-      expect(find.textContaining('será conectada após a aprovação'), findsOneWidget);
+      expect(
+        find.textContaining('será conectada após a aprovação'),
+        findsOneWidget,
+      );
     });
 
     testWidgets('permite navegar entre seções do painel', (tester) async {
