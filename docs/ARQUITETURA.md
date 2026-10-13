@@ -1,6 +1,6 @@
 # Arquitetura — pedidos de gás e água
 
-**Estado:** base de requisitos em revisão conjunta. Este documento não autoriza ainda a implementação do banco ou dos aplicativos. As decisões marcadas como pendentes em `DECISOES.md` precisam ser aprovadas antes das fases que dependem delas.
+**Estado:** a decisão de produto multi-tenant white-label foi aprovada. A modelagem detalhada de isolamento e algumas regras operacionais seguem em revisão. Este documento não autoriza ainda a implementação do banco ou dos aplicativos; as decisões pendentes em `DECISOES.md` precisam ser aprovadas antes das fases que dependem delas.
 
 ## 1. Objetivo e piloto
 
@@ -78,18 +78,25 @@ A stack proposta é Flutter/Dart, com Flutter Web para o painel, Flutter para o 
 - Segredos apenas nos locais de segredo do provedor/CI; nenhuma chave privilegiada embutida nos apps ou no repositório.
 - Backups e exportação independente com procedimento de restauração testado antes do piloto.
 
-## 5. Reutilização para outros clientes e ramos
+## 5. Reutilização: multi-tenant white-label
 
-O objetivo é reutilizar uma base comum sem misturar dados ou regras específicas de cada ramo. Reutilizar o código para implantações separadas é diferente de operar várias empresas dentro do mesmo sistema compartilhado. Ainda não está decidido qual modelo será usado:
+**Decisão aprovada:** será uma plataforma compartilhada por várias empresas (multi-tenant), com personalização white-label e isolamento rigoroso entre empresas. Uma empresa equivale ao tenant raiz; suas centrais, operadores, clientes, pedidos, arquivos e configurações pertencem a ela.
 
-- **Implantações separadas:** mesma base de código, mas banco e ambiente separados por cliente. Mais simples de isolar no piloto.
-- **Plataforma multiempresa (multi-tenant):** várias empresas no mesmo serviço, com `empresa_id`/tenant em cada dado e isolamento obrigatório por RLS, testes entre empresas e configuração independente.
+Princípios obrigatórios antes de qualquer migration:
 
-Nenhuma coluna ou regra multiempresa deve ser assumida silenciosamente. A decisão deve ocorrer antes do modelo de dados. Em qualquer opção, o núcleo comum deve ser separado das regras próprias de gás/água; um segundo ramo só entra após requisitos e análise de segurança próprios.
+- A tabela `empresas` representa cada negócio/tenant. Toda informação operacional deve pertencer a uma empresa, diretamente por `empresa_id` ou por relação verificável no banco.
+- RLS deve restringir o acesso primeiro à empresa e depois ao papel e à central. O proprietário administra somente sua própria empresa e suas centrais; não existe acesso cruzado entre empresas no produto.
+- Identidade de login é separada da associação a uma empresa. A mesma pessoa poderá eventualmente participar de mais de uma empresa sem misturar dados; papéis e vínculo devem ser validados no servidor.
+- Testes automatizados devem provar que um usuário de uma empresa não lê, altera, assina ou recebe eventos/arquivos de outra empresa. Essa validação cobre banco, Storage, Realtime, funções de servidor e notificações.
+- Personalização por empresa deve ser configurável (por exemplo: nome, marca, cores, logo e contatos) e nunca depender de cidades ou nomes de clientes escritos no código.
+- O núcleo reutilizável será separado das regras específicas de cada ramo. O piloto implementa apenas gás e água; outra atividade exige módulo próprio, análise de segurança e aprovação de escopo.
+- O dono de cada negócio é administrador apenas do seu tenant. A existência de um administrador global da plataforma está fora do escopo atual.
+
+Ainda precisa ser definido como o white-label será apresentado nas lojas: um aplicativo compartilhado com marca configurada após selecionar/identificar a empresa, ou aplicativos/listagens separados por empresa a partir da mesma base de código. Essa decisão afeta publicação, identidade visual e fluxo de entrada, mas não permite relaxar o isolamento dos dados.
 
 ## 6. Fases propostas
 
-0. Aprovar arquitetura, modelo de reutilização, ambientes e documentação; preparar integração contínua.
+0. Aprovar o desenho detalhado de isolamento multi-tenant, a distribuição white-label, os ambientes e a documentação; preparar integração contínua.
 1. Banco, migrations, RLS, funções transacionais, seed e testes de isolamento.
 2. Painel do proprietário.
 3. Painel das centrais e transferência de pedidos.
