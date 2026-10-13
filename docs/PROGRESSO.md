@@ -22,4 +22,4 @@
 
 ## Próximo passo
 
-Revisar com Evandro as decisões pendentes D-002 a D-008 de `docs/DECISOES.md` antes de iniciar código ou migrations.
+Revisar com Evandro as decisões pendentes D-002 a D-007 e D-009 de `docs/DECISOES.md` antes de iniciar código ou migrations.
