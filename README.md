@@ -13,6 +13,7 @@ O modelo multi-tenant white-label foi aprovado, assim como APKs Android dedicado
 - `docs/DECISOES.md`: decisões registradas e pontos que precisam de aprovação.
 - `docs/PROGRESSO.md`: estado do trabalho e próximo passo.
 - `docs/IMPLEMENTACAO_E_HANDOFF.md`: guia técnico para revisão e continuidade pelo arquiteto sênior.
+- `docs/MATRIZ_ACESSO_PROPOSTA.md`: proposta de permissões e testes de isolamento, aguardando aprovação.
 - `apps/README.md` e `supabase/README.md`: estrutura proposta e limites das futuras integrações.
 
 ## Princípios
