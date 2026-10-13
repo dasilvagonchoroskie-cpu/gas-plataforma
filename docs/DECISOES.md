@@ -13,18 +13,11 @@ Este registro separa o que Evandro já definiu do que ainda precisa ser decidido
 - Dinheiro e cartão na entrega; cartão processado na maquininha do entregador. Pix pode mostrar QR/código copia e cola e aceitar envio de comprovante; a imagem exige conferência humana até integração futura.
 - Fiado fica fora da plataforma, sem controle de dívida.
 - Uma integração com gateway de pagamento pode ser adicionada futuramente, sem fazer parte do piloto.
+- **D-001 — Multi-tenant white-label:** várias empresas usarão uma plataforma compartilhada; os dados de cada empresa devem ficar isolados e a identidade visual deve ser configurável por empresa.
+- O proprietário de cada negócio administra somente a própria empresa; não há administrador global entre empresas no escopo atual.
 - Cada fase precisa de documentação, explicação em português, testes e aceite antes de seguir.
 
 ## Decisões pendentes antes do banco e do código de negócio
-
-### D-001 — Reutilização por outros clientes
-
-Escolher entre:
-
-1. **Mesmo código, ambiente separado por cliente** — banco e credenciais independentes; isolamento mais simples para o piloto.
-2. **Uma plataforma multiempresa** — empresas diferentes usam a mesma instalação, com `empresa_id` em cada registro e isolamento rigoroso por RLS.
-
-**Recomendação para discussão:** começar com código modular e possibilidade de implantação separada. Só adotar o modo multiempresa se o produto for realmente servir várias empresas no mesmo ambiente. Se essa for a meta desde o início, a separação por empresa precisa ser desenhada e testada antes da primeira migration.
 
 ### D-002 — Como escolher a central mais próxima
 
@@ -50,6 +43,11 @@ O documento inicial prevê Flutter Web. Confirmar se o proprietário usará esse
 
 Definir prazo de retenção de endereços, pedidos, comprovantes e registros financeiros e como cumprir uma solicitação de exclusão sem apagar registros cuja retenção seja necessária.
 
+### D-008 — Marca e distribuição nas lojas
+
+Definir se haverá um único aplicativo compartilhado com marca configurável após identificar a empresa ou uma listagem/aplicativo por empresa, reutilizando o mesmo código.
+
 ## Registro de alterações
 
 - 2026-10-13 — Criado repositório privado e registrados os requisitos apresentados pelo proprietário; nenhuma implementação de aplicação ou banco iniciada.
+- 2026-10-13 — Aprovada a arquitetura multi-tenant white-label; modelo de isolamento por empresa registrado, sem início de migrations ou código de produto.
