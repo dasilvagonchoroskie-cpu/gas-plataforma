@@ -53,7 +53,7 @@ A assinatura e o envio às lojas ficam para a etapa final e serão revisados/rea
 
 ### D-010 — Modelo detalhado de tenant e autorização — PENDENTE
 
-A proposta técnica está em `IMPLEMENTACAO_E_HANDOFF.md`: identidade de login separada das associações a empresas; papéis de gestão/operação vinculados ao tenant; atribuição de operadores a centrais; pedidos do cliente vinculados ao usuário e à empresa; RLS por tenant, papel e central. Revisar papéis, convites, múltiplos vínculos e matriz de permissões com o arquiteto. Nenhuma migration deve ser criada até a aprovação explícita deste desenho e dos testes de isolamento.
+A proposta técnica está em `IMPLEMENTACAO_E_HANDOFF.md` e `MATRIZ_ACESSO_PROPOSTA.md`: identidade de login separada das associações a empresas; papéis de gestão/operação vinculados ao tenant; atribuição de operadores a centrais; pedidos do cliente vinculados ao usuário e à empresa; RLS por tenant, papel e central. Revisar papéis, convites, múltiplos vínculos e matriz de permissões com o arquiteto. A matriz é proposta, não decisão aprovada. Nenhuma migration deve ser criada até a aprovação explícita deste desenho e dos testes de isolamento.
 
 ### D-011 — Provedor, ambientes e hospedagem — PENDENTE
 
