@@ -43,15 +43,13 @@ O documento inicial prevê Flutter Web. Confirmar se o proprietário usará esse
 
 Definir prazo de retenção de endereços, pedidos, comprovantes e registros financeiros e como cumprir uma solicitação de exclusão sem apagar registros cuja retenção seja necessária.
 
-### D-008 — Marca e distribuição — Android decidido; iOS pendente
+### D-008 — Variantes white-label e publicação — CONFIRMADA
 
-No Android, haverá APK dedicado por empresa, gerado da mesma base de código usando Flavors/variantes. Nome, ícone, cores e URL pública do logo/configuração da empresa serão definidos no build a partir da configuração da empresa. A distribuição será direta, fora das lojas. O `empresa_id` embutido no app identifica a configuração, mas nunca é uma prova de autorização: o backend/RLS valida a empresa e o usuário. APKs não podem conter segredos.
+A mesma base de código produzirá uma variante dedicada por empresa usando Flavors. APKs Android serão usados durante desenvolvimento e testes. Quando o produto estiver aprovado para produção, a variante Android será publicada na Google Play em AAB; a variante iOS será publicada pela App Store usando o formato e processo da Apple. Não haverá distribuição direta dos APKs aos clientes em produção. O `empresa_id` embutido no app identifica a configuração, mas nunca é prova de autorização: o backend/RLS valida a empresa e o usuário. Configurações no app são públicas; nenhum segredo entra no binário.
 
-O caminho do iOS não está definido. APK é formato Android; não se deve presumir que a estratégia de distribuição direta de Android se aplica ao iOS.
+### D-009 — Assinatura e publicação — responsabilidade na etapa final
 
-### D-009 — Assinatura, distribuição e atualização dos APKs
-
-Definir identificador exclusivo do aplicativo por empresa, propriedade e armazenamento seguro da chave de assinatura, processo de geração/assinatura, canal seguro para entregar os APKs e como clientes recebem atualizações. Chaves de assinatura ficam em segredos protegidos do pipeline, nunca no repositório.
+A assinatura e o envio às lojas ficam para a etapa final e serão revisados/realizados pelo arquiteto sênior indicado pelo proprietário. Antes dessa fase, deixar a arquitetura preparada para identificadores de aplicativo por empresa e armazenamento protegido de certificados/chaves fora do repositório e dos binários. Detalhes de contas das lojas, identificadores, gestão de chaves e atualização serão definidos com esse arquiteto.
 
 ## Registro de alterações
 
