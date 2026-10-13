@@ -4,7 +4,7 @@ Produto multi-tenant white-label para pedidos de gás e água, com operação po
 
 ## Estado atual
 
-O modelo multi-tenant white-label foi aprovado, assim como APKs Android dedicados por empresa gerados da mesma base de código. Ainda não há código de produto, banco, ambientes ou integrações configurados. As decisões pendentes em `docs/DECISOES.md` precisam ser aprovadas antes das fases que dependem delas.
+O modelo multi-tenant white-label foi aprovado, assim como APKs Android dedicados por empresa gerados da mesma base de código. Já existe um pacote Dart inicial de configuração pública de marca e o CI executa análise/testes. Os apps completos e qualquer projeto de banco/serviço em nuvem ainda não foram criados ou conectados. A proposta de handoff e as decisões pendentes estão documentadas; migrations dependem da aprovação do modelo de acesso.
 
 ## Documentação
 
@@ -12,6 +12,8 @@ O modelo multi-tenant white-label foi aprovado, assim como APKs Android dedicado
 - `docs/ARQUITETURA.md`: requisitos e arquitetura-base.
 - `docs/DECISOES.md`: decisões registradas e pontos que precisam de aprovação.
 - `docs/PROGRESSO.md`: estado do trabalho e próximo passo.
+- `docs/IMPLEMENTACAO_E_HANDOFF.md`: guia técnico para revisão e continuidade pelo arquiteto sênior.
+- `apps/README.md` e `supabase/README.md`: estrutura proposta e limites das futuras integrações.
 
 ## Princípios
 
