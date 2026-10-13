@@ -16,6 +16,7 @@
 - Nenhum repositório antigo foi acessado ou alterado.
 - Nenhuma migration, projeto Supabase, credencial de serviço ou integração de pagamento foi criado. Os `README.md` em `supabase/` apenas preparam a estrutura e explicitam os critérios anteriores à conexão.
 - Criado `docs/IMPLEMENTACAO_E_HANDOFF.md` com arquitetura de referência, proposta de isolamento multi-tenant, ciclo de ambientes, gates de segurança e checklist para o arquiteto sênior.
+- Criada `docs/MATRIZ_ACESSO_PROPOSTA.md` com permissões e testes negativos entre empresas/centrais para revisão; permanece proposta, não aprovada e não autoriza migrations.
 - Criados guias preparatórios em `apps/` e `supabase/`; não foi gerado template incompleto de app nem configuração que sugira conexão já existente.
 - Registradas como pendentes D-010 (modelo detalhado de tenant/RLS) e D-011 (provedor, ambientes e hospedagem) em `docs/DECISOES.md`.
 
