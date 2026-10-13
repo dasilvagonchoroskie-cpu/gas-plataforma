@@ -6,22 +6,25 @@
 
 - Repositório privado e documentação inicial do produto.
 - CI no GitHub Actions, com versões das Actions fixadas por commit e Flutter fixado em `.fvmrc`.
-- Pacote `packages/nucleo` com configuração pública de marca por empresa, validações e testes.
-- A última execução de CI citada em `PROGRESSO.md` passou pela instalação do Flutter, análise estática, formatação e testes.
+- `packages/nucleo` com configuração pública de marca e `packages/design_system` com tema Material 3, navegação responsiva e estados de preparação.
+- Shells Flutter em `apps/cliente`, `apps/painel_proprietario` e `apps/painel_central`, com plataformas Android/iOS/Web iniciais e testes.
+- Os cinco `pubspec.lock` foram registrados após resolução de dependências, análise e testes no workflow `Fixar dependências Flutter`.
+- O workflow `Preparar plataformas Flutter e builds de teste` passou por análise/testes, build APK Android debug `arm64` e builds Web dos painéis. O [guia de builds](GUIA_BUILDS_TESTE.md) explica o artefato e seus limites; o runner Linux gerou os arquivos de projeto iOS, mas não compilou nem assinou iOS.
 
-Ainda não existem apps Flutter, projeto Supabase provisionado, migrations, dados de produção ou chaves de serviço no repositório.
+Ainda não há projeto Supabase provisionado, migrations, dados de produção, autenticação ou chaves de serviço no repositório. Os shells não contêm lógica de negócio nem autorização implementada.
 
 ## 2. Arquitetura de referência
 
 ### Aplicações e módulos
 
 - Monorepo Flutter/Dart, mantendo uma base de código reutilizável.
-- `apps/cliente`: app Android/iOS, com variantes white-label por empresa.
-- `apps/painel`: painel web para proprietário e operação das centrais; a divisão das telas e se haverá app móvel do proprietário dependem da decisão D-006.
-- `packages/nucleo`: tipos e regras realmente compartilhados; código de apresentação e regras específicas do ramo permanecem em módulos próprios.
-- Organização Flutter por funcionalidade (`features`) e separação clara entre interface, domínio e acesso a dados. Evitar duplicar regras críticas no app e no servidor.
+- `apps/cliente`: app Android/iOS com shell white-label compartilhado; IDs e variantes por empresa aguardam revisão.
+- `apps/painel_proprietario`: shell web responsivo para administrar somente o próprio tenant; a decisão D-006 ainda define se haverá app móvel do proprietário.
+- `apps/painel_central`: shell web responsivo para operações de uma central atribuída.
+- `packages/nucleo`: tipos e regras realmente compartilhados; `packages/design_system`: apresentação compartilhada.
+- Organização futura por funcionalidade (`features`) e separação clara entre interface, domínio e acesso a dados. Evitar duplicar regras críticas no app e no servidor.
 
-Os diretórios dos apps estão descritos em `apps/README.md`; não foi gerado um template incompleto de aplicativo.
+Os shells não estão conectados a autenticação, backend ou dados de negócio. A composição das plataformas e o guia de builds de teste estão descritos em `apps/README.md` e `docs/GUIA_BUILDS_TESTE.md`.
 
 ### Serviços de backend
 
