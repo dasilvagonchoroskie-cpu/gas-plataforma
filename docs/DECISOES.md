@@ -16,8 +16,11 @@ Este registro separa o que Evandro já definiu do que ainda precisa ser decidido
 - **D-001 — Multi-tenant white-label:** várias empresas usarão uma plataforma compartilhada; os dados de cada empresa devem ficar isolados e a identidade visual deve ser configurável por empresa.
 - O proprietário de cada negócio administra somente a própria empresa; não há administrador global entre empresas no escopo atual.
 - Cada fase precisa de documentação, explicação em português, testes e aceite antes de seguir.
+- Em 2026-10-14, Evandro autorizou adiantar interfaces e funcionalidades dos três apps. Essa autorização não escolhe provedor de nuvem nem aprova migrations, regras de negócio ainda pendentes, modelo de acesso ou publicação; funcionalidades dependentes desses pontos aguardam as decisões e a revisão do arquiteto.
 
-## Decisões pendentes antes do banco e do código de negócio
+## Decisões pendentes para fluxos que dependem de regras de negócio, banco ou serviços
+
+A implementação de interfaces e de funcionalidades que não dependam dessas decisões está autorizada. Não inferir comportamento de produto, provedor ou regra de acesso quando houver dependência listada abaixo; deixar o ponto configurável, documentado e aguardando aprovação.
 
 ### D-002 — Como escolher a central mais próxima
 
@@ -49,7 +52,7 @@ A mesma base de código produzirá uma variante dedicada por empresa usando Flav
 
 ### D-009 — Assinatura e publicação — responsabilidade na etapa final
 
-A assinatura e o envio às lojas ficam para a etapa final e serão revisados/realizados pelo arquiteto sênior indicado pelo proprietário. Antes dessa fase, deixar a arquitetura preparada para identificadores de aplicativo por empresa e armazenamento protegido de certificados/chaves fora do repositório e dos binários. Detalhes de contas das lojas, identificadores, gestão de chaves e atualização serão definidos com esse arquiteto.
+A assinatura fica para a etapa final e Evandro indicou que será feita com Claude Code. O arquiteto sênior revisará identificadores por empresa, contas das lojas e o processo de publicação. Certificados e chaves devem permanecer em armazenamento protegido, fora do repositório e dos binários; não serão configurados antes da revisão e aprovação do fluxo.
 
 ### D-010 — Modelo detalhado de tenant e autorização — PENDENTE
 
@@ -65,3 +68,4 @@ Supabase permanece como backend de referência no desenho atual, ainda sem proje
 - 2026-10-13 — Aprovada a arquitetura multi-tenant white-label; modelo de isolamento por empresa registrado, sem início de migrations ou código de produto.
 - 2026-10-13 — Definidos APKs Android para teste, AAB na Google Play e distribuição iOS pela App Store; assinatura e publicação ficam para a etapa final.
 - 2026-10-13 — Adicionada proposta de modelo detalhado de acesso multi-tenant e ambientes de backend para revisão; sem provisionamento ou migrations.
+- 2026-10-14 — Autorizado adiantar interfaces e funcionalidades dos apps cliente, proprietário e central, respeitando as decisões pendentes e sem provisionar serviços ou criar migrations não aprovadas; Claude Code ficará responsável pela assinatura na etapa final, com revisão do arquiteto.

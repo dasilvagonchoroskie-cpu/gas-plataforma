@@ -2,3 +2,4 @@
 library;
 
 export 'src/configuracao_marca_empresa.dart';
+export 'src/dinheiro.dart';

@@ -2,7 +2,7 @@
 
 Pacote Dart compartilhado pelos aplicativos e serviços que compõem a plataforma.
 
-## Primeiro componente
+## Componentes atuais
 
 `ConfiguracaoMarcaEmpresa` valida a configuração pública usada para identificar visualmente uma variante white-label:
 
@@ -12,6 +12,8 @@ Pacote Dart compartilhado pelos aplicativos e serviços que compõem a plataform
 - endereço HTTPS público do logo.
 
 A classe normaliza espaços, converte a cor para maiúsculas e rejeita campos ausentes, formatos inválidos e URLs inseguras. A conversão JSON usa os nomes de domínio em `snake_case`.
+
+`Dinheiro` representa valores como centavos inteiros e os formata em reais sem ponto flutuante. É um componente de exibição e representação: preços, disponibilidade e totais finais continuam sob validação autoritativa do servidor.
 
 ## Segurança
 

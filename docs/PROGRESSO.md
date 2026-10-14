@@ -6,7 +6,7 @@
 
 - Criado o repositório privado `gas-plataforma`; nenhum repositório antigo foi acessado ou alterado.
 - Registradas a arquitetura multi-tenant white-label e as decisões já aprovadas. A matriz de acesso e o handoff continuam como propostas para revisão do arquiteto, não como autorização para criar migrations.
-- Criado `packages/nucleo` com modelo de configuração pública de marca e validação, e `packages/design_system` com tema Material 3, navegação responsiva e estados seguros de preparação.
+- Criado `packages/nucleo` com modelo de configuração pública de marca, validação e `Dinheiro` para representar/formatar valores em centavos inteiros sem ponto flutuante; o componente monetário tem testes unitários. `packages/design_system` oferece tema Material 3, navegação responsiva e estados seguros de preparação.
 - Criados três shells Flutter: `apps/cliente`, `apps/painel_proprietario` e `apps/painel_central`, sem autenticação, autorização, backend ou dados de negócio simulados.
 - Geradas e versionadas as plataformas Android/iOS do app do cliente e Web dos dois painéis. IDs `com.example.*` e recursos visuais genéricos são placeholders, não configurações de produção.
 - Adicionados ao Git os cinco `pubspec.lock` (três apps e dois pacotes privados) pelo workflow `Fixar dependências Flutter`, após Flutter 3.47.7 resolver dependências, formatar, analisar e passar os testes. A execução [38464776457](https://github.com/dasilvagonchoroskie-cpu/gas-plataforma/actions/runs/38464776457) foi bem-sucedida; os lockfiles foram registrados no commit `fbced56000cb320f33f43c85f43c1d2f4870872a`.
