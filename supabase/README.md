@@ -1,22 +1,18 @@
-# Preparação do backend Supabase
+# Backend Supabase
 
-O Supabase é o backend de referência no desenho atual, mas ainda não há projeto, credencial, configuração local ou migration neste repositório. Este diretório documenta a preparação; não representa conexão com produção.
+O Supabase é o backend aprovado para esta plataforma: um único projeto por ambiente, usando Postgres, Auth, Realtime, Storage e Edge Functions. Não serão usados microsserviços. O Firebase Cloud Messaging fica restrito ao envio de notificações push.
 
-## Componentes previstos
+**Estado:** ainda não há projeto Supabase conectado. O projeto gratuito de desenvolvimento será criado por Evandro em uma organização separada. Produção não será criada nem acessada nesta etapa.
 
-- Postgres como fonte de verdade para dados transacionais.
-- Supabase Auth para autenticação.
-- RLS como limite obrigatório de autorização por empresa, usuário e central.
-- Storage privado para comprovantes e arquivos que não sejam públicos.
-- Realtime apenas para eventos que o usuário tem autorização para receber.
-- Edge Functions para operações privilegiadas que não devam ser executadas diretamente pelo cliente.
+## Regras obrigatórias
 
-## Antes de conectar
+- Todas as tabelas terão RLS habilitada; sem política explícita, não há acesso.
+- As permissões do banco são a autoridade. Filtros na interface não substituem RLS.
+- `service_role` nunca pode ser incluída em apps ou no repositório; somente a chave pública `anon` pode ser usada na configuração do app.
+- Migrations versionadas serão o único caminho para mudanças no banco; nenhuma alteração manual direta em produção.
+- Testes usarão contas e dados sintéticos de desenvolvimento, sem segredos ou dados pessoais reais.
+- Valores monetários são inteiros em centavos, e datas no banco ficam em UTC.
 
-1. Aprovar o modelo de empresas, perfis, associações de usuários, papéis e centrais.
-2. Aprovar a matriz de permissões e cenários de teste de isolamento.
-3. Escolher contas, região e planos para desenvolvimento/homologação/produção, verificando custo, backup e requisitos de dados.
-4. Configurar segredos por ambiente no provedor; nunca versionar chaves.
-5. Usar migrations versionadas e dados sintéticos nos testes.
+## Etapas
 
-Firestore e Render não foram selecionados como componentes adicionais. Uma eventual mudança de backend ou hospedagem precisa de decisão arquitetural registrada para manter uma fonte de verdade e evitar integrações duplicadas.
+A Fase 0 prepara documentação, ambientes e CI. Migrations, RLS, RPC, seed com dados de teste e testes de isolamento pertencem à Fase 1 e não devem ser antecipados. O projeto de desenvolvimento será conectado somente quando Evandro o criar e autorizar essa próxima etapa.

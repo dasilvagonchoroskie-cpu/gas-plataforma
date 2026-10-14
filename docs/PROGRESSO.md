@@ -1,28 +1,30 @@
 # Progresso
 
-**Atualizado:** 2026-10-14
+**Atualizado:** 2026-10-14  
+**Etapa atual:** Fase 0 — preparação do repositório; ainda não concluída.
 
-## Feito
+## Feito nesta preparação
 
-- Criado o repositório privado `gas-plataforma`; nenhum repositório antigo foi acessado ou alterado.
-- Registradas a arquitetura multi-tenant white-label e as decisões já aprovadas. A matriz de acesso e o handoff continuam como propostas para revisão do arquiteto, não como autorização para criar migrations.
-- Criado `packages/nucleo` com modelo de configuração pública de marca, validação e `Dinheiro` para representar/formatar valores em centavos inteiros sem ponto flutuante; o componente monetário tem testes unitários. `packages/design_system` oferece tema Material 3, navegação responsiva e estados seguros de preparação.
-- Criados três shells Flutter: `apps/cliente`, `apps/painel_proprietario` e `apps/painel_central`, sem autenticação, autorização, backend ou dados de negócio simulados.
-- Geradas e versionadas as plataformas Android/iOS do app do cliente e Web dos dois painéis. IDs `com.example.*` e recursos visuais genéricos são placeholders, não configurações de produção.
-- Adicionados ao Git os cinco `pubspec.lock` (três apps e dois pacotes privados) pelo workflow `Fixar dependências Flutter`, após Flutter 3.47.7 resolver dependências, formatar, analisar e passar os testes. A execução [38464776457](https://github.com/dasilvagonchoroskie-cpu/gas-plataforma/actions/runs/38464776457) foi bem-sucedida; os lockfiles foram registrados no commit `fbced56000cb320f33f43c85f43c1d2f4870872a`.
-- A execução anterior [38461272949](https://github.com/dasilvagonchoroskie-cpu/gas-plataforma/actions/runs/38461272949) validou formatação, análise e testes; compilou o primeiro APK do cliente e os builds Web. Seu artefato temporário expira em 2026-10-20 às 20:24 UTC; os builds atuais estão descritos nos guias abaixo.
-- A execução [38506208860](https://github.com/dasilvagonchoroskie-cpu/gas-plataforma/actions/runs/38506208860) passou: compilou três APKs Android debug `arm64` e os dois painéis Web após formatação, análise e testes. O artefato ZIP temporário inclui APKs, hashes, scaffolds e builds Web; tamanho 153.447.176 bytes, expiração em 2026-10-21 às 03:33:37 UTC.
-- As três APKs foram então publicadas como arquivos individuais em um pré-lançamento do repositório privado: [execução 38507526841](https://github.com/dasilvagonchoroskie-cpu/gas-plataforma/actions/runs/38507526841). Links diretos, hashes e instruções estão no [guia das APKs](GUIA_APKS_PREVIA.md). São debug ARM64; as prévias Android dos painéis não decidem D-006. O runner Linux não compilou nem assinou iOS.
-- A pasta iOS foi gerada, mas o runner Linux não compilou, assinou nem testou iOS. Nenhum AAB, build de produção ou deploy foi feito.
-- Não foram provisionados Supabase, serviços de nuvem, migrations, credenciais de serviço ou integrações de pagamento.
+- Registrada em `docs/ARQUITETURA.md` a arquitetura aprovada versão 1 (13/10/2026), que é a fonte de verdade para escopo, decisões e ordem das fases.
+- Atualizados `CLAUDE.md`, `docs/DECISOES.md`, README do repositório e `apps/README.md` para seguirem a arquitetura: um app do cliente, um painel web unificado, backend Supabase único, sem microsserviços, e proibição de antecipar fases.
+- Preparado `apps/painel/` como esqueleto seguro do painel unificado, preservando temporariamente os shells antigos como referência. O novo painel não tem login, conexão com backend nem dados comerciais simulados.
+- Atualizados os READMEs de Supabase para refletir as decisões aprovadas; `supabase/seed.sql` contém somente comentários. Não foram criadas migrations, funções ou dados de negócio.
+- Criado um esqueleto inicial de `docs/RUNBOOK.md`, ainda sem procedimentos de operação testados.
 
-## Falta
+## Limites e validação
 
-- Fechar D-002 a D-007: seleção por proximidade, transferência entre centrais, preço/reconfirmação, reserva de estoque e horários, Pix e escopo móvel do painel do proprietário.
-- Revisar e aprovar D-010: empresas, vínculos de usuários, papéis, RLS e testes negativos de isolamento, antes de migrations.
-- Definir D-011: provedor, ambientes e hospedagem antes de provisionar qualquer serviço.
-- Com o arquiteto sênior, definir IDs de produção, variantes por empresa, identidade visual, assinatura, compilação iOS em macOS e publicação.
+- Nenhum projeto Supabase foi conectado ou criado nesta execução. O projeto gratuito de desenvolvimento ainda será criado por Evandro, em organização separada.
+- Nenhum projeto ou banco de produção foi criado, acessado ou alterado. Nenhuma migration ou mudança de Fase 1 foi iniciada.
+- A execução atual não tem `flutter`, `dart`, `git` nem CLI do Supabase disponíveis. Isso descreve somente este ambiente de execução; o computador de Evandro não foi verificado.
+- Os testes Flutter e a análise estática do novo pacote ainda dependem do GitHub Actions. A validação CI desta versão está pendente; não declarar o painel nem a Fase 0 concluídos antes de verificar os resultados.
+
+## Falta para concluir a Fase 0
+
+- Validar o painel unificado e os demais pacotes no workflow de CI e resolver eventuais falhas.
+- Confirmar o registro do `pubspec.lock` do novo painel pelo workflow de dependências.
+- Fazer a conferência local do repositório com Claude Code ou com orientação ao desenvolvedor, pois esta execução não acessa o computador de Evandro.
+- Evandro criar o projeto Supabase gratuito de desenvolvimento em organização separada; não compartilhar chaves no chat nem registrá-las no repositório.
 
 ## Próximo passo
 
-Revisar o handoff, a matriz de acesso e os shells com Evandro e o arquiteto sênior. Só depois fechar as decisões pendentes e começar integrações e migrations versionadas, mantendo chaves privilegiadas fora do repositório e dos apps.
+Concluir a validação de CI da Fase 0, conferir o estado local com Claude Code e registrar os resultados aqui. Parar ao fim da Fase 0 e pedir autorização explícita antes de iniciar a Fase 1. Não criar nem acessar produção.

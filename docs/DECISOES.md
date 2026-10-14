@@ -1,71 +1,28 @@
 # Decisões do projeto
 
-Este registro separa o que Evandro já definiu do que ainda precisa ser decidido. Uma sugestão da equipe não vira regra sem aprovação.
+Este resumo acompanha `docs/ARQUITETURA.md`, que é a fonte principal e aprovada. Se houver diferença, prevalece a arquitetura mais recente aprovada por Evandro.
 
-## Decisões confirmadas
+## Decisões fechadas
 
-- Trabalhar somente neste projeto novo; projetos/repositórios anteriores ficam intocados sem ordem explícita.
-- Segurança, privacidade e qualidade profissional desde o início; nenhum segredo no código; mudanças do banco por migrations versionadas.
-- App do cliente em Flutter/Dart para Android e iOS; painel web em Flutter; backend proposto em Supabase, ainda sujeito à validação de arquitetura e contas.
-- No piloto, um revendedor opera várias centrais; podem existir duas ou mais no mesmo município.
-- Atendimento e encaminhamento de um pedido ficam dentro do mesmo município.
-- Cliente pode autenticar com Google ou e-mail/senha, informa telefone e endereço e pode permitir localização precisa, com alternativa de informar o endereço manualmente.
-- Dinheiro e cartão na entrega; cartão processado na maquininha do entregador. Pix pode mostrar QR/código copia e cola e aceitar envio de comprovante; a imagem exige conferência humana até integração futura.
-- Fiado fica fora da plataforma, sem controle de dívida.
-- Uma integração com gateway de pagamento pode ser adicionada futuramente, sem fazer parte do piloto.
-- **D-001 — Multi-tenant white-label:** várias empresas usarão uma plataforma compartilhada; os dados de cada empresa devem ficar isolados e a identidade visual deve ser configurável por empresa.
-- O proprietário de cada negócio administra somente a própria empresa; não há administrador global entre empresas no escopo atual.
-- Cada fase precisa de documentação, explicação em português, testes e aceite antes de seguir.
-- Em 2026-10-14, Evandro autorizou adiantar interfaces e funcionalidades dos três apps. Essa autorização não escolhe provedor de nuvem nem aprova migrations, regras de negócio ainda pendentes, modelo de acesso ou publicação; funcionalidades dependentes desses pontos aguardam as decisões e a revisão do arquiteto.
+- Um único vendedor atende Goiatuba, Itumbiara e Bom Jesus de Goiás; no piloto, somente a central de Goiatuba fica ativa.
+- O dono controla todas as centrais; centrais são registros do banco e não ficam fixadas no código.
+- Flutter para o app do cliente Android/iOS e Flutter Web para o painel único de dono e central.
+- App cliente usa Riverpod, go_router e supabase_flutter; modelos e regras compartilhados ficam em `packages/nucleo`.
+- Um backend Supabase (Postgres, Auth, Realtime, Storage e Edge Functions), sem microsserviços. Firebase Cloud Messaging é usado somente para push.
+- Dados e permissões são protegidos por RLS no banco; a chave `service_role` nunca vai para apps.
+- Valores monetários são inteiros em centavos; datas no banco são UTC e apresentadas em `America/Sao_Paulo`.
+- Migrations são versionadas; produção nunca é alterada manualmente.
+- A assinatura fica para a etapa final com Claude Code, sem certificados/chaves no repositório.
+- Seguir estritamente a ordem e o escopo de `docs/ARQUITETURA.md`.
 
-## Decisões pendentes para fluxos que dependem de regras de negócio, banco ou serviços
+## Estado dos ambientes
 
-A implementação de interfaces e de funcionalidades que não dependam dessas decisões está autorizada. Não inferir comportamento de produto, provedor ou regra de acesso quando houver dependência listada abaixo; deixar o ponto configurável, documentado e aguardando aprovação.
+- Evandro tem uma conta GitHub.
+- O projeto Supabase de desenvolvimento gratuito ainda será criado por Evandro, em organização separada.
+- O ambiente de produção não existe e fica fora desta Fase 0; nenhuma conta, projeto ou banco de produção será criado ou acessado agora.
+- Nenhuma migration, seed com dados de negócio ou credencial de Supabase foi criada nesta etapa.
 
-### D-002 — Como escolher a central mais próxima
+## Registro
 
-Definir se proximidade será distância em linha reta, tempo/distância por rota ou área/bairro de atendimento configurada. A escolha deve ocorrer apenas entre centrais ativas que atendem o município e o endereço.
-
-### D-003 — Transferência e preço
-
-Definir quando a transferência é permitida (por exemplo, falta de estoque), se o destino precisa aceitar, como manter o preço já apresentado e quando pedir nova confirmação ao cliente.
-
-### D-004 — Reserva de estoque e vaga
-
-Definir o instante de reserva, o instante de baixa definitiva, a liberação em cancelamentos e a regra de capacidade de horários, sempre com transação concorrente segura.
-
-### D-005 — Pix no piloto
-
-Definir uma chave Pix da empresa ou uma chave por central; se o QR inclui valor e identificador do pedido; quem confere no banco; como aprovar/rejeitar comprovante; e quando o pedido pode avançar. O upload não é confirmação bancária.
-
-### D-006 — Painel do proprietário
-
-O documento inicial prevê Flutter Web. Confirmar se o proprietário usará esse painel adaptado para celular ou se também haverá um aplicativo móvel nativo separado.
-
-### D-007 — Dados pessoais e exclusão de conta
-
-Definir prazo de retenção de endereços, pedidos, comprovantes e registros financeiros e como cumprir uma solicitação de exclusão sem apagar registros cuja retenção seja necessária.
-
-### D-008 — Variantes white-label e publicação — CONFIRMADA
-
-A mesma base de código produzirá uma variante dedicada por empresa usando Flavors. APKs Android serão usados durante desenvolvimento e testes. Quando o produto estiver aprovado para produção, a variante Android será publicada na Google Play em AAB; a variante iOS será publicada pela App Store usando o formato e processo da Apple. Não haverá distribuição direta dos APKs aos clientes em produção. O `empresa_id` embutido no app identifica a configuração, mas nunca é prova de autorização: o backend/RLS valida a empresa e o usuário. Configurações no app são públicas; nenhum segredo entra no binário.
-
-### D-009 — Assinatura e publicação — responsabilidade na etapa final
-
-A assinatura fica para a etapa final e Evandro indicou que será feita com Claude Code. O arquiteto sênior revisará identificadores por empresa, contas das lojas e o processo de publicação. Certificados e chaves devem permanecer em armazenamento protegido, fora do repositório e dos binários; não serão configurados antes da revisão e aprovação do fluxo.
-
-### D-010 — Modelo detalhado de tenant e autorização — PENDENTE
-
-A proposta técnica está em `IMPLEMENTACAO_E_HANDOFF.md` e `MATRIZ_ACESSO_PROPOSTA.md`: identidade de login separada das associações a empresas; papéis de gestão/operação vinculados ao tenant; atribuição de operadores a centrais; pedidos do cliente vinculados ao usuário e à empresa; RLS por tenant, papel e central. Revisar papéis, convites, múltiplos vínculos e matriz de permissões com o arquiteto. A matriz é proposta, não decisão aprovada. Nenhuma migration deve ser criada até a aprovação explícita deste desenho e dos testes de isolamento.
-
-### D-011 — Provedor, ambientes e hospedagem — PENDENTE
-
-Supabase permanece como backend de referência no desenho atual, ainda sem projeto ou conta conectada. Definir contas responsáveis, região, custo/plano, backup e ambientes local/homologação/produção. Firestore e Render não foram selecionados; qualquer uso adicional ou troca exige decisão arquitetural e definição de fonte única de verdade.
-
-## Registro de alterações
-
-- 2026-10-13 — Criado repositório privado e registrados os requisitos apresentados pelo proprietário; nenhuma implementação de aplicação ou banco iniciada.
-- 2026-10-13 — Aprovada a arquitetura multi-tenant white-label; modelo de isolamento por empresa registrado, sem início de migrations ou código de produto.
-- 2026-10-13 — Definidos APKs Android para teste, AAB na Google Play e distribuição iOS pela App Store; assinatura e publicação ficam para a etapa final.
-- 2026-10-13 — Adicionada proposta de modelo detalhado de acesso multi-tenant e ambientes de backend para revisão; sem provisionamento ou migrations.
-- 2026-10-14 — Autorizado adiantar interfaces e funcionalidades dos apps cliente, proprietário e central, respeitando as decisões pendentes e sem provisionar serviços ou criar migrations não aprovadas; Claude Code ficará responsável pela assinatura na etapa final, com revisão do arquiteto.
+- 2026-10-14 — Arquitetura versão 1 recebida e adotada como fonte principal do projeto; estrutura e trabalho devem seguir suas fases e limites.
+- 2026-10-14 — Fase 0 autorizada sem ambiente de produção; verificação do computador local depende de execução guiada por Evandro ou Claude Code, pois esta sessão não tem acesso ao computador físico.

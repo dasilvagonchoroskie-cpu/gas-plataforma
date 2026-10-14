@@ -1,7 +1,7 @@
 # Edge Functions
 
-Nenhuma função de backend foi criada ainda. Use este local somente para operações que precisem de validação confiável no servidor; não replique regras críticas em funções diferentes sem necessidade.
+Nenhuma Edge Function foi criada. As funções previstas na arquitetura, como tarefas de notificação, só serão implementadas na fase correspondente e após a Fase 1 preparar e proteger o banco.
 
-Toda função futura deve validar o JWT, resolver permissões no servidor, validar entrada e saída, limitar dados retornados, evitar exposição de informações pessoais e registrar auditoria sem segredos. Operações privilegiadas devem usar a menor permissão possível, tratar repetição/idempotência quando aplicável e manter `service_role` exclusivamente no ambiente seguro do servidor.
+Toda função futura deverá validar entradas no servidor, aplicar as permissões adequadas, limitar os dados retornados, proteger dados pessoais e tratar repetição de operações críticas. Segredos ficam somente nos ambientes seguros do servidor; `service_role` nunca entra em apps ou no repositório.
 
-Operações de pedido, reserva e pagamento dependem das decisões D-002 a D-005; não as implementar por antecipação.
+Não antecipar funções de pedidos, pagamentos ou outras fases. Seguir `docs/ARQUITETURA.md` e registrar mudanças como parte da etapa aprovada.

@@ -1,0 +1,4 @@
+-- Fase 0: nenhum dado de negócio é inserido neste arquivo.
+-- Seeds com dados sintéticos de desenvolvimento serão definidos na Fase 1,
+-- após autorização, junto com migrations e testes de RLS.
+-- Nunca carregar dados pessoais reais nem executar dados de teste em produção.

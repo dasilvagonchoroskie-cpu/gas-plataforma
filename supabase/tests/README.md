@@ -1,7 +1,7 @@
 # Testes de segurança do backend
 
-Ainda não há testes de banco ou funções. Antes da primeira migration, preparar dados sintéticos de pelo menos duas empresas e contas separadas para cliente, proprietário e operador de central.
+Ainda não há testes de banco ou funções. Eles pertencem à Fase 1 e serão preparados com dados sintéticos em desenvolvimento, sem contas ou dados reais.
 
-Os testes devem provar tanto o acesso permitido quanto o negado em leitura e escrita, incluindo alteração de IDs enviados pelo cliente. A cobertura deve incluir RLS, Storage privado, Realtime, RPC/Edge Functions e atribuição a centrais. Um teste que verifica somente a interface ou o filtro da consulta não prova isolamento.
+A cobertura deverá provar acesso permitido e negado conforme os papéis definidos na arquitetura. Casos mínimos de isolamento: operador da central A não consegue consultar nem alterar dados da central B; cliente não consegue consultar nem alterar dados de outro cliente. Os testes devem exercitar as permissões reais do banco (RLS), não apenas filtros de interface.
 
-Depois que o Supabase local for configurado, executar os testes no CI com ambiente efêmero e sem segredos de produção. A criação do ambiente e o comando exato dependem da versão do Supabase CLI escolhida pelo arquiteto.
+A estratégia e os comandos de execução serão definidos quando o projeto gratuito de desenvolvimento estiver criado e a Fase 1 for autorizada. Não usar credenciais nem dados de produção.
