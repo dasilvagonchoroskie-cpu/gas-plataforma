@@ -1,31 +1,17 @@
-# Aplicativos e superfícies da plataforma
+# Aplicativos da plataforma
 
-## Estrutura
+A arquitetura canônica está em `docs/ARQUITETURA.md`. Há um app Flutter mobile do cliente e um painel Flutter Web unificado para dono e central.
 
-- `cliente/`: app Flutter Android/iOS, com Início, Pedidos e Perfil.
-- `painel_proprietario/`: painel Flutter Web responsivo para administrar somente o próprio tenant.
-- `painel_central/`: painel Flutter Web responsivo para operar a central atribuída.
-- `../packages/design_system/`: tema Material 3, navegação responsiva e estados de preparação compartilhados.
-- `../packages/nucleo/`: modelos compartilhados e configuração pública de marca.
+## Estrutura prevista
 
-Os três produtos são shells: não contêm autenticação, autorização efetiva, conexão ao backend nem dados de negócio fictícios. Os avisos de módulos aguardando integração são intencionais.
+- `cliente/`: Flutter Android/iOS. Organizar por funcionalidade dentro de `lib/funcionalidades/`.
+- `painel/`: Flutter Web único. As funcionalidades do dono e da central ficam no mesmo projeto, separadas por papel em `lib/funcionalidades/`.
+- `../packages/nucleo/`: modelos e regras compartilhadas, com nomes de domínio em português.
 
-## Plataformas e builds de teste
+O painel unificado começou a ser preparado em `apps/painel`. Os shells anteriores em `painel_proprietario/` e `painel_central/` foram preservados temporariamente; seus módulos de navegação já foram copiados para o caminho canônico, e não devem receber funcionalidades novas. Só serão removidos depois da validação do novo pacote e dos fluxos de CI.
 
-As pastas nativas estão versionadas: `cliente/android`, `cliente/ios`, `painel_proprietario/web` e `painel_central/web`. Os painéis são Web nesta etapa; não foram criados apps móveis para eles.
+## Estado funcional
 
-A execução [38506208860](https://github.com/dasilvagonchoroskie-cpu/gas-plataforma/actions/runs/38506208860) passou na resolução, formatação, análise, testes e compilou três APKs Android arm64 de depuração, além dos builds Web dos dois painéis. O artefato temporário do Actions contém os três APKs, hashes, scaffolds gerados e builds Web; seu tamanho é 153.447.176 bytes e expira em 2026-10-21 às 03:33:37 UTC. Para evitar depender do ZIP temporário, as três APKs foram publicadas individualmente, com SHA256, no [pré-lançamento privado do GitHub](https://github.com/dasilvagonchoroskie-cpu/gas-plataforma/releases/tag/previa-apks-android-arm64-38507526841). Os links diretos e os passos de instalação estão no [guia das APKs](../docs/GUIA_APKS_PREVIA.md).
+Os shells atuais não estão conectados a autenticação ou backend e não devem mostrar pedidos ou dados comerciais inventados. O painel unificado inicia em estado de preparação. Nenhum projeto Supabase foi conectado, nenhuma migration foi criada e não existe ambiente de produção.
 
-As APKs são apenas prévias e não definem D-006: os painéis permanecem Web responsivos até decisão de produto. O Android gerado para os painéis existe somente no artefato temporário, não nos projetos versionados. O runner Linux gerou scaffolds de projeto iOS, mas não compilou, assinou ou testou iOS. Os builds Web não foram implantados em hospedagem. O [run anterior 38461272949](https://github.com/dasilvagonchoroskie-cpu/gas-plataforma/actions/runs/38461272949) gerou o artefato cliente/Web inicial documentado no [guia de builds de teste](../docs/GUIA_BUILDS_TESTE.md).
-
-## Dependências
-
-Os `pubspec.lock` dos três apps e dos dois pacotes privados são gerados pelo workflow `Fixar dependências Flutter`, que resolve, analisa e testa os projetos antes de registrá-los. Isso permite repetir as versões testadas; não substitui a atualização periódica e revisão de dependências.
-
-## Limites e revisão pendente
-
-- `com.example.*`, ícones e imagens genéricos são placeholders, não identificadores de produção.
-- Não há chave de assinatura de produção; não gerar ou distribuir AAB/release antes da revisão do arquiteto.
-- Variantes por empresa, IDs finais, identidade visual, assinatura e publicação precisam de revisão do arquiteto sênior.
-- Não há projeto Supabase, migrations, regras de negócio, autenticação, papéis ou autorização. Fechar D-002–D-007, D-010 e D-011 antes de qualquer migration ou integração.
-- A identidade da empresa no app nunca substitui autorização do servidor/RLS. O proprietário fica limitado ao próprio tenant; não há administrador global no escopo.
+A implementação deve seguir as fases da arquitetura: banco e segurança (Fase 1), painel do dono (Fase 2), painel da central (Fase 3), app do cliente (Fase 4), push e relatórios (Fase 5), fechamento (Fase 6) e piloto (Fase 7). Não antecipar funcionalidades de fases futuras.
