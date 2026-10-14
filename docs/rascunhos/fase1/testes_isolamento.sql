@@ -15,11 +15,21 @@ select extensions.is(
   'Cliente Teste A não enxerga o pedido de Cliente Teste B'
 );
 
-select extensions.ok(
-  not has_column_privilege('authenticated', 'public.precos_central', 'preco_centavos', 'UPDATE'),
-  'Cliente autenticado não pode alterar preço'
+update public.precos_central
+set preco_centavos = 1
+where central_id = '20000000-0000-0000-0000-000000000001'
+  and produto_id = '30000000-0000-0000-0000-000000000001';
+reset role;
+
+select extensions.is(
+  (select preco_centavos::integer from public.precos_central
+   where central_id = '20000000-0000-0000-0000-000000000001'
+     and produto_id = '30000000-0000-0000-0000-000000000001'),
+  10000,
+  'Política RLS impede cliente de alterar preço'
 );
 
+set local role authenticated;
 select extensions.ok(
   not has_column_privilege('authenticated', 'public.perfis', 'papel', 'UPDATE'),
   'Cliente autenticado não pode alterar papel'
@@ -53,7 +63,7 @@ select extensions.throws_ok(
       'Tentativa fictícia de cruzar centrais'
     )
   $$,
-  '23503',
+  '23503', null,
   'FK composta rejeita janela de outra central em bloqueio'
 );
 
@@ -70,7 +80,7 @@ select extensions.throws_ok(
       '40000000-0000-0000-0000-000000000002', 'dinheiro', 0, 0, 0
     )
   $$,
-  '23503',
+  '23503', null,
   'FK composta rejeita pedido apontando para janela de outra central'
 );
 
@@ -84,7 +94,7 @@ select extensions.throws_ok(
       '30000000-0000-0000-0000-000000000001', 1, 10000
     )
   $$,
-  '23503',
+  '23503', null,
   'FK composta rejeita item ligado a pedido de outra central'
 );
 
@@ -97,7 +107,7 @@ select extensions.throws_ok(
       'novo', '10000000-0000-0000-0000-000000000001'
     )
   $$,
-  '23503',
+  '23503', null,
   'FK composta rejeita histórico ligado a pedido de outra central'
 );
 
@@ -113,7 +123,7 @@ select extensions.throws_ok(
       '10000000-0000-0000-0000-000000000001'
     )
   $$,
-  '23503',
+  '23503', null,
   'FK composta rejeita movimento ligado a pedido de outra central'
 );
 

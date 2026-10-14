@@ -40,4 +40,7 @@ As quatro funções de negócio `criar_pedido`, `janelas_disponiveis`, `mudar_st
 
 ## Resultado do workflow
 
-Pendente de execução manual após a publicação deste workflow. Registrar aqui o resultado real, o link da execução e, se houver falha, o erro e as correções realizadas. Qualquer sucesso será somente de um Supabase local e temporário no runner — não valida a integração nem altera o banco do projeto.
+- **Tentativa 1:** execução local temporária falhou (4/10 testes passaram). A verificação de preço consultava privilégio SQL apesar da proteção ser feita pela política RLS; os cinco `throws_ok` esperavam que o texto descritivo fosse a mensagem exata do PostgreSQL. Execução: https://github.com/dasilvagonchoroskie-cpu/gas-plataforma/actions/runs/38632504314
+- **Correções preparadas:** o teste de preço agora tenta uma alteração como cliente e verifica que o valor permanece; os testes de FK passam a validar o SQLSTATE `23503` sem exigir texto variável do erro. Aguardando nova execução manual.
+
+Qualquer sucesso será somente de um Supabase local e temporário no runner — não valida a integração nem altera o banco do projeto.
