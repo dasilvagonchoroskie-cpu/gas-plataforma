@@ -2,7 +2,7 @@
 
 O Supabase é o backend aprovado para esta plataforma: um único projeto por ambiente, usando Postgres, Auth, Realtime, Storage e Edge Functions. Não serão usados microsserviços. O Firebase Cloud Messaging fica restrito ao envio de notificações push.
 
-**Estado:** ainda não há projeto Supabase conectado. O projeto gratuito de desenvolvimento será criado por Evandro em uma organização separada. Produção não será criada nem acessada nesta etapa.
+**Estado:** Evandro informou que vinculou o Supabase ao GitHub. Ainda falta confirmar qual projeto está conectado e revisar as opções de implantação. Usar somente o projeto gratuito de desenvolvimento em organização separada; produção não existe e não será criada nem acessada nesta etapa.
 
 ## Regras obrigatórias
 
@@ -15,4 +15,4 @@ O Supabase é o backend aprovado para esta plataforma: um único projeto por amb
 
 ## Etapas
 
-A Fase 0 prepara documentação, ambientes e CI. Migrations, RLS, RPC, seed com dados de teste e testes de isolamento pertencem à Fase 1 e não devem ser antecipados. O projeto de desenvolvimento será conectado somente quando Evandro o criar e autorizar essa próxima etapa.
+Migrations, RLS, RPC, seed com dados de teste e testes de isolamento pertencem à Fase 1 e não devem ser antecipados. Antes dela, confirmar com Evandro que a integração aponta somente para o projeto gratuito de desenvolvimento e aguardar autorização explícita.

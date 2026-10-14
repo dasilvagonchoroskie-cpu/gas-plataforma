@@ -1,29 +1,32 @@
 # Progresso
 
 **Atualizado:** 2026-10-14  
-**Etapa atual:** Fase 0 — preparação do repositório concluída; conferência local e ambiente de desenvolvimento ainda pendentes.
+**Etapa:** Fase 0 — preparação do repositório concluída; Fase 1 ainda não começou.
+
+## Objetivo
+
+Uma revenda de gás e água atende Goiatuba, Itumbiara e Bom Jesus de Goiás. O piloto começa somente em Goiatuba. O produto terá um app Flutter para clientes e um painel web único para o dono e as centrais. A arquitetura completa está em `docs/ARQUITETURA.md`.
 
 ## Feito
 
-- Registrada em `docs/ARQUITETURA.md` a arquitetura aprovada versão 1 (13/10/2026), fonte de verdade para escopo, decisões e ordem das fases.
-- Alinhados `CLAUDE.md`, `docs/DECISOES.md`, README do repositório, `apps/README.md` e a documentação de Supabase à arquitetura aprovada.
-- Preparado `apps/painel/` como esqueleto seguro do painel web unificado de dono e central. Os shells antigos foram mantidos temporariamente como referência. O novo painel não tem login, backend nem dados comerciais simulados.
-- Preparadas pastas por funcionalidade para o app cliente e painel unificado.
-- Atualizados os READMEs do backend; `supabase/seed.sql` contém apenas comentários. Não foram criadas migrations, funções, dados de negócio ou credenciais.
-- Criado esqueleto inicial de `docs/RUNBOOK.md`, ainda sem procedimentos operacionais testados.
-- O GitHub Actions [Verificações Flutter, execução 38513731244](https://github.com/dasilvagonchoroskie-cpu/gas-plataforma/actions/runs/38513731244) concluiu com sucesso no commit `745f1dc375e646f8c8399b8cb7c880f9bf256680`: resolução de dependências, formatação, análise estática e testes de todos os pacotes Flutter, incluindo o painel unificado.
-- O workflow [Fixar dependências Flutter, execução 38513731202](https://github.com/dasilvagonchoroskie-cpu/gas-plataforma/actions/runs/38513731202) também concluiu com sucesso, validou os pacotes e registrou `apps/painel/pubspec.lock` no commit `31ce2209d4aafc5ae1f11642e7a1ae97e2176cdf`.
+- Registrada a arquitetura aprovada e as regras para continuar o projeto.
+- Preparado `apps/painel` como estrutura única do painel; as pastas antigas foram mantidas como referência.
+- Preparadas as pastas de funcionalidades do app cliente e do painel.
+- Preparados os documentos de decisões, progresso e operação.
+- CI do Flutter passou: dependências, formatação, análise estática e testes. [Execução de validação](https://github.com/dasilvagonchoroskie-cpu/gas-plataforma/actions/runs/38513731244).
+- Lockfile do painel unificado registrado com sucesso. [Execução de lockfiles](https://github.com/dasilvagonchoroskie-cpu/gas-plataforma/actions/runs/38513731202).
+- Evandro informou que vinculou o Supabase ao GitHub; o projeto e as opções da integração ainda precisam ser confirmados.
 
-## Ainda falta
+## Falta
 
-- Claude Code deve conferir o repositório no computador de Evandro e verificar/instalar o ambiente local. Esta execução não tem `flutter`, `dart`, `git` nem CLI do Supabase; isso descreve somente este ambiente, e o computador de Evandro não foi verificado.
-- Evandro ainda criará o projeto Supabase gratuito de desenvolvimento numa organização separada. Não compartilhar chaves pelo chat nem registrá-las no repositório.
-- O runbook precisa ser completado e testado antes do piloto.
+- Confirmar que a integração do Supabase aponta somente para o ambiente gratuito de desenvolvimento e que nenhuma implantação em produção está habilitada.
+- Se o projeto gratuito de desenvolvimento ainda não existir, criá-lo em organização separada.
+- Depois da confirmação e de autorização de Evandro, iniciar a Fase 1 conforme `docs/ARQUITETURA.md`.
 
 ## Limites respeitados
 
-Nenhum projeto Supabase foi criado ou conectado; nenhum banco de produção foi criado, acessado ou alterado. Nenhuma migration, seed de negócio ou atividade da Fase 1 foi iniciada. A produção permanece intocada.
+Não há ambiente de produção criado ou acessado. Nenhuma migration, função de negócio ou seed com dados de negócio foi criada; a Fase 1 não começou.
 
 ## Próximo passo
 
-Fazer a conferência local e preparar o projeto Supabase gratuito de desenvolvimento com Claude Code, mantendo esta tarefa na Fase 0. Parar aqui: iniciar a Fase 1 somente depois de autorização explícita de Evandro. Não criar nem acessar produção.
+Claude Code deve ler `CLAUDE.md`, `docs/ARQUITETURA.md` e `docs/IMPLEMENTACAO_E_HANDOFF.md`, confirmar a integração informada e continuar somente após a autorização de Evandro.

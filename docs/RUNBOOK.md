@@ -1,14 +1,14 @@
 # Runbook — operação e recuperação
 
-**Estado:** esqueleto inicial da Fase 0. Ainda não há projeto Supabase conectado. Não há ambiente de produção.
+**Estado:** esqueleto inicial da Fase 0. Evandro informou que vinculou o Supabase ao GitHub; ainda falta confirmar o projeto e as opções da integração. Não há ambiente de produção.
 
 Este documento será completado e testado antes do piloto. Não contém nem deve receber senhas, tokens ou chaves secretas.
 
 ## 1. Identificação dos ambientes
 
-- Desenvolvimento: Supabase gratuito, em organização separada, a ser criado por Evandro.
-- Produção: ainda não existe; não provisionar nesta Fase 0.
-- Responsáveis, links dos projetos e canais de contato serão registrados depois da criação/aprovação dos ambientes, sem incluir segredos.
+- Desenvolvimento: projeto Supabase gratuito em organização separada; Evandro informou que conectou o Supabase ao GitHub, mas o projeto de destino ainda precisa ser confirmado.
+- Produção: ainda não existe; não provisionar nesta etapa.
+- Registrar o projeto e o ambiente corretos quando confirmados, sem incluir senhas ou chaves secretas.
 
 ## 2. Falha do app ou painel
 

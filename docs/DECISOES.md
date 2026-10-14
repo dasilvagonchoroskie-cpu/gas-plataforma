@@ -1,28 +1,21 @@
 # Decisões do projeto
 
-Este resumo acompanha `docs/ARQUITETURA.md`, que é a fonte principal e aprovada. Se houver diferença, prevalece a arquitetura mais recente aprovada por Evandro.
+`docs/ARQUITETURA.md` é a fonte principal. Se houver diferença, vale a arquitetura aprovada mais recente por Evandro.
 
 ## Decisões fechadas
 
-- Um único vendedor atende Goiatuba, Itumbiara e Bom Jesus de Goiás; no piloto, somente a central de Goiatuba fica ativa.
-- O dono controla todas as centrais; centrais são registros do banco e não ficam fixadas no código.
-- Flutter para o app do cliente Android/iOS e Flutter Web para o painel único de dono e central.
-- App cliente usa Riverpod, go_router e supabase_flutter; modelos e regras compartilhados ficam em `packages/nucleo`.
-- Um backend Supabase (Postgres, Auth, Realtime, Storage e Edge Functions), sem microsserviços. Firebase Cloud Messaging é usado somente para push.
-- Dados e permissões são protegidos por RLS no banco; a chave `service_role` nunca vai para apps.
-- Valores monetários são inteiros em centavos; datas no banco são UTC e apresentadas em `America/Sao_Paulo`.
-- Migrations são versionadas; produção nunca é alterada manualmente.
-- A assinatura fica para a etapa final com Claude Code, sem certificados/chaves no repositório.
-- Seguir estritamente a ordem e o escopo de `docs/ARQUITETURA.md`.
+- Uma revenda atende Goiatuba, Itumbiara e Bom Jesus de Goiás; no piloto, somente Goiatuba fica ativa.
+- O dono controla todas as centrais. Municípios e centrais são dados configuráveis, não nomes fixos no código.
+- Flutter para o app de cliente Android/iOS e painel web único para dono e central.
+- Supabase é o backend único; Firebase Cloud Messaging serve somente para notificações push.
+- Permissões são aplicadas no banco com RLS; `service_role` nunca vai para os apps.
+- Dinheiro é armazenado em centavos inteiros; datas ficam em UTC no banco.
+- Mudanças de banco passam por migrations versionadas. Produção nunca é alterada manualmente.
+- Seguir a ordem das fases de `docs/ARQUITETURA.md`; assinatura e publicação ficam para a etapa final.
 
-## Estado dos ambientes
+## Estado atual
 
-- Evandro tem uma conta GitHub.
-- O projeto Supabase de desenvolvimento gratuito ainda será criado por Evandro, em organização separada.
-- O ambiente de produção não existe e fica fora desta Fase 0; nenhuma conta, projeto ou banco de produção será criado ou acessado agora.
-- Nenhuma migration, seed com dados de negócio ou credencial de Supabase foi criada nesta etapa.
-
-## Registro
-
-- 2026-10-14 — Arquitetura versão 1 recebida e adotada como fonte principal do projeto; estrutura e trabalho devem seguir suas fases e limites.
-- 2026-10-14 — Fase 0 autorizada sem ambiente de produção; verificação do computador local depende de execução guiada por Evandro ou Claude Code, pois esta sessão não tem acesso ao computador físico.
+- Evandro informou que vinculou o Supabase ao GitHub. Ainda falta confirmar qual projeto está ligado e revisar as opções de implantação.
+- A conexão deve apontar para o projeto gratuito de desenvolvimento, em organização separada. Não habilitar implantação automática em produção.
+- Produção não existe e não deve ser criada nesta etapa.
+- Nenhuma migration, função de negócio ou seed com dados de negócio foi criada. A Fase 1 ainda não começou.
