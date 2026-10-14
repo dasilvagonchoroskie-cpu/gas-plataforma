@@ -41,6 +41,7 @@ As quatro funções de negócio `criar_pedido`, `janelas_disponiveis`, `mudar_st
 ## Resultado do workflow
 
 - **Tentativa 1:** execução local temporária falhou (4/10 testes passaram). A verificação de preço consultava privilégio SQL apesar da proteção ser feita pela política RLS; os cinco `throws_ok` esperavam que o texto descritivo fosse a mensagem exata do PostgreSQL. Execução: https://github.com/dasilvagonchoroskie-cpu/gas-plataforma/actions/runs/38632504314
-- **Correções preparadas:** o teste de preço agora tenta uma alteração como cliente e verifica que o valor permanece; os testes de FK passam a validar o SQLSTATE `23503` sem exigir texto variável do erro. Aguardando nova execução manual.
+- **Correções aplicadas:** o teste de preço agora tenta uma alteração como cliente e verifica que o valor permanece; os testes de FK validam o SQLSTATE `23503` sem exigir texto variável do erro.
+- **Tentativa 2:** sucesso no Supabase local e temporário do runner; **10/10 testes pgTAP passaram** e o runner removeu o diretório temporário. Execução: https://github.com/dasilvagonchoroskie-cpu/gas-plataforma/actions/runs/38633323911
 
-Qualquer sucesso será somente de um Supabase local e temporário no runner — não valida a integração nem altera o banco do projeto.
+Esse resultado valida somente os rascunhos carregados no Supabase local e temporário do runner — não valida a integração nem altera/testa o banco do projeto.
