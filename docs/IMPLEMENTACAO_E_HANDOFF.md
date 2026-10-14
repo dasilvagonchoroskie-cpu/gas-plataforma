@@ -7,9 +7,9 @@
 - Repositório privado e documentação inicial do produto.
 - CI no GitHub Actions, com versões das Actions fixadas por commit e Flutter fixado em `.fvmrc`.
 - `packages/nucleo` com configuração pública de marca e `packages/design_system` com tema Material 3, navegação responsiva e estados de preparação.
-- Shells Flutter em `apps/cliente`, `apps/painel_proprietario` e `apps/painel_central`, com plataformas Android/iOS/Web iniciais e testes.
+- Shells Flutter em `apps/cliente`, `apps/painel_proprietario` e `apps/painel_central`; Android/iOS versionados para o cliente e Web para os painéis. APKs Android dos painéis são prévias temporárias e não alteram a decisão D-006.
 - Os cinco `pubspec.lock` foram registrados após resolução de dependências, análise e testes no workflow `Fixar dependências Flutter`.
-- O workflow `Preparar plataformas Flutter e builds de teste` passou por análise/testes, build APK Android debug `arm64` e builds Web dos painéis. O [guia de builds](GUIA_BUILDS_TESTE.md) explica o artefato e seus limites; o runner Linux gerou os arquivos de projeto iOS, mas não compilou nem assinou iOS.
+- O workflow `Preparar plataformas Flutter e builds de teste` passou por análise/testes e builds Web. Compilou três APKs Android debug `arm64`; elas estão separadas como assets no [pré-lançamento privado](https://github.com/dasilvagonchoroskie-cpu/gas-plataforma/releases/tag/previa-apks-android-arm64-38507526841), com links e hashes no [guia de instalação](GUIA_APKS_PREVIA.md). O runner Linux gerou arquivos de projeto iOS, mas não compilou nem assinou iOS.
 
 Ainda não há projeto Supabase provisionado, migrations, dados de produção, autenticação ou chaves de serviço no repositório. Os shells não contêm lógica de negócio nem autorização implementada.
 
@@ -24,7 +24,7 @@ Ainda não há projeto Supabase provisionado, migrations, dados de produção, a
 - `packages/nucleo`: tipos e regras realmente compartilhados; `packages/design_system`: apresentação compartilhada.
 - Organização futura por funcionalidade (`features`) e separação clara entre interface, domínio e acesso a dados. Evitar duplicar regras críticas no app e no servidor.
 
-Os shells não estão conectados a autenticação, backend ou dados de negócio. A composição das plataformas e o guia de builds de teste estão descritos em `apps/README.md` e `docs/GUIA_BUILDS_TESTE.md`.
+Os shells não estão conectados a autenticação, backend ou dados de negócio. A composição das plataformas e os guias de prévia estão em `apps/README.md`, `docs/GUIA_BUILDS_TESTE.md` e `docs/GUIA_APKS_PREVIA.md`.
 
 ### Serviços de backend
 
