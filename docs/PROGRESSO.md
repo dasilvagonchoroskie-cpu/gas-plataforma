@@ -1,6 +1,6 @@
 # Progresso
 
-**Atualizado:** 2026-10-13
+**Atualizado:** 2026-10-14
 
 ## Feito
 
@@ -11,6 +11,7 @@
 - Geradas e versionadas as plataformas Android/iOS do app do cliente e Web dos dois painéis. IDs `com.example.*` e recursos visuais genéricos são placeholders, não configurações de produção.
 - Adicionados ao Git os cinco `pubspec.lock` (três apps e dois pacotes privados) pelo workflow `Fixar dependências Flutter`, após Flutter 3.47.7 resolver dependências, formatar, analisar e passar os testes. A execução [38464776457](https://github.com/dasilvagonchoroskie-cpu/gas-plataforma/actions/runs/38464776457) foi bem-sucedida; os lockfiles foram registrados no commit `fbced56000cb320f33f43c85f43c1d2f4870872a`.
 - A execução [38461272949](https://github.com/dasilvagonchoroskie-cpu/gas-plataforma/actions/runs/38461272949) também validou formatação, análise e testes; compilou um APK Android debug `arm64` e builds Web dos dois painéis. O artefato `plataformas-e-builds-de-teste` expira em 2026-10-20 às 20:24 UTC. Os binários não foram adicionados ao Git, publicados ou implantados. O [guia de builds](GUIA_BUILDS_TESTE.md) explica como inspecionar o artefato.
+- A execução [38506208860](https://github.com/dasilvagonchoroskie-cpu/gas-plataforma/actions/runs/38506208860) passou: compilou três APKs Android debug `arm64` e os dois painéis Web após formatação, análise e testes. O artefato privado `previa-tres-apks-android-arm64` inclui os APKs `cliente-debug-arm64.apk`, `painel-proprietario-debug-arm64.apk` e `painel-central-debug-arm64.apk`, `SHA256SUMS.txt`, scaffolds temporários das plataformas e builds Web; tamanho 153.447.176 bytes, expiração em 2026-10-21 às 03:33:37 UTC. A prévia Android dos painéis não decide D-006. Nenhum binário foi adicionado ao Git ou publicado. O runner Linux não compilou nem assinou iOS. Instruções: [guia das APKs](GUIA_APKS_PREVIA.md).
 - A pasta iOS foi gerada, mas o runner Linux não compilou, assinou nem testou iOS. Nenhum AAB, build de produção ou deploy foi feito.
 - Não foram provisionados Supabase, serviços de nuvem, migrations, credenciais de serviço ou integrações de pagamento.
 

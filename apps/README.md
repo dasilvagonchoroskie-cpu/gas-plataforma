@@ -14,9 +14,9 @@ Os três produtos são shells: não contêm autenticação, autorização efetiv
 
 As pastas nativas estão versionadas: `cliente/android`, `cliente/ios`, `painel_proprietario/web` e `painel_central/web`. Os painéis são Web nesta etapa; não foram criados apps móveis para eles.
 
-O [run 38461272949](https://github.com/dasilvagonchoroskie-cpu/gas-plataforma/actions/runs/38461272949) passou na resolução, formatação, análise, testes e compilou um APK Android arm64 de depuração e os dois painéis Web. O artefato `plataformas-e-builds-de-teste` expira em 2026-10-20 às 20:24 UTC; os binários não ficam no Git nem foram publicados. Consulte o [guia de builds de teste](../docs/GUIA_BUILDS_TESTE.md).
+A execução [38506208860](https://github.com/dasilvagonchoroskie-cpu/gas-plataforma/actions/runs/38506208860) passou na resolução, formatação, análise, testes e compilou três APKs Android arm64 de depuração, além dos builds Web dos dois painéis. O artefato privado `previa-tres-apks-android-arm64` contém `build/apks/cliente-debug-arm64.apk`, `build/apks/painel-proprietario-debug-arm64.apk`, `build/apks/painel-central-debug-arm64.apk`, `build/apks/SHA256SUMS.txt`, os scaffolds de plataforma gerados para as três interfaces e os builds Web dos painéis. Seu tamanho é 153.447.176 bytes e expira em 2026-10-21 às 03:33:37 UTC. Os binários não ficam no Git nem foram publicados. Consulte o [guia de instalação das três APKs](../docs/GUIA_APKS_PREVIA.md).
 
-O runner Linux gerou os arquivos de projeto iOS, mas não compilou, assinou ou testou iOS. Os builds Web não foram implantados em hospedagem.
+As APKs são apenas prévias e não definem D-006: os painéis continuam Web responsivos como decisão de produto pendente, e o Android criado para eles existe somente no artefato temporário. O runner Linux gerou scaffolds de projeto iOS, mas não compilou, assinou ou testou iOS. Os builds Web não foram implantados em hospedagem. O [run anterior 38461272949](https://github.com/dasilvagonchoroskie-cpu/gas-plataforma/actions/runs/38461272949) gerou o artefato cliente/Web documentado no [guia de builds de teste](../docs/GUIA_BUILDS_TESTE.md).
 
 ## Dependências
 
