@@ -1,0 +1,68 @@
+name: Teste local do rascunho de banco
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: banco-teste-rascunho-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  testar-em-supabase-local:
+    name: Supabase temporário no runner
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - name: Baixar somente o código do repositório
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+
+      - name: Instalar Supabase CLI fixada
+        uses: supabase/setup-cli@bea637206310b05056109c4ffab256b2c3c522af # commit fixado
+        with:
+          version: 2.121.0
+
+      - name: Preparar projeto em diretório temporário do runner
+        shell: bash
+        run: |
+          set -euo pipefail
+          pasta_temporaria="$(mktemp -d "$RUNNER_TEMP/supabase-banco-teste.XXXXXX")"
+          echo "SUPABASE_TEST_DIR=$pasta_temporaria" >> "$GITHUB_ENV"
+          cd "$pasta_temporaria"
+          supabase init
+          mkdir -p supabase/migrations supabase/tests
+          cp "$GITHUB_WORKSPACE/docs/rascunhos/fase1/esquema_inicial.sql" \
+            supabase/migrations/20261014170000_esquema_inicial.sql
+          cp "$GITHUB_WORKSPACE/docs/rascunhos/fase1/testes_isolamento.sql" \
+            supabase/tests/isolamento.sql
+          cp "$GITHUB_WORKSPACE/docs/rascunhos/fase1/seed_ficticio.sql" \
+            supabase/seed.sql
+
+      - name: Iniciar apenas o Supabase local do runner
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd "$SUPABASE_TEST_DIR"
+          supabase start
+
+      - name: Executar testes pgTAP locais
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd "$SUPABASE_TEST_DIR"
+          supabase test db
+
+      - name: Encerrar e remover somente o diretório temporário
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [[ -n "${SUPABASE_TEST_DIR:-}" && -d "$SUPABASE_TEST_DIR" ]]; then
+            cd "$SUPABASE_TEST_DIR"
+            supabase stop --no-backup || true
+            rm -rf -- "$SUPABASE_TEST_DIR"
+          fi
