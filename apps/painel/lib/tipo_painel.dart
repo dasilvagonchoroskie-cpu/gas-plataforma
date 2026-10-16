@@ -30,7 +30,9 @@ enum TipoPainel {
   final String descricao;
 
   static TipoPainel deValor(String? valor) =>
-      valor?.trim().toLowerCase() == superCentral.valor ? superCentral : central;
+      valor?.trim().toLowerCase() == superCentral.valor
+          ? superCentral
+          : central;
 
   /// O tipo escolhido no build deste aplicativo.
   static TipoPainel get doBuild {

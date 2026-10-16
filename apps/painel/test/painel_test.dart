@@ -55,8 +55,7 @@ void main() {
       expect(tipo.motivoSemAcesso(_perfil(PapelPerfil.cliente)),
           contains('cliente'));
       expect(tipo.motivoSemAcesso(_perfil(PapelPerfil.entregador)), isNotNull);
-      expect(
-          tipo.motivoSemAcesso(_perfil(PapelPerfil.dono, ativo: false)),
+      expect(tipo.motivoSemAcesso(_perfil(PapelPerfil.dono, ativo: false)),
           contains('desativada'));
       expect(
           tipo.motivoSemAcesso(_perfil(PapelPerfil.operadorCentral,
