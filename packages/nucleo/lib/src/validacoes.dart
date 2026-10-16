@@ -56,6 +56,44 @@ abstract final class Validacoes {
     return null;
   }
 
+  /// Confere os dígitos verificadores do CPF.
+  static bool cpfValido(String? valor) {
+    final cpf = somenteDigitos(valor);
+    if (cpf.length != 11 || RegExp(r'^(\d)\1{10}$').hasMatch(cpf)) {
+      return false;
+    }
+    int digito(int tamanho) {
+      var soma = 0;
+      for (var i = 0; i < tamanho; i++) {
+        soma += int.parse(cpf[i]) * (tamanho + 1 - i);
+      }
+      final resto = (soma * 10) % 11;
+      return resto == 10 ? 0 : resto;
+    }
+
+    return digito(9) == int.parse(cpf[9]) && digito(10) == int.parse(cpf[10]);
+  }
+
+  static String? cpf(String? valor) => cpfValido(valor) ? null : 'CPF inválido. Confira os números.';
+
+  /// "52998224725" → "529.982.247-25".
+  static String formatarCpf(String? valor) {
+    final d = somenteDigitos(valor);
+    if (d.length != 11) {
+      return d;
+    }
+    return '${d.substring(0, 3)}.${d.substring(3, 6)}.${d.substring(6, 9)}-${d.substring(9)}';
+  }
+
+  /// Esconde o meio do CPF: "529.***.***-25".
+  static String cpfMascarado(String? valor) {
+    final d = somenteDigitos(valor);
+    if (d.length != 11) {
+      return d;
+    }
+    return '${d.substring(0, 3)}.***.***-${d.substring(9)}';
+  }
+
   static String? cep(String? valor) {
     if (somenteDigitos(valor).length != 8) {
       return 'O CEP tem 8 números.';

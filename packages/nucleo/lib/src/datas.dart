@@ -56,6 +56,32 @@ abstract final class Datas {
     return DateTime.utc(local.year, local.month, local.day);
   }
 
+  /// Lê uma data digitada ("16/10/1980" ou "16101980"). Nulo se inválida.
+  static DateTime? lerDataDigitada(String texto) {
+    final d = texto.replaceAll(RegExp(r'[^0-9]'), '');
+    if (d.length != 8) {
+      return null;
+    }
+    final dia = int.parse(d.substring(0, 2));
+    final mes = int.parse(d.substring(2, 4));
+    final ano = int.parse(d.substring(4));
+    final data = DateTime.utc(ano, mes, dia);
+    if (data.day != dia || data.month != mes || data.year != ano) {
+      return null;
+    }
+    return data;
+  }
+
+  /// Idade em anos completos na data de hoje (fuso da operação).
+  static int idade(DateTime nascimento, {DateTime? agora}) {
+    final h = hoje(agora);
+    var anos = h.year - nascimento.year;
+    if (h.month < nascimento.month || (h.month == nascimento.month && h.day < nascimento.day)) {
+      anos--;
+    }
+    return anos;
+  }
+
   /// "16/10/2026".
   static String formatarData(DateTime data) =>
       '${data.day.toString().padLeft(2, '0')}/'

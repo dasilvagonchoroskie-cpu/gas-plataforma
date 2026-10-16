@@ -60,16 +60,28 @@ enum StatusPedido {
       );
 }
 
-/// Forma de pagamento, sempre na entrega (valores do banco).
+/// Forma de pagamento (valores do banco). As três primeiras são pagas na
+/// entrega; no crediário (fiado) o valor entra na conta do cliente.
 enum FormaPagamento {
   dinheiro('dinheiro', 'Dinheiro'),
   cartaoNaEntrega('cartao_na_entrega', 'Cartão na maquininha'),
-  pixNaEntrega('pix_na_entrega', 'Pix na entrega');
+  pixNaEntrega('pix_na_entrega', 'Pix na entrega'),
+  crediario('crediario', 'Crediário (fiado)');
 
   const FormaPagamento(this.valor, this.rotulo);
 
   final String valor;
   final String rotulo;
+
+  /// Pago na hora da entrega (não é fiado).
+  bool get naEntrega => this != FormaPagamento.crediario;
+
+  /// Formas aceitas para receber um pagamento do crediário.
+  static const List<FormaPagamento> paraReceber = [
+    FormaPagamento.dinheiro,
+    FormaPagamento.pixNaEntrega,
+    FormaPagamento.cartaoNaEntrega,
+  ];
 
   static FormaPagamento deValor(String valor) =>
       FormaPagamento.values.firstWhere(
@@ -130,5 +142,39 @@ enum TipoMovimentoEstoque {
       TipoMovimentoEstoque.values.firstWhere(
         (t) => t.valor == valor,
         orElse: () => throw FormatException('Movimento desconhecido: $valor'),
+      );
+}
+
+/// Situação da ficha de cadastro.
+enum StatusFicha {
+  pendente('pendente', 'Em análise'),
+  aprovada('aprovada', 'Aprovada'),
+  recusada('recusada', 'Recusada');
+
+  const StatusFicha(this.valor, this.rotulo);
+
+  final String valor;
+  final String rotulo;
+
+  static StatusFicha deValor(String valor) => StatusFicha.values.firstWhere(
+        (s) => s.valor == valor,
+        orElse: () => throw FormatException('Situação desconhecida: $valor'),
+      );
+}
+
+/// Tipo de lançamento na conta do crediário.
+enum TipoLancamento {
+  compra('compra', 'Compra no fiado'),
+  pagamento('pagamento', 'Pagamento'),
+  ajuste('ajuste', 'Ajuste');
+
+  const TipoLancamento(this.valor, this.rotulo);
+
+  final String valor;
+  final String rotulo;
+
+  static TipoLancamento deValor(String valor) => TipoLancamento.values.firstWhere(
+        (t) => t.valor == valor,
+        orElse: () => throw FormatException('Lançamento desconhecido: $valor'),
       );
 }

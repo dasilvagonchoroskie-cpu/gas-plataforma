@@ -66,7 +66,7 @@ String mensagemDeErro(Object erro) {
   }
 
   if (erro is StorageException) {
-    return 'Não foi possível enviar a foto. Use uma imagem JPG, PNG ou WEBP de até 2 MB.';
+    return 'Não foi possível enviar a foto. Use uma imagem JPG, PNG ou WEBP menor e tente de novo.';
   }
 
   if (erro is TimeoutException) {

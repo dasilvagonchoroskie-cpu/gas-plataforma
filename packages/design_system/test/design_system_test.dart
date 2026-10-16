@@ -91,5 +91,40 @@ void main() {
       await tester.pumpAndSettle();
       expect(resposta, 'Cliente desistiu');
     });
+
+    testWidgets('extrato mostra pagamento diminuindo a dívida', (tester) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: Column(
+              children: [
+                LinhaLancamento(
+                  lancamento: LancamentoCredito(
+                    id: 'l1',
+                    tipo: TipoLancamento.pagamento,
+                    valor: const Dinheiro(-4000),
+                    forma: FormaPagamento.dinheiro,
+                    criadoEm: DateTime.utc(2026, 10, 16, 12),
+                  ),
+                ),
+                LinhaLancamento(
+                  lancamento: LancamentoCredito(
+                    id: 'l2',
+                    tipo: TipoLancamento.compra,
+                    valor: const Dinheiro(11000),
+                    criadoEm: DateTime.utc(2026, 10, 16, 12),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+
+      expect(find.text('− R\$ 40,00'), findsOneWidget);
+      expect(find.text('+ R\$ 110,00'), findsOneWidget);
+      expect(find.text('Pagamento'), findsOneWidget);
+      expect(find.text('Compra no fiado'), findsOneWidget);
+    });
   });
 }

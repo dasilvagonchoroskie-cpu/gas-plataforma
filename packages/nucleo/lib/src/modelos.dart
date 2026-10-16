@@ -879,3 +879,360 @@ final class RegistroAuditoria {
     ];
   }
 }
+
+// ---------------------------------------------------------------------------
+// Ficha de cadastro e crediário
+// ---------------------------------------------------------------------------
+
+/// Configurações da revenda que o dono controla.
+final class Configuracoes {
+  const Configuracoes({
+    required this.centraisAprovamCredito,
+    this.limiteMaximoCentral,
+  });
+
+  factory Configuracoes.deJson(Json json) => Configuracoes(
+        centraisAprovamCredito: _logico(json['centrais_aprovam_credito']),
+        limiteMaximoCentral: json['limite_maximo_central_centavos'] == null
+            ? null
+            : Dinheiro(_inteiro(json['limite_maximo_central_centavos'])),
+      );
+
+  final bool centraisAprovamCredito;
+
+  /// Maior limite que uma central pode liberar (nulo: sem teto).
+  final Dinheiro? limiteMaximoCentral;
+}
+
+/// Ficha completa do cliente (dados sensíveis: só quem pode ver recebe).
+final class FichaCliente {
+  const FichaCliente({
+    required this.clienteId,
+    required this.cpf,
+    required this.rg,
+    required this.dataNascimento,
+    required this.nomeMae,
+    required this.empresa,
+    required this.profissao,
+    required this.telefoneTrabalho,
+    required this.rendaMensal,
+    required this.referencia1Nome,
+    required this.referencia1Telefone,
+    required this.referencia1Relacao,
+    required this.referencia2Nome,
+    required this.referencia2Telefone,
+    required this.referencia2Relacao,
+    required this.documentoCaminho,
+    required this.comprovanteCaminho,
+    required this.status,
+    required this.limite,
+    required this.creditoBloqueado,
+    required this.enviadoEm,
+    this.enderecoId,
+    this.centralId,
+    this.centralNome,
+    this.motivo,
+    this.analisadoEm,
+    this.analisadoPorNome,
+    this.nome,
+    this.telefone,
+    this.email,
+    this.enderecoTexto,
+  });
+
+  factory FichaCliente.deJson(Json json) {
+    final endereco = _objeto(json['endereco']);
+    String? enderecoTexto;
+    if (endereco != null) {
+      final complemento = _textoOuNulo(endereco['complemento']);
+      enderecoTexto = '${_texto(endereco['logradouro'])}, ${_texto(endereco['numero'])}'
+          '${complemento == null ? '' : ', $complemento'} - ${_texto(endereco['bairro'])}, '
+          '${_texto(endereco['cidade'])}/${_texto(endereco['uf'])}';
+    }
+    return FichaCliente(
+      clienteId: _texto(json['cliente_id']),
+      cpf: _texto(json['cpf']),
+      rg: _texto(json['rg']),
+      dataNascimento: Datas.lerData(json['data_nascimento']) ?? Datas.hoje(),
+      nomeMae: _texto(json['nome_mae']),
+      enderecoId: _textoOuNulo(json['endereco_id']),
+      centralId: _textoOuNulo(json['central_id']),
+      centralNome: _textoOuNulo(json['central_nome']),
+      empresa: _texto(json['empresa']),
+      profissao: _texto(json['profissao']),
+      telefoneTrabalho: _texto(json['telefone_trabalho']),
+      rendaMensal: Dinheiro(_inteiro(json['renda_mensal_centavos'])),
+      referencia1Nome: _texto(json['referencia1_nome']),
+      referencia1Telefone: _texto(json['referencia1_telefone']),
+      referencia1Relacao: _texto(json['referencia1_relacao']),
+      referencia2Nome: _texto(json['referencia2_nome']),
+      referencia2Telefone: _texto(json['referencia2_telefone']),
+      referencia2Relacao: _texto(json['referencia2_relacao']),
+      documentoCaminho: _texto(json['documento_caminho']),
+      comprovanteCaminho: _texto(json['comprovante_caminho']),
+      status: StatusFicha.deValor(_texto(json['status'], 'pendente')),
+      limite: Dinheiro(_inteiro(json['limite_centavos'])),
+      creditoBloqueado: _logico(json['credito_bloqueado']),
+      motivo: _textoOuNulo(json['motivo']),
+      enviadoEm: Datas.lerInstante(json['enviado_em']) ?? Datas.hoje(),
+      analisadoEm: Datas.lerInstante(json['analisado_em']),
+      analisadoPorNome: _textoOuNulo(json['analisado_por_nome']),
+      nome: _textoOuNulo(json['nome']),
+      telefone: _textoOuNulo(json['telefone']),
+      email: _textoOuNulo(json['email']),
+      enderecoTexto: enderecoTexto,
+    );
+  }
+
+  final String clienteId;
+  final String cpf;
+  final String rg;
+  final DateTime dataNascimento;
+  final String nomeMae;
+  final String? enderecoId;
+  final String? centralId;
+  final String? centralNome;
+  final String empresa;
+  final String profissao;
+  final String telefoneTrabalho;
+  final Dinheiro rendaMensal;
+  final String referencia1Nome;
+  final String referencia1Telefone;
+  final String referencia1Relacao;
+  final String referencia2Nome;
+  final String referencia2Telefone;
+  final String referencia2Relacao;
+  final String documentoCaminho;
+  final String comprovanteCaminho;
+  final StatusFicha status;
+  final Dinheiro limite;
+  final bool creditoBloqueado;
+  final String? motivo;
+  final DateTime enviadoEm;
+  final DateTime? analisadoEm;
+  final String? analisadoPorNome;
+
+  /// Dados do perfil (vêm junto na ficha completa).
+  final String? nome;
+  final String? telefone;
+  final String? email;
+  final String? enderecoTexto;
+}
+
+/// Dados que o cliente preenche para enviar a ficha.
+final class DadosFicha {
+  const DadosFicha({
+    required this.cpf,
+    required this.rg,
+    required this.dataNascimento,
+    required this.nomeMae,
+    required this.enderecoId,
+    required this.empresa,
+    required this.profissao,
+    required this.telefoneTrabalho,
+    required this.rendaMensal,
+    required this.referencia1Nome,
+    required this.referencia1Telefone,
+    required this.referencia1Relacao,
+    required this.referencia2Nome,
+    required this.referencia2Telefone,
+    required this.referencia2Relacao,
+    required this.documentoCaminho,
+    required this.comprovanteCaminho,
+  });
+
+  final String cpf;
+  final String rg;
+  final DateTime dataNascimento;
+  final String nomeMae;
+  final String enderecoId;
+  final String empresa;
+  final String profissao;
+  final String telefoneTrabalho;
+  final Dinheiro rendaMensal;
+  final String referencia1Nome;
+  final String referencia1Telefone;
+  final String referencia1Relacao;
+  final String referencia2Nome;
+  final String referencia2Telefone;
+  final String referencia2Relacao;
+  final String documentoCaminho;
+  final String comprovanteCaminho;
+
+  /// Formato da função enviar_ficha do banco.
+  Json paraBanco() => {
+        'cpf': cpf,
+        'rg': rg.trim(),
+        'data_nascimento': Datas.paraBanco(dataNascimento),
+        'nome_mae': nomeMae.trim(),
+        'endereco_id': enderecoId,
+        'empresa': empresa.trim(),
+        'profissao': profissao.trim(),
+        'telefone_trabalho': telefoneTrabalho,
+        'renda_mensal_centavos': rendaMensal.centavos,
+        'referencia1_nome': referencia1Nome.trim(),
+        'referencia1_telefone': referencia1Telefone,
+        'referencia1_relacao': referencia1Relacao.trim(),
+        'referencia2_nome': referencia2Nome.trim(),
+        'referencia2_telefone': referencia2Telefone,
+        'referencia2_relacao': referencia2Relacao.trim(),
+        'documento_caminho': documentoCaminho,
+        'comprovante_caminho': comprovanteCaminho,
+      };
+}
+
+/// Linha da lista de fichas (painel).
+final class ItemFicha {
+  const ItemFicha({
+    required this.clienteId,
+    required this.nome,
+    required this.telefone,
+    required this.cpf,
+    required this.status,
+    required this.limite,
+    required this.creditoBloqueado,
+    required this.devido,
+    required this.enviadoEm,
+    this.email,
+    this.centralId,
+    this.centralNome,
+    this.analisadoEm,
+  });
+
+  factory ItemFicha.deJson(Json json) => ItemFicha(
+        clienteId: _texto(json['cliente_id']),
+        nome: _texto(json['nome']),
+        telefone: _texto(json['telefone']),
+        email: _textoOuNulo(json['email']),
+        cpf: _texto(json['cpf']),
+        status: StatusFicha.deValor(_texto(json['status'], 'pendente')),
+        limite: Dinheiro(_inteiro(json['limite_centavos'])),
+        creditoBloqueado: _logico(json['credito_bloqueado']),
+        centralId: _textoOuNulo(json['central_id']),
+        centralNome: _textoOuNulo(json['central_nome']),
+        enviadoEm: Datas.lerInstante(json['enviado_em']) ?? Datas.hoje(),
+        analisadoEm: Datas.lerInstante(json['analisado_em']),
+        devido: Dinheiro(_inteiro(json['devido_centavos'])),
+      );
+
+  final String clienteId;
+  final String nome;
+  final String telefone;
+  final String? email;
+  final String cpf;
+  final StatusFicha status;
+  final Dinheiro limite;
+  final bool creditoBloqueado;
+  final String? centralId;
+  final String? centralNome;
+  final DateTime enviadoEm;
+  final DateTime? analisadoEm;
+  final Dinheiro devido;
+}
+
+/// Situação do crediário de um cliente.
+final class ResumoCredito {
+  const ResumoCredito({
+    required this.clienteId,
+    required this.bloqueado,
+    required this.limite,
+    required this.devido,
+    required this.reservado,
+    required this.disponivel,
+    this.status,
+  });
+
+  factory ResumoCredito.deJson(Json json) => ResumoCredito(
+        clienteId: _texto(json['cliente_id']),
+        status: _textoOuNulo(json['status']) == null
+            ? null
+            : StatusFicha.deValor(_texto(json['status'])),
+        bloqueado: _logico(json['bloqueado']),
+        limite: Dinheiro(_inteiro(json['limite_centavos'])),
+        devido: Dinheiro(_inteiro(json['devido_centavos'])),
+        reservado: Dinheiro(_inteiro(json['reservado_centavos'])),
+        disponivel: Dinheiro(_inteiro(json['disponivel_centavos'])),
+      );
+
+  final String clienteId;
+
+  /// Nulo quando o cliente ainda não enviou a ficha.
+  final StatusFicha? status;
+  final bool bloqueado;
+  final Dinheiro limite;
+
+  /// Compras fiado entregues menos pagamentos.
+  final Dinheiro devido;
+
+  /// Pedidos fiado ainda não entregues.
+  final Dinheiro reservado;
+  final Dinheiro disponivel;
+
+  bool get temFicha => status != null;
+
+  /// Pode escolher "Crediário" ao pedir (o servidor confere o valor).
+  bool get podeComprarFiado => status == StatusFicha.aprovada && !bloqueado && disponivel.centavos > 0;
+}
+
+/// Lançamento na conta do crediário (extrato).
+final class LancamentoCredito {
+  const LancamentoCredito({
+    required this.id,
+    required this.tipo,
+    required this.valor,
+    required this.criadoEm,
+    this.forma,
+    this.observacao,
+    this.pedidoId,
+  });
+
+  factory LancamentoCredito.deJson(Json json) => LancamentoCredito(
+        id: _texto(json['id']),
+        tipo: TipoLancamento.deValor(_texto(json['tipo'], 'ajuste')),
+        valor: Dinheiro(_inteiro(json['valor_centavos'])),
+        forma: _textoOuNulo(json['forma']) == null
+            ? null
+            : FormaPagamento.deValor(_texto(json['forma'])),
+        observacao: _textoOuNulo(json['observacao']),
+        pedidoId: _textoOuNulo(json['pedido_id']),
+        criadoEm: Datas.lerInstante(json['criado_em']) ?? Datas.hoje(),
+      );
+
+  final String id;
+  final TipoLancamento tipo;
+
+  /// Positivo aumenta a dívida; negativo diminui.
+  final Dinheiro valor;
+  final FormaPagamento? forma;
+  final String? observacao;
+  final String? pedidoId;
+  final DateTime criadoEm;
+}
+
+/// Cliente com valor em aberto no crediário.
+final class Devedor {
+  const Devedor({
+    required this.clienteId,
+    required this.nome,
+    required this.telefone,
+    required this.limite,
+    required this.devido,
+    this.ultimaCompra,
+  });
+
+  factory Devedor.deJson(Json json) => Devedor(
+        clienteId: _texto(json['cliente_id']),
+        nome: _texto(json['nome']),
+        telefone: _texto(json['telefone']),
+        limite: Dinheiro(_inteiro(json['limite_centavos'])),
+        devido: Dinheiro(_inteiro(json['devido_centavos'])),
+        ultimaCompra: Datas.lerInstante(json['ultima_compra']),
+      );
+
+  final String clienteId;
+  final String nome;
+  final String telefone;
+  final Dinheiro limite;
+  final Dinheiro devido;
+  final DateTime? ultimaCompra;
+}
