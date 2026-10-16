@@ -1,0 +1,19 @@
+name: dados
+description: Acesso ao backend Supabase da plataforma de gás e água (repositórios e erros em português).
+publish_to: none
+version: 1.0.0
+
+environment:
+  sdk: '>=3.5.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  nucleo:
+    path: ../nucleo
+  supabase_flutter: ^2.12.0
+
+dev_dependencies:
+  flutter_lints: 5.0.0
+  flutter_test:
+    sdk: flutter

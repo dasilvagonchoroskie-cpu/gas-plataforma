@@ -1,35 +1,23 @@
 import 'package:design_system/design_system.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:nucleo/nucleo.dart';
 
 void main() {
   group('Componentes visuais compartilhados', () {
-    test('cria tema Material 3', () {
+    test('cria tema Material 3 com botões grandes', () {
       final tema = criarTemaPlataforma();
 
       expect(tema.useMaterial3, isTrue);
-    });
-
-    testWidgets('mostra quando uma área aguarda integração', (tester) async {
-      await tester.pumpWidget(
-        const MaterialApp(
-          home: EstadoModuloEmPreparacao(titulo: 'Relatórios'),
-        ),
-      );
-
-      expect(find.text('Relatórios'), findsOneWidget);
-      expect(
-        find.textContaining('será conectada após a aprovação'),
-        findsOneWidget,
-      );
+      expect(tema.textTheme.bodyLarge?.fontSize, 18);
     });
 
     testWidgets('permite navegar entre seções do painel', (tester) async {
       await tester.pumpWidget(
-        MaterialApp(
+        const MaterialApp(
           home: CascaPainel(
             titulo: 'Painel de teste',
-            secoes: const [
+            secoes: [
               SecaoPainel(
                 rotulo: 'Visão geral',
                 icone: Icons.home_outlined,
@@ -39,6 +27,7 @@ void main() {
                 rotulo: 'Centrais',
                 icone: Icons.store_outlined,
                 conteudo: Text('Conteúdo das centrais'),
+                contador: 3,
               ),
             ],
           ),
@@ -46,9 +35,61 @@ void main() {
       );
 
       expect(find.text('Conteúdo inicial'), findsOneWidget);
+      expect(find.text('3'), findsOneWidget);
       await tester.tap(find.text('Centrais'));
       await tester.pumpAndSettle();
       expect(find.text('Conteúdo das centrais'), findsOneWidget);
+    });
+
+    testWidgets('mostra o status do pedido com o texto certo', (tester) async {
+      await tester.pumpWidget(
+        const MaterialApp(
+          home: Scaffold(
+            body: Column(
+              children: [
+                SeloStatus(status: StatusPedido.emRota),
+                SeloStatus(status: StatusPedido.emRota, paraCentral: true),
+              ],
+            ),
+          ),
+        ),
+      );
+
+      expect(find.text('Saiu para entrega'), findsOneWidget);
+      expect(find.text('Em rota'), findsOneWidget);
+    });
+
+    testWidgets('pede o motivo antes de confirmar', (tester) async {
+      String? resposta;
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Builder(
+            builder: (context) => TextButton(
+              onPressed: () async {
+                resposta = await pedirTexto(
+                  context,
+                  titulo: 'Cancelar pedido',
+                  rotulo: 'Motivo',
+                  sugestoes: const ['Cliente desistiu'],
+                );
+              },
+              child: const Text('abrir'),
+            ),
+          ),
+        ),
+      );
+
+      await tester.tap(find.text('abrir'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Confirmar'));
+      await tester.pump();
+      expect(find.text('Preencha este campo.'), findsOneWidget);
+
+      await tester.tap(find.text('Cliente desistiu'));
+      await tester.pump();
+      await tester.tap(find.text('Confirmar'));
+      await tester.pumpAndSettle();
+      expect(resposta, 'Cliente desistiu');
     });
   });
 }

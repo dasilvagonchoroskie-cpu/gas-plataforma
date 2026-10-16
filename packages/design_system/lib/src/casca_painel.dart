@@ -1,28 +1,37 @@
 import 'package:flutter/material.dart';
 
-/// Item de navegação de um dos painéis web.
+/// Item de navegação do painel.
 class SecaoPainel {
   const SecaoPainel({
     required this.rotulo,
     required this.icone,
     required this.conteudo,
+    this.contador = 0,
   });
 
   final String rotulo;
   final IconData icone;
   final Widget conteudo;
+
+  /// Número mostrado em destaque no ícone (por exemplo, pedidos novos).
+  final int contador;
 }
 
-/// Casca responsiva compartilhada pelos painéis de gestão e de central.
+/// Casca responsiva dos painéis: barra lateral no computador e barra
+/// inferior no celular.
 class CascaPainel extends StatefulWidget {
   const CascaPainel({
     required this.titulo,
     required this.secoes,
+    this.subtitulo,
+    this.acoes = const [],
     super.key,
   });
 
   final String titulo;
+  final String? subtitulo;
   final List<SecaoPainel> secoes;
+  final List<Widget> acoes;
 
   @override
   State<CascaPainel> createState() => _CascaPainelState();
@@ -38,12 +47,34 @@ class _CascaPainelState extends State<CascaPainel> {
     setState(() => _indiceSelecionado = indice);
   }
 
+  Widget _icone(SecaoPainel secao) {
+    final icone = Icon(secao.icone);
+    if (secao.contador <= 0) {
+      return icone;
+    }
+    return Badge(label: Text('${secao.contador}'), child: icone);
+  }
+
   @override
   Widget build(BuildContext context) {
+    final titulo = widget.subtitulo == null
+        ? Text(widget.titulo)
+        : Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(widget.titulo),
+              Text(
+                widget.subtitulo!,
+                style: Theme.of(context).textTheme.bodyMedium,
+              ),
+            ],
+          );
+
     if (widget.secoes.isEmpty) {
       return Scaffold(
-        appBar: AppBar(title: Text(widget.titulo)),
-        body: const Center(child: Text('Nenhuma seção configurada.')),
+        appBar: AppBar(title: titulo, actions: widget.acoes),
+        body: const Center(child: Text('Nenhuma seção disponível.')),
       );
     }
 
@@ -55,10 +86,12 @@ class _CascaPainelState extends State<CascaPainel> {
     );
 
     return LayoutBuilder(
-      builder: (context, constraints) {
-        if (constraints.maxWidth < 720) {
+      builder: (context, restricoes) {
+        final celular = restricoes.maxWidth < 760;
+        // No celular, com muitas seções, a barra inferior mostra só ícones.
+        if (celular && widget.secoes.length <= 5) {
           return Scaffold(
-            appBar: AppBar(title: Text(widget.titulo)),
+            appBar: AppBar(title: titulo, actions: widget.acoes),
             body: conteudo,
             bottomNavigationBar: NavigationBar(
               selectedIndex: indiceSeguro,
@@ -66,7 +99,7 @@ class _CascaPainelState extends State<CascaPainel> {
               destinations: [
                 for (final secao in widget.secoes)
                   NavigationDestination(
-                    icon: Icon(secao.icone),
+                    icon: _icone(secao),
                     label: secao.rotulo,
                   ),
               ],
@@ -74,8 +107,30 @@ class _CascaPainelState extends State<CascaPainel> {
           );
         }
 
+        if (celular) {
+          return Scaffold(
+            appBar: AppBar(title: titulo, actions: widget.acoes),
+            drawer: NavigationDrawer(
+              selectedIndex: indiceSeguro,
+              onDestinationSelected: (indice) {
+                _selecionarSecao(indice);
+                Navigator.of(context).pop();
+              },
+              children: [
+                const SizedBox(height: 16),
+                for (final secao in widget.secoes)
+                  NavigationDrawerDestination(
+                    icon: _icone(secao),
+                    label: Text(secao.rotulo),
+                  ),
+              ],
+            ),
+            body: conteudo,
+          );
+        }
+
         return Scaffold(
-          appBar: AppBar(title: Text(widget.titulo)),
+          appBar: AppBar(title: titulo, actions: widget.acoes),
           body: Row(
             children: [
               NavigationRail(
@@ -85,7 +140,7 @@ class _CascaPainelState extends State<CascaPainel> {
                 destinations: [
                   for (final secao in widget.secoes)
                     NavigationRailDestination(
-                      icon: Icon(secao.icone),
+                      icon: _icone(secao),
                       label: Text(secao.rotulo),
                     ),
                 ],
