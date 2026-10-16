@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:nucleo/nucleo.dart';
 
 import '../../estado/provedores.dart';
+import '../crediario/secao_clientes.dart';
 import 'secao_auditoria.dart';
 import 'secao_centrais.dart';
 import 'secao_pedidos_dono.dart';
@@ -13,7 +14,8 @@ import 'secao_relatorios.dart';
 import 'secao_usuarios.dart';
 import 'secao_visao_geral.dart';
 
-/// Painel do dono (super administrador): vê e controla todas as centrais.
+/// Super Central: o painel do dono (super administrador), que vê e controla
+/// todas as centrais (lojas) e os cadastros dos clientes.
 class PainelDono extends ConsumerWidget {
   const PainelDono({required this.perfil, super.key});
 
@@ -21,8 +23,9 @@ class PainelDono extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final fichasPendentes = ref.watch(provedorFichasPendentes).valueOrNull ?? 0;
     return CascaPainel(
-      titulo: 'Painel do dono',
+      titulo: 'Super Central',
       subtitulo: perfil.primeiroNome,
       acoes: [
         IconButton(
@@ -41,15 +44,21 @@ class PainelDono extends ConsumerWidget {
           },
         ),
       ],
-      secoes: const [
-        SecaoPainel(rotulo: 'Visão geral', icone: Icons.dashboard_outlined, conteudo: SecaoVisaoGeral()),
-        SecaoPainel(rotulo: 'Pedidos', icone: Icons.receipt_long_outlined, conteudo: SecaoPedidosDono()),
-        SecaoPainel(rotulo: 'Centrais', icone: Icons.store_outlined, conteudo: SecaoCentrais()),
-        SecaoPainel(rotulo: 'Produtos', icone: Icons.inventory_2_outlined, conteudo: SecaoProdutos()),
-        SecaoPainel(rotulo: 'Preços', icone: Icons.sell_outlined, conteudo: SecaoPrecos()),
-        SecaoPainel(rotulo: 'Usuários', icone: Icons.group_outlined, conteudo: SecaoUsuarios()),
-        SecaoPainel(rotulo: 'Relatórios', icone: Icons.insights_outlined, conteudo: SecaoRelatorios()),
-        SecaoPainel(rotulo: 'Auditoria', icone: Icons.history, conteudo: SecaoAuditoria()),
+      secoes: [
+        const SecaoPainel(rotulo: 'Visão geral', icone: Icons.dashboard_outlined, conteudo: SecaoVisaoGeral()),
+        const SecaoPainel(rotulo: 'Pedidos', icone: Icons.receipt_long_outlined, conteudo: SecaoPedidosDono()),
+        const SecaoPainel(rotulo: 'Centrais', icone: Icons.store_outlined, conteudo: SecaoCentrais()),
+        SecaoPainel(
+          rotulo: 'Clientes',
+          icone: Icons.badge_outlined,
+          contador: fichasPendentes,
+          conteudo: const SecaoClientes(ehDono: true),
+        ),
+        const SecaoPainel(rotulo: 'Produtos', icone: Icons.inventory_2_outlined, conteudo: SecaoProdutos()),
+        const SecaoPainel(rotulo: 'Preços', icone: Icons.sell_outlined, conteudo: SecaoPrecos()),
+        const SecaoPainel(rotulo: 'Usuários', icone: Icons.group_outlined, conteudo: SecaoUsuarios()),
+        const SecaoPainel(rotulo: 'Relatórios', icone: Icons.insights_outlined, conteudo: SecaoRelatorios()),
+        const SecaoPainel(rotulo: 'Auditoria', icone: Icons.history, conteudo: SecaoAuditoria()),
       ],
     );
   }

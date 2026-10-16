@@ -22,6 +22,9 @@ const _tabelas = <String?, String>{
   'usuarios': 'Usuários',
   'perfis': 'Papéis',
   'operadores_central': 'Operadores',
+  'fichas_cliente': 'Fichas',
+  'lancamentos_credito': 'Crediário',
+  'configuracoes': 'Configurações',
 };
 
 const _acoes = {
@@ -33,6 +36,10 @@ const _acoes = {
   'ativar_usuario': 'reativou o acesso',
   'desativar_usuario': 'desativou o acesso',
   'redefinir_senha': 'criou senha nova',
+  'analisar_ficha': 'analisou a ficha',
+  'bloquear_credito': 'bloqueou o fiado',
+  'liberar_credito': 'liberou o fiado',
+  'ajustar_credito': 'ajustou o crediário',
 };
 
 const _campos = {
@@ -62,6 +69,12 @@ const _campos = {
   'motivo': 'motivo',
   'data': 'data',
   'central_id': 'central',
+  'status': 'situação',
+  'limite_centavos': 'limite',
+  'credito_bloqueado': 'fiado bloqueado',
+  'valor_centavos': 'valor',
+  'centrais_aprovam_credito': 'centrais aprovam fichas',
+  'limite_maximo_central_centavos': 'teto da central',
 };
 
 /// Texto curto de um valor guardado na auditoria.

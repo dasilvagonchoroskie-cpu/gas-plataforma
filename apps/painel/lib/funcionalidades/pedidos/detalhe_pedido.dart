@@ -387,6 +387,11 @@ class _DetalhePedidoState extends ConsumerState<DetalhePedido> {
                     const Divider(),
                     LinhaValor(rotulo: 'Total', valor: p.total.formatarEmReais(), destaque: true),
                     LinhaValor(rotulo: 'Pagamento', valor: p.formaPagamento.rotulo),
+                    if (!p.formaPagamento.naEntrega)
+                      const Padding(
+                        padding: EdgeInsets.only(top: 4),
+                        child: Text('Fiado: não cobrar na entrega. O valor entra na conta do cliente ao marcar como entregue.'),
+                      ),
                     if (!p.trocoALevar.ehZero)
                       LinhaValor(
                         rotulo: 'Levar troco (cliente paga com ${p.trocoPara.formatarEmReais()})',

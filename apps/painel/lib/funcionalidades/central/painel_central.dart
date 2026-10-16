@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:nucleo/nucleo.dart';
 
 import '../../estado/provedores.dart';
+import '../crediario/secao_clientes.dart';
 import '../pedidos/fila_pedidos.dart';
 import 'secao_disponibilidade.dart';
 import 'secao_entregadores.dart';
@@ -82,6 +83,12 @@ class _PainelCentralState extends ConsumerState<PainelCentral> {
           rotulo: 'Produtos',
           icone: Icons.sell_outlined,
           conteudo: SecaoDisponibilidade(centralId: widget.centralId),
+        ),
+        SecaoPainel(
+          rotulo: 'Crediário',
+          icone: Icons.account_balance_wallet_outlined,
+          contador: ref.watch(provedorFichasPendentes).valueOrNull ?? 0,
+          conteudo: const SecaoClientes(ehDono: false),
         ),
         SecaoPainel(
           rotulo: 'Entregadores',

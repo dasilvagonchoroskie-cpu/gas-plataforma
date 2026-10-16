@@ -70,3 +70,27 @@ final provedorProdutos = FutureProvider<List<Produto>>((ref) async {
   ref.watch(provedorUsuarioId);
   return ref.watch(provedorGestao).produtos();
 });
+
+// ---------------------------------------------------------------------------
+// Ficha de cadastro e crediário
+// ---------------------------------------------------------------------------
+
+final provedorCredito =
+    Provider<RepositorioCredito>((ref) => RepositorioCredito(ref.watch(provedorCliente)));
+
+/// Configurações da revenda (o dono altera; a central só lê).
+final provedorConfiguracoes = FutureProvider<Configuracoes>((ref) async {
+  ref.watch(provedorUsuarioId);
+  return ref.watch(provedorCredito).configuracoes();
+});
+
+/// Quantas fichas esperam análise (aviso no menu). Zero se não puder ver.
+final provedorFichasPendentes = FutureProvider<int>((ref) async {
+  ref.watch(provedorUsuarioId);
+  try {
+    final fichas = await ref.watch(provedorCredito).fichas(status: StatusFicha.pendente);
+    return fichas.length;
+  } catch (_) {
+    return 0;
+  }
+});
