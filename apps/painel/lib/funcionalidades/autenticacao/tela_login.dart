@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:nucleo/nucleo.dart';
 
 import '../../estado/provedores.dart';
+import '../../tipo_painel.dart';
 
 /// Entrada do painel. Contas do painel são criadas pelo dono (não há cadastro
 /// aberto aqui).
@@ -83,6 +84,7 @@ class _TelaLoginState extends ConsumerState<TelaLogin> {
   @override
   Widget build(BuildContext context) {
     final tema = Theme.of(context);
+    final tipo = ref.watch(provedorTipoPainel);
     return Scaffold(
       body: SafeArea(
         child: Center(
@@ -99,18 +101,21 @@ class _TelaLoginState extends ConsumerState<TelaLogin> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
-                          Icon(Icons.dashboard_outlined,
-                              size: 56, color: tema.colorScheme.primary),
+                          Icon(
+                              tipo == TipoPainel.superCentral
+                                  ? Icons.hub_outlined
+                                  : Icons.storefront_outlined,
+                              size: 56,
+                              color: tema.colorScheme.primary),
                           const SizedBox(height: 12),
                           Text(
-                            'Painel Gás e Água',
+                            tipo.nome,
                             textAlign: TextAlign.center,
                             style: tema.textTheme.headlineSmall
                                 ?.copyWith(fontWeight: FontWeight.w800),
                           ),
                           const SizedBox(height: 4),
-                          const Text('Acesso do dono e das centrais',
-                              textAlign: TextAlign.center),
+                          Text(tipo.descricao, textAlign: TextAlign.center),
                           const SizedBox(height: 28),
                           TextFormField(
                             controller: _email,

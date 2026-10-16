@@ -39,6 +39,24 @@ android {
         versionName = flutter.versionName
     }
 
+    // Dois aplicativos com o mesmo código. Gerar com --flavor supercentral ou
+    // --flavor central (e --dart-define=PAINEL com o mesmo nome).
+    flavorDimensions += "painel"
+    productFlavors {
+        create("supercentral") {
+            dimension = "painel"
+            // Mesmo identificador do painel antigo: instala por cima no celular
+            // do dono, sem perder o login.
+            applicationId = "br.com.fortalezadigitalsecurity.gasagua.painel"
+            manifestPlaceholders["nomeApp"] = "Super Central"
+        }
+        create("central") {
+            dimension = "painel"
+            applicationId = "br.com.fortalezadigitalsecurity.gasagua.central"
+            manifestPlaceholders["nomeApp"] = "Central"
+        }
+    }
+
     signingConfigs {
         if (!propriedadesChave.isEmpty()) {
             create("revenda") {

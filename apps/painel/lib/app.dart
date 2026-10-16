@@ -3,22 +3,22 @@ import 'package:design_system/design_system.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:nucleo/nucleo.dart';
 
 import 'estado/provedores.dart';
 import 'funcionalidades/autenticacao/tela_login.dart';
 import 'funcionalidades/central/painel_central.dart';
 import 'funcionalidades/dono/painel_dono.dart';
+import 'tipo_painel.dart';
 
 ThemeData _tema() => criarTemaPlataforma();
 
-class AplicativoPainel extends StatelessWidget {
+class AplicativoPainel extends ConsumerWidget {
   const AplicativoPainel({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return MaterialApp(
-      title: 'Painel Gás e Água',
+      title: ref.watch(provedorTipoPainel).nome,
       debugShowCheckedModeBanner: false,
       theme: _tema(),
       locale: const Locale('pt', 'BR'),
@@ -29,9 +29,9 @@ class AplicativoPainel extends StatelessWidget {
   }
 }
 
-/// Decide o que mostrar: login, painel do dono, painel da central ou aviso de
-/// "sem acesso". Quem decide o que cada um pode fazer é o banco; esta tela só
-/// escolhe a interface certa.
+/// Decide o que mostrar: login, Super Central (dono), Central (loja) ou aviso de
+/// "sem acesso". Cada aplicativo aceita só o seu tipo de conta. Quem decide o
+/// que cada um pode fazer é o banco; esta tela só escolhe a interface certa.
 class RaizPainel extends ConsumerWidget {
   const RaizPainel({super.key});
 
@@ -55,32 +55,32 @@ class RaizPainel extends ConsumerWidget {
         if (p == null) {
           return const TelaLogin();
         }
-        if (p.ativo && p.papel == PapelPerfil.dono) {
+        final tipo = ref.watch(provedorTipoPainel);
+        final motivo = tipo.motivoSemAcesso(p);
+        final centralId = p.centralId;
+        if (motivo != null) {
+          return _SemAcesso(mensagem: motivo);
+        }
+        if (tipo == TipoPainel.superCentral) {
           return PainelDono(perfil: p);
         }
-        if (p.ativo &&
-            p.papel == PapelPerfil.operadorCentral &&
-            p.centralId != null) {
-          return PainelCentral(perfil: p, centralId: p.centralId!);
+        if (centralId != null) {
+          return PainelCentral(perfil: p, centralId: centralId);
         }
-        return _SemAcesso(perfil: p);
+        return const _SemAcesso(
+            mensagem: 'Sua conta ainda não está ligada a uma loja.');
       },
     );
   }
 }
 
 class _SemAcesso extends ConsumerWidget {
-  const _SemAcesso({required this.perfil});
+  const _SemAcesso({required this.mensagem});
 
-  final Perfil perfil;
+  final String mensagem;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final mensagem = perfil.papel == PapelPerfil.cliente
-        ? 'Esta conta é de cliente. Para pedir, use o aplicativo de pedidos. '
-            'O painel é só para o dono e as centrais.'
-        : 'Sua conta ainda não está ligada a uma central, ou foi desativada. '
-            'Fale com o dono da revenda.';
     return Scaffold(
       body: EstadoVazio(
         icone: Icons.lock_outline,
@@ -99,7 +99,7 @@ class PainelSemConfiguracao extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Painel Gás e Água',
+      title: TipoPainel.doBuild.nome,
       debugShowCheckedModeBanner: false,
       theme: _tema(),
       home: const Scaffold(

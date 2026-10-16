@@ -10,6 +10,7 @@ import 'package:painel/funcionalidades/autenticacao/tela_login.dart';
 import 'package:painel/funcionalidades/dono/secao_auditoria.dart';
 import 'package:painel/funcionalidades/dono/secao_relatorios.dart';
 import 'package:painel/funcionalidades/dono/secao_usuarios.dart';
+import 'package:painel/tipo_painel.dart';
 
 ResumoCentral _resumo(String nome,
         {int pedidos = 0, int entregues = 0, int faturamento = 0}) =>
@@ -26,7 +27,68 @@ ResumoCentral _resumo(String nome,
       ticketMedio: Dinheiro.zero,
     );
 
+Perfil _perfil(PapelPerfil papel, {bool ativo = true, String? centralId}) =>
+    Perfil(
+      id: 'p1',
+      nome: 'Pessoa Teste',
+      telefone: '64999990000',
+      papel: papel,
+      ativo: ativo,
+      centralId: centralId,
+    );
+
 void main() {
+  test('cada aplicativo do painel aceita só o seu tipo de conta', () {
+    const superCentral = TipoPainel.superCentral;
+    const central = TipoPainel.central;
+    final dono = _perfil(PapelPerfil.dono);
+    final loja = _perfil(PapelPerfil.operadorCentral, centralId: 'c1');
+
+    expect(superCentral.motivoSemAcesso(dono), isNull);
+    expect(superCentral.motivoSemAcesso(loja), contains('aplicativo Central'));
+    expect(central.motivoSemAcesso(loja), isNull);
+    expect(central.motivoSemAcesso(dono), contains('Super Central'));
+
+    expect(central.motivoSemAcesso(_perfil(PapelPerfil.operadorCentral)),
+        contains('não está ligada a uma loja'));
+    for (final tipo in TipoPainel.values) {
+      expect(tipo.motivoSemAcesso(_perfil(PapelPerfil.cliente)),
+          contains('cliente'));
+      expect(tipo.motivoSemAcesso(_perfil(PapelPerfil.entregador)), isNotNull);
+      expect(
+          tipo.motivoSemAcesso(_perfil(PapelPerfil.dono, ativo: false)),
+          contains('desativada'));
+      expect(
+          tipo.motivoSemAcesso(_perfil(PapelPerfil.operadorCentral,
+              ativo: false, centralId: 'c1')),
+          contains('desativada'));
+    }
+  });
+
+  test('tipo do painel vem do build; sem nada, vale o Central', () {
+    expect(TipoPainel.deValor('supercentral'), TipoPainel.superCentral);
+    expect(TipoPainel.deValor(' SuperCentral '), TipoPainel.superCentral);
+    expect(TipoPainel.deValor('central'), TipoPainel.central);
+    expect(TipoPainel.deValor(null), TipoPainel.central);
+    expect(TipoPainel.deValor('qualquer'), TipoPainel.central);
+    expect(TipoPainel.doBuild, TipoPainel.central);
+  });
+
+  testWidgets('tela de entrada mostra o nome do aplicativo', (tester) async {
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          provedorTipoPainel.overrideWithValue(TipoPainel.superCentral),
+        ],
+        child:
+            MaterialApp(theme: criarTemaPlataforma(), home: const TelaLogin()),
+      ),
+    );
+
+    expect(find.text('Super Central'), findsOneWidget);
+    expect(find.text('Acesso do dono: todas as lojas'), findsOneWidget);
+  });
+
   testWidgets('sem configuração do servidor, avisa em vez de quebrar',
       (tester) async {
     await tester.pumpWidget(const PainelSemConfiguracao());
