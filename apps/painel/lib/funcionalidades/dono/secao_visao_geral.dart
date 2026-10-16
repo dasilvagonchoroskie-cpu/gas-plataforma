@@ -37,13 +37,15 @@ class SecaoVisaoGeral extends ConsumerWidget {
         }
         final totalPedidos = centrais.fold(0, (s, c) => s + c.pedidos);
         final totalAberto = centrais.fold(0, (s, c) => s + c.emAberto);
-        final faturamento = centrais.fold(Dinheiro.zero, (s, c) => s + c.faturamento);
+        final faturamento =
+            centrais.fold(Dinheiro.zero, (s, c) => s + c.faturamento);
         return RefreshIndicator(
           onRefresh: () => ref.refresh(_provedorHoje.future),
           child: ListView(
             padding: const EdgeInsets.all(16),
             children: [
-              Text('Hoje, ${Datas.formatarData(Datas.hoje())}', style: tema.textTheme.titleLarge),
+              Text('Hoje, ${Datas.formatarData(Datas.hoje())}',
+                  style: tema.textTheme.titleLarge),
               const SizedBox(height: 4),
               Text(
                 '$totalPedidos pedidos · $totalAberto em aberto · '
@@ -63,7 +65,8 @@ class SecaoVisaoGeral extends ConsumerWidget {
                           onTap: () => Navigator.of(context).push(
                             MaterialPageRoute<void>(
                               builder: (_) => Scaffold(
-                                appBar: AppBar(title: Text('Pedidos · ${c.centralNome}')),
+                                appBar: AppBar(
+                                    title: Text('Pedidos · ${c.centralNome}')),
                                 body: FilaPedidos(centralId: c.centralId),
                               ),
                             ),
@@ -76,7 +79,8 @@ class SecaoVisaoGeral extends ConsumerWidget {
                                 Row(
                                   children: [
                                     Expanded(
-                                      child: Text(c.centralNome, style: tema.textTheme.titleMedium),
+                                      child: Text(c.centralNome,
+                                          style: tema.textTheme.titleMedium),
                                     ),
                                     if (!c.ativa)
                                       const Chip(
@@ -87,9 +91,15 @@ class SecaoVisaoGeral extends ConsumerWidget {
                                 ),
                                 Text(c.cidade),
                                 const Divider(),
-                                LinhaValor(rotulo: 'Pedidos hoje', valor: '${c.pedidos}'),
-                                LinhaValor(rotulo: 'Em aberto', valor: '${c.emAberto}'),
-                                LinhaValor(rotulo: 'Entregues', valor: '${c.entregues}'),
+                                LinhaValor(
+                                    rotulo: 'Pedidos hoje',
+                                    valor: '${c.pedidos}'),
+                                LinhaValor(
+                                    rotulo: 'Em aberto',
+                                    valor: '${c.emAberto}'),
+                                LinhaValor(
+                                    rotulo: 'Entregues',
+                                    valor: '${c.entregues}'),
                                 LinhaValor(
                                   rotulo: 'Faturamento',
                                   valor: c.faturamento.formatarEmReais(),

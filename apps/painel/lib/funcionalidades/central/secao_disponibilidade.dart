@@ -6,7 +6,8 @@ import 'package:nucleo/nucleo.dart';
 
 import '../../estado/provedores.dart';
 
-final _provedorPrecos = FutureProvider.autoDispose.family<List<ItemCatalogo>, String>(
+final _provedorPrecos =
+    FutureProvider.autoDispose.family<List<ItemCatalogo>, String>(
   (ref, centralId) => ref.watch(provedorGestao).precos(centralId),
 );
 
@@ -40,7 +41,9 @@ class SecaoDisponibilidade extends ConsumerWidget {
                   'desta central até você ligar de novo. O preço é definido pelo dono.',
                 ),
                 const SizedBox(height: 12),
-                if (itens.isEmpty) const Text('O dono ainda não definiu os produtos desta central.'),
+                if (itens.isEmpty)
+                  const Text(
+                      'O dono ainda não definiu os produtos desta central.'),
                 for (final item in itens)
                   Card(
                     child: SwitchListTile(
@@ -52,17 +55,21 @@ class SecaoDisponibilidade extends ConsumerWidget {
                       ),
                       onChanged: (ligado) async {
                         try {
-                          await ref.read(provedorGestao).definirDisponivel(centralId, item.produto.id, ligado);
+                          await ref.read(provedorGestao).definirDisponivel(
+                              centralId, item.produto.id, ligado);
                           ref.invalidate(_provedorPrecos(centralId));
                           if (context.mounted) {
                             mostrarMensagem(
                               context,
-                              ligado ? '${item.produto.nome} voltou a ser vendido.' : '${item.produto.nome} saiu do aplicativo.',
+                              ligado
+                                  ? '${item.produto.nome} voltou a ser vendido.'
+                                  : '${item.produto.nome} saiu do aplicativo.',
                             );
                           }
                         } catch (erro) {
                           if (context.mounted) {
-                            mostrarMensagem(context, mensagemDeErro(erro), erro: true);
+                            mostrarMensagem(context, mensagemDeErro(erro),
+                                erro: true);
                           }
                         }
                       },

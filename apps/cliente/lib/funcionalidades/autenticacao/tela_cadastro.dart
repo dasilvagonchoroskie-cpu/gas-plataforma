@@ -39,7 +39,9 @@ class _TelaCadastroState extends ConsumerState<TelaCadastro> {
       return;
     }
     if (!_aceitou) {
-      mostrarMensagem(context, 'Para continuar, aceite os termos e a política de privacidade.', erro: true);
+      mostrarMensagem(context,
+          'Para continuar, aceite os termos e a política de privacidade.',
+          erro: true);
       return;
     }
     setState(() => _carregando = true);
@@ -99,7 +101,8 @@ class _TelaCadastroState extends ConsumerState<TelaCadastro> {
                       keyboardType: TextInputType.phone,
                       autofillHints: const [AutofillHints.telephoneNumber],
                       inputFormatters: [
-                        FilteringTextInputFormatter.allow(RegExp(r'[0-9() \-]')),
+                        FilteringTextInputFormatter.allow(
+                            RegExp(r'[0-9() \-]')),
                         LengthLimitingTextInputFormatter(16),
                       ],
                       textInputAction: TextInputAction.next,
@@ -131,9 +134,14 @@ class _TelaCadastroState extends ConsumerState<TelaCadastro> {
                         labelText: 'Crie uma senha (mínimo 8 caracteres)',
                         prefixIcon: const Icon(Icons.lock_outline),
                         suffixIcon: IconButton(
-                          tooltip: _mostrarSenha ? 'Esconder senha' : 'Mostrar senha',
-                          icon: Icon(_mostrarSenha ? Icons.visibility_off : Icons.visibility),
-                          onPressed: () => setState(() => _mostrarSenha = !_mostrarSenha),
+                          tooltip: _mostrarSenha
+                              ? 'Esconder senha'
+                              : 'Mostrar senha',
+                          icon: Icon(_mostrarSenha
+                              ? Icons.visibility_off
+                              : Icons.visibility),
+                          onPressed: () =>
+                              setState(() => _mostrarSenha = !_mostrarSenha),
                         ),
                       ),
                       validator: Validacoes.senha,
@@ -143,8 +151,10 @@ class _TelaCadastroState extends ConsumerState<TelaCadastro> {
                       value: _aceitou,
                       contentPadding: EdgeInsets.zero,
                       controlAffinity: ListTileControlAffinity.leading,
-                      onChanged: (valor) => setState(() => _aceitou = valor ?? false),
-                      title: const Text('Li e aceito os termos de uso e a política de privacidade'),
+                      onChanged: (valor) =>
+                          setState(() => _aceitou = valor ?? false),
+                      title: const Text(
+                          'Li e aceito os termos de uso e a política de privacidade'),
                     ),
                     Wrap(
                       spacing: 8,
@@ -154,7 +164,8 @@ class _TelaCadastroState extends ConsumerState<TelaCadastro> {
                           child: const Text('Ver termos'),
                         ),
                         TextButton(
-                          onPressed: () => abrirLink(context, enderecoPrivacidade),
+                          onPressed: () =>
+                              abrirLink(context, enderecoPrivacidade),
                           child: const Text('Ver privacidade'),
                         ),
                       ],

@@ -22,11 +22,13 @@ const _gas = ItemCatalogo(
 );
 
 Widget _comTema(Widget filho) => ProviderScope(
-      child: MaterialApp(theme: criarTemaPlataforma(), home: Scaffold(body: filho)),
+      child: MaterialApp(
+          theme: criarTemaPlataforma(), home: Scaffold(body: filho)),
     );
 
 void main() {
-  testWidgets('sem configuração do servidor, avisa em vez de quebrar', (tester) async {
+  testWidgets('sem configuração do servidor, avisa em vez de quebrar',
+      (tester) async {
     await tester.pumpWidget(const AplicativoSemConfiguracao());
 
     expect(find.text('Aplicativo sem configuração'), findsOneWidget);
@@ -43,7 +45,8 @@ void main() {
     expect(find.text('Criar minha conta'), findsOneWidget);
   });
 
-  testWidgets('cartão do produto mostra preço e soma no carrinho', (tester) async {
+  testWidgets('cartão do produto mostra preço e soma no carrinho',
+      (tester) async {
     final container = ProviderContainer();
     addTearDown(container.dispose);
     await tester.pumpWidget(

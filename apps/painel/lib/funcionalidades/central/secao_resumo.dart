@@ -7,8 +7,9 @@ import 'package:nucleo/nucleo.dart';
 import '../../estado/provedores.dart';
 import '../relatorios/cartoes_resumo.dart';
 
-final _provedorResumoHoje = FutureProvider.autoDispose
-    .family<({List<ResumoCentral> resumo, List<VendaProduto> produtos}), String>((ref, centralId) async {
+final _provedorResumoHoje = FutureProvider.autoDispose.family<
+    ({List<ResumoCentral> resumo, List<VendaProduto> produtos}),
+    String>((ref, centralId) async {
   final gestao = ref.watch(provedorGestao);
   final hoje = Datas.hoje();
   final resultados = await Future.wait([
@@ -47,9 +48,11 @@ class SecaoResumo extends ConsumerWidget {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   TituloSecao('Hoje, ${Datas.formatarData(Datas.hoje())}'),
-                  if (d.resumo.isNotEmpty) CartoesResumo(resumo: d.resumo.first),
+                  if (d.resumo.isNotEmpty)
+                    CartoesResumo(resumo: d.resumo.first),
                   const TituloSecao('Vendido hoje (entregues)'),
-                  if (d.produtos.isEmpty) const Text('Nenhuma entrega concluída hoje.'),
+                  if (d.produtos.isEmpty)
+                    const Text('Nenhuma entrega concluída hoje.'),
                   for (final p in d.produtos)
                     LinhaValor(
                       rotulo: '${p.quantidade}x ${p.produtoNome}',

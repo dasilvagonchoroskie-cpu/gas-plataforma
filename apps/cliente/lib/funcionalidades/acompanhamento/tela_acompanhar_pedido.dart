@@ -14,11 +14,13 @@ class TelaAcompanharPedido extends ConsumerWidget {
 
   final String pedidoId;
 
-  Future<void> _cancelar(BuildContext context, WidgetRef ref, Pedido pedido) async {
+  Future<void> _cancelar(
+      BuildContext context, WidgetRef ref, Pedido pedido) async {
     final certeza = await confirmar(
       context,
       titulo: 'Cancelar o pedido nº ${pedido.numero}?',
-      mensagem: 'A central ainda não confirmou. Se cancelar, ela não fará a entrega.',
+      mensagem:
+          'A central ainda não confirmou. Se cancelar, ela não fará a entrega.',
       rotuloConfirmar: 'Cancelar pedido',
       rotuloCancelar: 'Manter pedido',
       perigoso: true,
@@ -44,7 +46,9 @@ class TelaAcompanharPedido extends ConsumerWidget {
     final pedido = ref.watch(provedorPedidoAoVivo(pedidoId));
     return Scaffold(
       appBar: AppBar(
-        title: Text(pedido.valueOrNull == null ? 'Pedido' : 'Pedido nº ${pedido.valueOrNull!.numero}'),
+        title: Text(pedido.valueOrNull == null
+            ? 'Pedido'
+            : 'Pedido nº ${pedido.valueOrNull!.numero}'),
         leading: IconButton(
           tooltip: 'Voltar',
           icon: const Icon(Icons.arrow_back),
@@ -55,7 +59,8 @@ class TelaAcompanharPedido extends ConsumerWidget {
         loading: () => const Carregando(),
         error: (erro, _) => EstadoErro(
           mensagem: mensagemDeErro(erro),
-          aoTentarNovamente: () => ref.invalidate(provedorPedidoAoVivo(pedidoId)),
+          aoTentarNovamente: () =>
+              ref.invalidate(provedorPedidoAoVivo(pedidoId)),
         ),
         data: (p) {
           if (p == null) {
@@ -74,7 +79,8 @@ class TelaAcompanharPedido extends ConsumerWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('Itens', style: Theme.of(context).textTheme.titleMedium),
+                      Text('Itens',
+                          style: Theme.of(context).textTheme.titleMedium),
                       const SizedBox(height: 8),
                       for (final item in p.itens)
                         LinhaValor(
@@ -83,16 +89,22 @@ class TelaAcompanharPedido extends ConsumerWidget {
                         ),
                       LinhaValor(
                         rotulo: 'Entrega',
-                        valor: p.taxaEntrega.ehZero ? 'Grátis' : p.taxaEntrega.formatarEmReais(),
+                        valor: p.taxaEntrega.ehZero
+                            ? 'Grátis'
+                            : p.taxaEntrega.formatarEmReais(),
                       ),
                       const Divider(),
-                      LinhaValor(rotulo: 'Total', valor: p.total.formatarEmReais(), destaque: true),
+                      LinhaValor(
+                          rotulo: 'Total',
+                          valor: p.total.formatarEmReais(),
+                          destaque: true),
                       const SizedBox(height: 8),
                       Text('Pagamento na entrega: ${p.formaPagamento.rotulo}'
                           '${p.trocoPara.centavos > 0 ? ' (troco para ${p.trocoPara.formatarEmReais()})' : ''}'),
                       if (p.itens.any((i) => i.trocaVasilhame)) ...[
                         const SizedBox(height: 8),
-                        const Text('Deixe o vasilhame vazio separado para a troca.'),
+                        const Text(
+                            'Deixe o vasilhame vazio separado para a troca.'),
                       ],
                     ],
                   ),
@@ -124,7 +136,8 @@ class TelaAcompanharPedido extends ConsumerWidget {
                   onPressed: () => _cancelar(context, ref, p),
                   icon: const Icon(Icons.close),
                   label: const Text('Cancelar pedido'),
-                  style: TextButton.styleFrom(foregroundColor: Theme.of(context).colorScheme.error),
+                  style: TextButton.styleFrom(
+                      foregroundColor: Theme.of(context).colorScheme.error),
                 ),
               ],
             ],
@@ -145,11 +158,14 @@ class _Cabecalho extends StatelessWidget {
     final tema = Theme.of(context);
     final cor = corDoStatus(pedido.status, tema.colorScheme);
     final mensagem = switch (pedido.status) {
-      StatusPedido.novo => 'A central recebeu seu pedido e vai confirmar em instantes.',
+      StatusPedido.novo =>
+        'A central recebeu seu pedido e vai confirmar em instantes.',
       StatusPedido.confirmado => 'A central está separando o seu pedido.',
-      StatusPedido.emRota => 'O entregador está a caminho${pedido.entregadorNome == null ? '' : ': ${pedido.entregadorNome}'}.',
+      StatusPedido.emRota =>
+        'O entregador está a caminho${pedido.entregadorNome == null ? '' : ': ${pedido.entregadorNome}'}.',
       StatusPedido.entregue => 'Pedido entregue. Obrigado pela preferência!',
-      StatusPedido.cancelado => pedido.motivoCancelamento ?? 'Pedido cancelado.',
+      StatusPedido.cancelado =>
+        pedido.motivoCancelamento ?? 'Pedido cancelado.',
     };
     return Card(
       color: cor.withValues(alpha: 0.08),
@@ -163,7 +179,8 @@ class _Cabecalho extends StatelessWidget {
             Text(mensagem, style: tema.textTheme.titleMedium),
             const SizedBox(height: 8),
             Text('Entrega: ${pedido.horario}'),
-            if (pedido.centralNome != null) Text('Central: ${pedido.centralNome}'),
+            if (pedido.centralNome != null)
+              Text('Central: ${pedido.centralNome}'),
           ],
         ),
       ),
@@ -196,7 +213,9 @@ class _LinhaDoTempo extends StatelessWidget {
             for (final etapa in etapas)
               ListTile(
                 leading: Icon(
-                  pedido.status.etapa >= etapa.etapa ? Icons.check_circle : Icons.radio_button_unchecked,
+                  pedido.status.etapa >= etapa.etapa
+                      ? Icons.check_circle
+                      : Icons.radio_button_unchecked,
                   color: pedido.status.etapa >= etapa.etapa
                       ? corDoStatus(etapa, tema.colorScheme)
                       : tema.colorScheme.outline,

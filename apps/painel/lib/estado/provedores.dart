@@ -8,17 +8,17 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 final provedorCliente = Provider<SupabaseClient>((ref) => clienteBackend);
 
-final provedorConta =
-    Provider<RepositorioConta>((ref) => RepositorioConta(ref.watch(provedorCliente)));
+final provedorConta = Provider<RepositorioConta>(
+    (ref) => RepositorioConta(ref.watch(provedorCliente)));
 
-final provedorPedidos =
-    Provider<RepositorioPedidos>((ref) => RepositorioPedidos(ref.watch(provedorCliente)));
+final provedorPedidos = Provider<RepositorioPedidos>(
+    (ref) => RepositorioPedidos(ref.watch(provedorCliente)));
 
-final provedorGestao =
-    Provider<RepositorioGestao>((ref) => RepositorioGestao(ref.watch(provedorCliente)));
+final provedorGestao = Provider<RepositorioGestao>(
+    (ref) => RepositorioGestao(ref.watch(provedorCliente)));
 
-final provedorEnderecos =
-    Provider<RepositorioEnderecos>((ref) => RepositorioEnderecos(ref.watch(provedorCliente)));
+final provedorEnderecos = Provider<RepositorioEnderecos>(
+    (ref) => RepositorioEnderecos(ref.watch(provedorCliente)));
 
 /// Avisa a tela raiz sempre que alguém entra ou sai.
 class EstadoDeLogin extends ChangeNotifier {
@@ -48,10 +48,11 @@ class EstadoDeLogin extends ChangeNotifier {
   }
 }
 
-final provedorEstadoDeLogin =
-    ChangeNotifierProvider<EstadoDeLogin>((ref) => EstadoDeLogin(ref.watch(provedorConta)));
+final provedorEstadoDeLogin = ChangeNotifierProvider<EstadoDeLogin>(
+    (ref) => EstadoDeLogin(ref.watch(provedorConta)));
 
-final provedorUsuarioId = Provider<String?>((ref) => ref.watch(provedorEstadoDeLogin).usuarioId);
+final provedorUsuarioId =
+    Provider<String?>((ref) => ref.watch(provedorEstadoDeLogin).usuarioId);
 
 final provedorPerfil = FutureProvider<Perfil?>((ref) async {
   if (ref.watch(provedorUsuarioId) == null) {

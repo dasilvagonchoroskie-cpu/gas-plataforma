@@ -53,11 +53,8 @@ class RepositorioConta {
     if (id == null) {
       return null;
     }
-    final dados = await _cliente
-        .from('perfis')
-        .select()
-        .eq('id', id)
-        .maybeSingle();
+    final dados =
+        await _cliente.from('perfis').select().eq('id', id).maybeSingle();
     if (dados == null) {
       return null;
     }

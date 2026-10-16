@@ -20,8 +20,10 @@ class _SecaoPedidosDonoState extends ConsumerState<SecaoPedidosDono> {
 
   @override
   Widget build(BuildContext context) {
-    final centrais = ref.watch(provedorCentrais).valueOrNull ?? const <Central>[];
-    final centralId = _centralId ?? (centrais.isEmpty ? null : centrais.first.id);
+    final centrais =
+        ref.watch(provedorCentrais).valueOrNull ?? const <Central>[];
+    final centralId =
+        _centralId ?? (centrais.isEmpty ? null : centrais.first.id);
     return Column(
       children: [
         Padding(
@@ -37,7 +39,10 @@ class _SecaoPedidosDonoState extends ConsumerState<SecaoPedidosDono> {
         Expanded(
           child: centralId == null
               ? const EstadoVazio(titulo: 'Nenhuma central cadastrada')
-              : FilaPedidos(key: ValueKey(centralId), centralId: centralId, tocarSom: false),
+              : FilaPedidos(
+                  key: ValueKey(centralId),
+                  centralId: centralId,
+                  tocarSom: false),
         ),
       ],
     );

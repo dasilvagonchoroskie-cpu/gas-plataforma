@@ -23,8 +23,11 @@ String gerarSenhaTemporaria([Random? gerador]) {
 
 typedef _Filtro = ({PapelPerfil? papel, String busca});
 
-final _provedorUsuarios = FutureProvider.autoDispose.family<List<Perfil>, _Filtro>(
-  (ref, filtro) => ref.watch(provedorGestao).usuarios(papel: filtro.papel, busca: filtro.busca),
+final _provedorUsuarios =
+    FutureProvider.autoDispose.family<List<Perfil>, _Filtro>(
+  (ref, filtro) => ref
+      .watch(provedorGestao)
+      .usuarios(papel: filtro.papel, busca: filtro.busca),
 );
 
 /// Quem acessa o sistema: clientes, operadores das centrais e administradores.
@@ -74,7 +77,8 @@ class _SecaoUsuariosState extends ConsumerState<SecaoUsuarios> {
     ref.invalidate(_provedorUsuarios);
     await _mostrarSenha(
       titulo: 'Usuário criado',
-      mensagem: 'Passe estes dados para a pessoa. Ela pode trocar a senha depois, no perfil.',
+      mensagem:
+          'Passe estes dados para a pessoa. Ela pode trocar a senha depois, no perfil.',
       email: criado.email,
       senha: criado.senha,
     );
@@ -96,10 +100,13 @@ class _SecaoUsuariosState extends ConsumerState<SecaoUsuarios> {
           children: [
             Text(mensagem),
             const SizedBox(height: 12),
-            if (email != null) SelectableText('E-mail: $email', style: const TextStyle(fontSize: 18)),
+            if (email != null)
+              SelectableText('E-mail: $email',
+                  style: const TextStyle(fontSize: 18)),
             SelectableText(
               'Senha: $senha',
-              style: const TextStyle(fontSize: 22, fontWeight: FontWeight.w700, letterSpacing: 1),
+              style: const TextStyle(
+                  fontSize: 22, fontWeight: FontWeight.w700, letterSpacing: 1),
             ),
           ],
         ),
@@ -107,7 +114,10 @@ class _SecaoUsuariosState extends ConsumerState<SecaoUsuarios> {
           TextButton.icon(
             onPressed: () async {
               await Clipboard.setData(
-                ClipboardData(text: email == null ? senha : 'E-mail: $email\nSenha: $senha'),
+                ClipboardData(
+                    text: email == null
+                        ? senha
+                        : 'E-mail: $email\nSenha: $senha'),
               );
               if (contexto.mounted) {
                 mostrarMensagem(contexto, 'Copiado.');
@@ -116,7 +126,9 @@ class _SecaoUsuariosState extends ConsumerState<SecaoUsuarios> {
             icon: const Icon(Icons.copy),
             label: const Text('Copiar'),
           ),
-          FilledButton(onPressed: () => Navigator.of(contexto).pop(), child: const Text('Pronto')),
+          FilledButton(
+              onPressed: () => Navigator.of(contexto).pop(),
+              child: const Text('Pronto')),
         ],
       ),
     );
@@ -132,8 +144,10 @@ class _SecaoUsuariosState extends ConsumerState<SecaoUsuarios> {
           mainAxisSize: MainAxisSize.min,
           children: [
             ListTile(
-              title: Text(usuario.nome, style: Theme.of(contexto).textTheme.titleMedium),
-              subtitle: Text(usuario.email ?? Validacoes.formatarTelefone(usuario.telefone)),
+              title: Text(usuario.nome,
+                  style: Theme.of(contexto).textTheme.titleMedium),
+              subtitle: Text(usuario.email ??
+                  Validacoes.formatarTelefone(usuario.telefone)),
             ),
             if (!souEu)
               ListTile(
@@ -148,8 +162,10 @@ class _SecaoUsuariosState extends ConsumerState<SecaoUsuarios> {
             ),
             if (!souEu)
               ListTile(
-                leading: Icon(usuario.ativo ? Icons.block : Icons.check_circle_outline),
-                title: Text(usuario.ativo ? 'Desativar acesso' : 'Reativar acesso'),
+                leading: Icon(
+                    usuario.ativo ? Icons.block : Icons.check_circle_outline),
+                title: Text(
+                    usuario.ativo ? 'Desativar acesso' : 'Reativar acesso'),
                 onTap: () => Navigator.of(contexto).pop('ativo'),
               ),
           ],
@@ -168,7 +184,8 @@ class _SecaoUsuariosState extends ConsumerState<SecaoUsuarios> {
         );
         if (novo != null) {
           await _executar(
-            () => gestao.mudarPapel(usuario.id, novo.papel, centralId: novo.centralId),
+            () => gestao.mudarPapel(usuario.id, novo.papel,
+                centralId: novo.centralId),
             'Papel atualizado.',
           );
         }
@@ -176,7 +193,8 @@ class _SecaoUsuariosState extends ConsumerState<SecaoUsuarios> {
         final certeza = await confirmar(
           context,
           titulo: 'Criar senha nova para ${usuario.primeiroNome}?',
-          mensagem: 'A senha atual deixa de funcionar. Você vai ver a nova senha para passar à pessoa.',
+          mensagem:
+              'A senha atual deixa de funcionar. Você vai ver a nova senha para passar à pessoa.',
           rotuloConfirmar: 'Criar senha',
         );
         if (!certeza) {
@@ -201,7 +219,9 @@ class _SecaoUsuariosState extends ConsumerState<SecaoUsuarios> {
       case 'ativo':
         final certeza = await confirmar(
           context,
-          titulo: usuario.ativo ? 'Desativar ${usuario.primeiroNome}?' : 'Reativar ${usuario.primeiroNome}?',
+          titulo: usuario.ativo
+              ? 'Desativar ${usuario.primeiroNome}?'
+              : 'Reativar ${usuario.primeiroNome}?',
           mensagem: usuario.ativo
               ? 'A pessoa não consegue mais entrar no aplicativo nem no painel.'
               : 'A pessoa volta a entrar com o e-mail e a senha dela.',
@@ -221,7 +241,9 @@ class _SecaoUsuariosState extends ConsumerState<SecaoUsuarios> {
   Widget build(BuildContext context) {
     final usuarios = ref.watch(_provedorUsuarios(_filtro));
     final centrais = {
-      for (final c in ref.watch(provedorCentrais).valueOrNull ?? const <Central>[]) c.id: c.nome,
+      for (final c
+          in ref.watch(provedorCentrais).valueOrNull ?? const <Central>[])
+        c.id: c.nome,
     };
     return Scaffold(
       floatingActionButton: FloatingActionButton.extended(
@@ -285,23 +307,30 @@ class _SecaoUsuariosState extends ConsumerState<SecaoUsuarios> {
               ),
               data: (lista) {
                 if (lista.isEmpty) {
-                  return const EstadoVazio(icone: Icons.group_outlined, titulo: 'Ninguém encontrado');
+                  return const EstadoVazio(
+                      icone: Icons.group_outlined,
+                      titulo: 'Ninguém encontrado');
                 }
                 return ListView.builder(
                   padding: const EdgeInsets.fromLTRB(16, 0, 16, 96),
                   itemCount: lista.length,
                   itemBuilder: (context, i) {
                     final u = lista[i];
-                    final central = u.centralId == null ? null : centrais[u.centralId];
+                    final central =
+                        u.centralId == null ? null : centrais[u.centralId];
                     return Card(
                       child: ListTile(
-                        leading: CircleAvatar(child: Text(u.nome.isEmpty ? '?' : u.nome[0].toUpperCase())),
+                        leading: CircleAvatar(
+                            child: Text(u.nome.isEmpty
+                                ? '?'
+                                : u.nome[0].toUpperCase())),
                         title: Text(u.nome.isEmpty ? '(sem nome)' : u.nome),
                         subtitle: Text(
                           [
                             '${u.papel.rotulo}${central == null ? '' : ' · $central'}',
                             if (u.email != null) u.email!,
-                            if (u.telefone.isNotEmpty) Validacoes.formatarTelefone(u.telefone),
+                            if (u.telefone.isNotEmpty)
+                              Validacoes.formatarTelefone(u.telefone),
                             if (!u.ativo) 'ACESSO DESATIVADO',
                           ].join('\n'),
                         ),
@@ -339,7 +368,8 @@ class _CampoPapelCentral extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final centrais = ref.watch(provedorCentrais).valueOrNull ?? const <Central>[];
+    final centrais =
+        ref.watch(provedorCentrais).valueOrNull ?? const <Central>[];
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
@@ -355,7 +385,8 @@ class _CampoPapelCentral extends ConsumerWidget {
                   contentPadding: EdgeInsets.zero,
                   title: Text(p.rotulo),
                   subtitle: Text(switch (p) {
-                    PapelPerfil.operadorCentral => 'Atende os pedidos de uma central',
+                    PapelPerfil.operadorCentral =>
+                      'Atende os pedidos de uma central',
                     PapelPerfil.dono => 'Vê e controla tudo, todas as centrais',
                     PapelPerfil.cliente => 'Só faz pedidos pelo aplicativo',
                     PapelPerfil.entregador => 'Entregador',
@@ -372,7 +403,8 @@ class _CampoPapelCentral extends ConsumerWidget {
             expandedInsets: EdgeInsets.zero,
             onSelected: aoMudarCentral,
             dropdownMenuEntries: [
-              for (final c in centrais) DropdownMenuEntry(value: c.id, label: c.nome),
+              for (final c in centrais)
+                DropdownMenuEntry(value: c.id, label: c.nome),
             ],
           ),
         ],
@@ -391,8 +423,9 @@ class _DialogoPapel extends StatefulWidget {
 }
 
 class _DialogoPapelState extends State<_DialogoPapel> {
-  late PapelPerfil _papel =
-      widget.usuario.papel == PapelPerfil.entregador ? PapelPerfil.cliente : widget.usuario.papel;
+  late PapelPerfil _papel = widget.usuario.papel == PapelPerfil.entregador
+      ? PapelPerfil.cliente
+      : widget.usuario.papel;
   late String? _centralId = widget.usuario.centralId;
   String? _erro;
 
@@ -417,7 +450,11 @@ class _DialogoPapelState extends State<_DialogoPapel> {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             _CampoPapelCentral(
-              papeis: const [PapelPerfil.cliente, PapelPerfil.operadorCentral, PapelPerfil.dono],
+              papeis: const [
+                PapelPerfil.cliente,
+                PapelPerfil.operadorCentral,
+                PapelPerfil.dono
+              ],
               papel: _papel,
               centralId: _centralId,
               aoMudarPapel: (p) => setState(() => _papel = p),
@@ -426,13 +463,17 @@ class _DialogoPapelState extends State<_DialogoPapel> {
             if (_erro != null)
               Padding(
                 padding: const EdgeInsets.only(top: 8),
-                child: Text(_erro!, style: TextStyle(color: Theme.of(context).colorScheme.error)),
+                child: Text(_erro!,
+                    style:
+                        TextStyle(color: Theme.of(context).colorScheme.error)),
               ),
           ],
         ),
       ),
       actions: [
-        TextButton(onPressed: () => Navigator.of(context).pop(), child: const Text('Voltar')),
+        TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Text('Voltar')),
         FilledButton(onPressed: _confirmar, child: const Text('Salvar')),
       ],
     );
@@ -443,7 +484,8 @@ class _DialogoNovoUsuario extends ConsumerStatefulWidget {
   const _DialogoNovoUsuario();
 
   @override
-  ConsumerState<_DialogoNovoUsuario> createState() => _DialogoNovoUsuarioState();
+  ConsumerState<_DialogoNovoUsuario> createState() =>
+      _DialogoNovoUsuarioState();
 }
 
 class _DialogoNovoUsuarioState extends ConsumerState<_DialogoNovoUsuario> {
@@ -485,7 +527,8 @@ class _DialogoNovoUsuarioState extends ConsumerState<_DialogoNovoUsuario> {
             telefone: _telefone.text,
             senha: senha,
             papel: _papel,
-            centralId: _papel == PapelPerfil.operadorCentral ? _centralId : null,
+            centralId:
+                _papel == PapelPerfil.operadorCentral ? _centralId : null,
           );
       if (mounted) {
         Navigator.of(context).pop((email: email, senha: senha));
@@ -525,14 +568,16 @@ class _DialogoNovoUsuarioState extends ConsumerState<_DialogoNovoUsuario> {
                   controller: _email,
                   keyboardType: TextInputType.emailAddress,
                   autocorrect: false,
-                  decoration: const InputDecoration(labelText: 'E-mail (usado para entrar)'),
+                  decoration: const InputDecoration(
+                      labelText: 'E-mail (usado para entrar)'),
                   validator: Validacoes.email,
                 ),
                 const SizedBox(height: 12),
                 TextFormField(
                   controller: _telefone,
                   keyboardType: TextInputType.phone,
-                  decoration: const InputDecoration(labelText: 'Celular com DDD (opcional)'),
+                  decoration: const InputDecoration(
+                      labelText: 'Celular com DDD (opcional)'),
                   validator: Validacoes.telefoneOpcional,
                 ),
                 const SizedBox(height: 12),
@@ -544,11 +589,14 @@ class _DialogoNovoUsuarioState extends ConsumerState<_DialogoNovoUsuario> {
                   aoMudarCentral: (id) => setState(() => _centralId = id),
                 ),
                 const SizedBox(height: 12),
-                const Text('Uma senha provisória será criada e mostrada na tela.'),
+                const Text(
+                    'Uma senha provisória será criada e mostrada na tela.'),
                 if (_erro != null)
                   Padding(
                     padding: const EdgeInsets.only(top: 8),
-                    child: Text(_erro!, style: TextStyle(color: Theme.of(context).colorScheme.error)),
+                    child: Text(_erro!,
+                        style: TextStyle(
+                            color: Theme.of(context).colorScheme.error)),
                   ),
               ],
             ),
@@ -563,7 +611,10 @@ class _DialogoNovoUsuarioState extends ConsumerState<_DialogoNovoUsuario> {
         FilledButton(
           onPressed: _salvando ? null : _criar,
           child: _salvando
-              ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2))
+              ? const SizedBox(
+                  width: 20,
+                  height: 20,
+                  child: CircularProgressIndicator(strokeWidth: 2))
               : const Text('Criar'),
         ),
       ],

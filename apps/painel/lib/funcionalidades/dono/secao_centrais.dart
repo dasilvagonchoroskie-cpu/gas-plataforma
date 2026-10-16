@@ -11,7 +11,8 @@ import 'editor_central.dart';
 class SecaoCentrais extends ConsumerWidget {
   const SecaoCentrais({super.key});
 
-  Future<void> _abrir(BuildContext context, WidgetRef ref, [Central? central]) async {
+  Future<void> _abrir(BuildContext context, WidgetRef ref,
+      [Central? central]) async {
     final salvou = await Navigator.of(context).push<bool>(
       MaterialPageRoute(builder: (_) => EditorCentral(central: central)),
     );
@@ -40,7 +41,8 @@ class SecaoCentrais extends ConsumerWidget {
             return EstadoVazio(
               icone: Icons.store_outlined,
               titulo: 'Nenhuma central',
-              mensagem: 'Crie a primeira central. Ela começa desativada até você ligar.',
+              mensagem:
+                  'Crie a primeira central. Ela começa desativada até você ligar.',
               rotuloAcao: 'Criar central',
               aoAcionar: () => _abrir(context, ref),
             );
@@ -60,7 +62,9 @@ class SecaoCentrais extends ConsumerWidget {
                     child: ListTile(
                       leading: Icon(
                         Icons.store,
-                        color: c.ativa ? Theme.of(context).colorScheme.primary : Theme.of(context).disabledColor,
+                        color: c.ativa
+                            ? Theme.of(context).colorScheme.primary
+                            : Theme.of(context).disabledColor,
                       ),
                       title: Text(c.nome),
                       subtitle: Text(

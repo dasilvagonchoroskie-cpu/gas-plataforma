@@ -16,8 +16,7 @@ final class ConfiguracaoBackend {
   final String url;
   final String chavePublica;
 
-  bool get completa =>
-      url.startsWith('https://') && chavePublica.length > 20;
+  bool get completa => url.startsWith('https://') && chavePublica.length > 20;
 }
 
 /// Liga o app ao backend. Chamar uma vez, antes de `runApp`.

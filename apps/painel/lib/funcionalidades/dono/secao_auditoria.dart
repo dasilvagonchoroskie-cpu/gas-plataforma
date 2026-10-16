@@ -6,7 +6,8 @@ import 'package:nucleo/nucleo.dart';
 
 import '../../estado/provedores.dart';
 
-final _provedorAuditoria = FutureProvider.autoDispose.family<List<RegistroAuditoria>, String?>(
+final _provedorAuditoria =
+    FutureProvider.autoDispose.family<List<RegistroAuditoria>, String?>(
   (ref, tabela) => ref.watch(provedorGestao).auditoria(tabela: tabela),
 );
 
@@ -79,7 +80,11 @@ String descreverValorAuditoria(String campo, Object? valor) {
     return Datas.nomeDiaLongo(valor.toInt());
   }
   if (campo == 'papel' && valor is String) {
-    return PapelPerfil.values.where((p) => p.valor == valor).map((p) => p.rotulo).firstOrNull ?? valor;
+    return PapelPerfil.values
+            .where((p) => p.valor == valor)
+            .map((p) => p.rotulo)
+            .firstOrNull ??
+        valor;
   }
   final texto = '$valor';
   return texto.length > 60 ? '${texto.substring(0, 57)}...' : texto;
@@ -100,7 +105,9 @@ class _SecaoAuditoriaState extends ConsumerState<SecaoAuditoria> {
   Widget build(BuildContext context) {
     final registros = ref.watch(_provedorAuditoria(_tabela));
     final centrais = {
-      for (final c in ref.watch(provedorCentrais).valueOrNull ?? const <Central>[]) c.id: c.nome,
+      for (final c
+          in ref.watch(provedorCentrais).valueOrNull ?? const <Central>[])
+        c.id: c.nome,
     };
     return Column(
       children: [
@@ -127,14 +134,17 @@ class _SecaoAuditoriaState extends ConsumerState<SecaoAuditoria> {
             loading: () => const Carregando(),
             error: (erro, _) => EstadoErro(
               mensagem: mensagemDeErro(erro),
-              aoTentarNovamente: () => ref.invalidate(_provedorAuditoria(_tabela)),
+              aoTentarNovamente: () =>
+                  ref.invalidate(_provedorAuditoria(_tabela)),
             ),
             data: (lista) {
               if (lista.isEmpty) {
-                return const EstadoVazio(icone: Icons.history, titulo: 'Nada registrado ainda');
+                return const EstadoVazio(
+                    icone: Icons.history, titulo: 'Nada registrado ainda');
               }
               return RefreshIndicator(
-                onRefresh: () => ref.refresh(_provedorAuditoria(_tabela).future),
+                onRefresh: () =>
+                    ref.refresh(_provedorAuditoria(_tabela).future),
                 child: ListView.builder(
                   padding: const EdgeInsets.fromLTRB(16, 0, 16, 24),
                   itemCount: lista.length + 1,
@@ -142,10 +152,12 @@ class _SecaoAuditoriaState extends ConsumerState<SecaoAuditoria> {
                     if (i == lista.length) {
                       return const Padding(
                         padding: EdgeInsets.all(12),
-                        child: Text('Mostrando os 200 registros mais recentes.', textAlign: TextAlign.center),
+                        child: Text('Mostrando os 200 registros mais recentes.',
+                            textAlign: TextAlign.center),
                       );
                     }
-                    return _ItemAuditoria(registro: lista[i], centrais: centrais);
+                    return _ItemAuditoria(
+                        registro: lista[i], centrais: centrais);
                   },
                 ),
               );
@@ -170,13 +182,16 @@ class _ItemAuditoria extends StatelessWidget {
     final acao = _acoes[r.acao] ?? r.acao;
     final onde = _tabelas[r.tabela] ?? r.tabela;
     final dados = r.depois ?? r.antes ?? const <String, dynamic>{};
-    final Object? nome = dados['nome'] ?? centrais['${dados['central_id']}'] ?? centrais[r.registroId];
+    final Object? nome = dados['nome'] ??
+        centrais['${dados['central_id']}'] ??
+        centrais[r.registroId];
     final alterados = [
       for (final campo in r.camposAlterados)
         if (_campos.containsKey(campo)) campo,
     ];
-    String valor(String campo, Object? v) =>
-        campo == 'central_id' ? (centrais['$v'] ?? '-') : descreverValorAuditoria(campo, v);
+    String valor(String campo, Object? v) => campo == 'central_id'
+        ? (centrais['$v'] ?? '-')
+        : descreverValorAuditoria(campo, v);
     final detalhes = r.acao == 'update' && alterados.isNotEmpty
         ? [
             for (final campo in alterados)
@@ -184,7 +199,8 @@ class _ItemAuditoria extends StatelessWidget {
           ]
         : [
             for (final e in dados.entries)
-              if (_campos.containsKey(e.key)) '${_campos[e.key]}: ${valor(e.key, e.value)}',
+              if (_campos.containsKey(e.key))
+                '${_campos[e.key]}: ${valor(e.key, e.value)}',
           ];
     return Card(
       child: ExpansionTile(

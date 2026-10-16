@@ -11,7 +11,8 @@ void main() {
         message: 'Esse horário acabou de lotar. Escolha outro horário.',
         code: 'P0001',
       );
-      expect(mensagemDeErro(erro), 'Esse horário acabou de lotar. Escolha outro horário.');
+      expect(mensagemDeErro(erro),
+          'Esse horário acabou de lotar. Escolha outro horário.');
     });
 
     test('esconde mensagens técnicas do banco', () {
@@ -32,7 +33,8 @@ void main() {
         status: 409,
         details: {'erro': 'Este e-mail já tem cadastro. Entre com sua senha.'},
       );
-      expect(mensagemDeErro(erro), 'Este e-mail já tem cadastro. Entre com sua senha.');
+      expect(mensagemDeErro(erro),
+          'Este e-mail já tem cadastro. Entre com sua senha.');
     });
 
     test('avisa quando falta internet', () {
@@ -40,11 +42,13 @@ void main() {
         mensagemDeErro(Exception('SocketException: Failed host lookup')),
         'Sem internet no momento. Confira a conexão e tente de novo.',
       );
-      expect(mensagemDeErro(TimeoutException('x')), 'A internet está lenta. Tente de novo.');
+      expect(mensagemDeErro(TimeoutException('x')),
+          'A internet está lenta. Tente de novo.');
     });
 
     test('configuração sem endereço não é considerada completa', () {
-      expect(const ConfiguracaoBackend(url: '', chavePublica: '').completa, isFalse);
+      expect(const ConfiguracaoBackend(url: '', chavePublica: '').completa,
+          isFalse);
       expect(
         const ConfiguracaoBackend(
           url: 'https://exemplo.supabase.co',

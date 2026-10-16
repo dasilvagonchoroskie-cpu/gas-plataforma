@@ -43,7 +43,8 @@ class RaizPainel extends ConsumerWidget {
     }
     final perfil = ref.watch(provedorPerfil);
     return perfil.when(
-      loading: () => const Scaffold(body: Carregando(mensagem: 'Abrindo o painel...')),
+      loading: () =>
+          const Scaffold(body: Carregando(mensagem: 'Abrindo o painel...')),
       error: (erro, _) => Scaffold(
         body: EstadoErro(
           mensagem: mensagemDeErro(erro),
@@ -57,7 +58,9 @@ class RaizPainel extends ConsumerWidget {
         if (p.ativo && p.papel == PapelPerfil.dono) {
           return PainelDono(perfil: p);
         }
-        if (p.ativo && p.papel == PapelPerfil.operadorCentral && p.centralId != null) {
+        if (p.ativo &&
+            p.papel == PapelPerfil.operadorCentral &&
+            p.centralId != null) {
           return PainelCentral(perfil: p, centralId: p.centralId!);
         }
         return _SemAcesso(perfil: p);

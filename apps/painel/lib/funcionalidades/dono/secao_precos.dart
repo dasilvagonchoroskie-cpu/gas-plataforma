@@ -8,7 +8,8 @@ import 'package:nucleo/nucleo.dart';
 import '../../estado/provedores.dart';
 import 'painel_dono.dart';
 
-final _provedorPrecos = FutureProvider.autoDispose.family<List<ItemCatalogo>, String>(
+final _provedorPrecos =
+    FutureProvider.autoDispose.family<List<ItemCatalogo>, String>(
   (ref, centralId) => ref.watch(provedorGestao).precos(centralId),
 );
 
@@ -39,7 +40,8 @@ class _SecaoPrecosState extends ConsumerState<SecaoPrecos> {
     }
   }
 
-  Future<void> _definirPreco(String centralId, Produto produto, {ItemCatalogo? atual}) async {
+  Future<void> _definirPreco(String centralId, Produto produto,
+      {ItemCatalogo? atual}) async {
     final resultado = await showDialog<({Dinheiro preco, bool todas})>(
       context: context,
       builder: (_) => _DialogoPreco(produto: produto, atual: atual?.preco),
@@ -94,8 +96,10 @@ class _SecaoPrecosState extends ConsumerState<SecaoPrecos> {
 
   @override
   Widget build(BuildContext context) {
-    final centrais = ref.watch(provedorCentrais).valueOrNull ?? const <Central>[];
-    final centralId = _centralId ?? (centrais.isEmpty ? null : centrais.first.id);
+    final centrais =
+        ref.watch(provedorCentrais).valueOrNull ?? const <Central>[];
+    final centralId =
+        _centralId ?? (centrais.isEmpty ? null : centrais.first.id);
     return ListView(
       padding: const EdgeInsets.all(16),
       children: [
@@ -112,7 +116,8 @@ class _SecaoPrecosState extends ConsumerState<SecaoPrecos> {
         else
           _ListaPrecos(
             centralId: centralId,
-            aoDefinirPreco: (produto, atual) => _definirPreco(centralId, produto, atual: atual),
+            aoDefinirPreco: (produto, atual) =>
+                _definirPreco(centralId, produto, atual: atual),
             aoMudarDisponivel: (item, disponivel) => _executar(
               () => ref.read(provedorGestao).salvarPreco(
                     centralId: centralId,
@@ -120,7 +125,9 @@ class _SecaoPrecosState extends ConsumerState<SecaoPrecos> {
                     preco: item.preco,
                     disponivel: disponivel,
                   ),
-              disponivel ? 'Produto disponível.' : 'Produto marcado como em falta.',
+              disponivel
+                  ? 'Produto disponível.'
+                  : 'Produto marcado como em falta.',
             ),
             aoRemover: (item) => _remover(centralId, item),
           ),
@@ -145,9 +152,11 @@ class _ListaPrecos extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final precos = ref.watch(_provedorPrecos(centralId));
-    final produtos = ref.watch(provedorProdutos).valueOrNull ?? const <Produto>[];
+    final produtos =
+        ref.watch(provedorProdutos).valueOrNull ?? const <Produto>[];
     return precos.when(
-      loading: () => const Padding(padding: EdgeInsets.all(32), child: Carregando()),
+      loading: () =>
+          const Padding(padding: EdgeInsets.all(32), child: Carregando()),
       error: (erro, _) => EstadoErro(
         mensagem: mensagemDeErro(erro),
         aoTentarNovamente: () => ref.invalidate(_provedorPrecos(centralId)),
@@ -165,7 +174,8 @@ class _ListaPrecos extends ConsumerWidget {
             if (lista.isEmpty)
               const Padding(
                 padding: EdgeInsets.all(8),
-                child: Text('Nenhum produto com preço nesta central. Adicione abaixo.'),
+                child: Text(
+                    'Nenhum produto com preço nesta central. Adicione abaixo.'),
               ),
             for (final item in lista)
               Card(
@@ -177,10 +187,13 @@ class _ListaPrecos extends ConsumerWidget {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(item.produto.nome, style: Theme.of(context).textTheme.titleMedium),
+                            Text(item.produto.nome,
+                                style: Theme.of(context).textTheme.titleMedium),
                             Text(
                               item.produto.ativo
-                                  ? (item.disponivel ? 'Disponível' : 'Em falta (cliente não consegue pedir)')
+                                  ? (item.disponivel
+                                      ? 'Disponível'
+                                      : 'Em falta (cliente não consegue pedir)')
                                   : 'Produto desativado no catálogo',
                             ),
                           ],
@@ -188,7 +201,8 @@ class _ListaPrecos extends ConsumerWidget {
                       ),
                       TextButton(
                         onPressed: () => aoDefinirPreco(item.produto, item),
-                        child: Text(item.preco.formatarEmReais(), style: const TextStyle(fontSize: 18)),
+                        child: Text(item.preco.formatarEmReais(),
+                            style: const TextStyle(fontSize: 18)),
                       ),
                       Switch(
                         value: item.disponivel,
@@ -209,7 +223,8 @@ class _ListaPrecos extends ConsumerWidget {
                 Card(
                   child: ListTile(
                     title: Text(p.nome),
-                    subtitle: const Text('Sem preço: não aparece para o cliente'),
+                    subtitle:
+                        const Text('Sem preço: não aparece para o cliente'),
                     trailing: FilledButton.tonal(
                       onPressed: () => aoDefinirPreco(p, null),
                       child: const Text('Definir preço'),
@@ -235,7 +250,8 @@ class _DialogoPreco extends StatefulWidget {
 }
 
 class _DialogoPrecoState extends State<_DialogoPreco> {
-  late final _valor = TextEditingController(text: widget.atual?.formatarParaEdicao() ?? '');
+  late final _valor =
+      TextEditingController(text: widget.atual?.formatarParaEdicao() ?? '');
   bool _todas = false;
   String? _erro;
 
@@ -265,8 +281,11 @@ class _DialogoPrecoState extends State<_DialogoPreco> {
             controller: _valor,
             autofocus: true,
             keyboardType: const TextInputType.numberWithOptions(decimal: true),
-            inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'[0-9.,]'))],
-            decoration: InputDecoration(labelText: 'Preço', prefixText: 'R\$ ', errorText: _erro),
+            inputFormatters: [
+              FilteringTextInputFormatter.allow(RegExp(r'[0-9.,]'))
+            ],
+            decoration: InputDecoration(
+                labelText: 'Preço', prefixText: 'R\$ ', errorText: _erro),
             onSubmitted: (_) => _confirmar(),
           ),
           CheckboxListTile(
@@ -278,7 +297,9 @@ class _DialogoPrecoState extends State<_DialogoPreco> {
         ],
       ),
       actions: [
-        TextButton(onPressed: () => Navigator.of(context).pop(), child: const Text('Voltar')),
+        TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Text('Voltar')),
         FilledButton(onPressed: _confirmar, child: const Text('Salvar')),
       ],
     );

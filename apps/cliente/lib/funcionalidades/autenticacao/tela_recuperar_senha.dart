@@ -59,7 +59,8 @@ class _TelaRecuperarSenhaState extends ConsumerState<TelaRecuperarSenha> {
                 ? const EstadoVazio(
                     icone: Icons.mark_email_read_outlined,
                     titulo: 'Pronto!',
-                    mensagem: 'Se o e-mail estiver cadastrado, você vai receber um link para '
+                    mensagem:
+                        'Se o e-mail estiver cadastrado, você vai receber um link para '
                         'criar uma senha nova. Se não chegar em alguns minutos, olhe o lixo '
                         'eletrônico ou ligue para a central: ela pode criar uma senha nova para você.',
                   )
@@ -68,7 +69,8 @@ class _TelaRecuperarSenhaState extends ConsumerState<TelaRecuperarSenha> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
-                        const Text('Digite o e-mail da sua conta. Vamos mandar um link para você criar uma senha nova.'),
+                        const Text(
+                            'Digite o e-mail da sua conta. Vamos mandar um link para você criar uma senha nova.'),
                         const SizedBox(height: 20),
                         TextFormField(
                           controller: _email,

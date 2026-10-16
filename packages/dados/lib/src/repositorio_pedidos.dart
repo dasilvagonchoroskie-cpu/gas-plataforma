@@ -34,7 +34,8 @@ class RepositorioPedidos {
   Future<List<ItemCatalogo>> catalogo(String centralId) async {
     final linhas = await _cliente
         .from('precos_central')
-        .select('central_id, produto_id, preco_centavos, disponivel, produtos(*)')
+        .select(
+            'central_id, produto_id, preco_centavos, disponivel, produtos(*)')
         .eq('central_id', centralId)
         .eq('disponivel', true);
     final itens = linhas
@@ -49,13 +50,15 @@ class RepositorioPedidos {
   }
 
   /// Horários com vaga nos próximos dias.
-  Future<List<HorarioDisponivel>> agenda(String centralId, {int dias = 7}) async {
+  Future<List<HorarioDisponivel>> agenda(String centralId,
+      {int dias = 7}) async {
     final linhas = await _cliente.rpc(
       'agenda_disponivel',
       params: {'p_central_id': centralId, 'p_dias': dias},
     ) as List<dynamic>;
     return linhas
-        .map((l) => HorarioDisponivel.deJson(Map<String, dynamic>.from(l as Map)))
+        .map((l) =>
+            HorarioDisponivel.deJson(Map<String, dynamic>.from(l as Map)))
         .toList();
   }
 
@@ -79,9 +82,11 @@ class RepositorioPedidos {
       'p_forma_pagamento': formaPagamento.valor,
       'p_itens': carrinho.paraPedido(),
       'p_chave_idempotencia': chaveIdempotencia,
-      'p_troco_para_centavos':
-          formaPagamento == FormaPagamento.dinheiro ? (trocoPara?.centavos ?? 0) : 0,
-      'p_observacao': (observacao ?? '').trim().isEmpty ? null : observacao!.trim(),
+      'p_troco_para_centavos': formaPagamento == FormaPagamento.dinheiro
+          ? (trocoPara?.centavos ?? 0)
+          : 0,
+      'p_observacao':
+          (observacao ?? '').trim().isEmpty ? null : observacao!.trim(),
     });
     final dados = Map<String, dynamic>.from(resposta as Map);
     return (
@@ -135,7 +140,8 @@ class RepositorioPedidos {
 
   /// Pedidos da central: em andamento de qualquer data e encerrados desde
   /// `desde` (padrão: hoje).
-  Future<List<Pedido>> pedidosDaCentral(String centralId, {DateTime? desde}) async {
+  Future<List<Pedido>> pedidosDaCentral(String centralId,
+      {DateTime? desde}) async {
     final inicio = desde ?? Datas.hoje();
     final emAndamento = await _cliente
         .from('pedidos')
@@ -153,7 +159,8 @@ class RepositorioPedidos {
         .from('pedidos')
         .select(_camposPedido)
         .eq('central_id', centralId)
-        .inFilter('status', [StatusPedido.entregue.valor, StatusPedido.cancelado.valor])
+        .inFilter('status',
+            [StatusPedido.entregue.valor, StatusPedido.cancelado.valor])
         .gte('atualizado_em', inicio.subtract(Datas.fuso).toIso8601String())
         .order('atualizado_em', ascending: false)
         .limit(300);
@@ -164,12 +171,13 @@ class RepositorioPedidos {
   }
 
   /// Avisa quando um pedido da central muda (ou chega um novo).
-  Stream<List<Map<String, dynamic>>> mudancasDaCentral(String centralId) => _cliente
-      .from('pedidos')
-      .stream(primaryKey: ['id'])
-      .eq('central_id', centralId);
+  Stream<List<Map<String, dynamic>>> mudancasDaCentral(String centralId) =>
+      _cliente
+          .from('pedidos')
+          .stream(primaryKey: ['id']).eq('central_id', centralId);
 
-  Future<void> mudarStatus(String pedidoId, StatusPedido novo, {String? motivo}) async {
+  Future<void> mudarStatus(String pedidoId, StatusPedido novo,
+      {String? motivo}) async {
     await _cliente.rpc('mudar_status_pedido', params: {
       'p_pedido_id': pedidoId,
       'p_novo_status': novo.valor,
@@ -190,11 +198,13 @@ class RepositorioPedidos {
       params: {'p_pedido_id': pedidoId},
     ) as List<dynamic>;
     return linhas
-        .map((l) => OpcaoTransferencia.deJson(Map<String, dynamic>.from(l as Map)))
+        .map((l) =>
+            OpcaoTransferencia.deJson(Map<String, dynamic>.from(l as Map)))
         .toList();
   }
 
-  Future<void> transferir(String pedidoId, String centralDestinoId, String motivo) async {
+  Future<void> transferir(
+      String pedidoId, String centralDestinoId, String motivo) async {
     await _cliente.rpc('transferir_pedido', params: {
       'p_pedido_id': pedidoId,
       'p_central_destino_id': centralDestinoId,

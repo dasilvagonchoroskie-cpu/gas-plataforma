@@ -11,7 +11,8 @@ String mensagemDeErro(Object erro) {
 
   if (erro is AuthException) {
     final texto = erro.message.toLowerCase();
-    if (texto.contains('invalid login') || texto.contains('invalid_credentials')) {
+    if (texto.contains('invalid login') ||
+        texto.contains('invalid_credentials')) {
       return 'E-mail ou senha incorretos.';
     }
     if (texto.contains('banned')) {
@@ -23,7 +24,9 @@ String mensagemDeErro(Object erro) {
     if (texto.contains('email not confirmed')) {
       return 'Seu e-mail ainda não foi confirmado.';
     }
-    if (texto.contains('jwt') || texto.contains('session') || texto.contains('refresh')) {
+    if (texto.contains('jwt') ||
+        texto.contains('session') ||
+        texto.contains('refresh')) {
       return 'Sua sessão expirou. Entre de novo.';
     }
     return 'Não foi possível entrar agora. Tente de novo.';

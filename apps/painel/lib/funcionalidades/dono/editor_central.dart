@@ -38,11 +38,13 @@ class _LinhaFaixa {
 class _EditorCentralState extends ConsumerState<EditorCentral> {
   final _formulario = GlobalKey<FormState>();
   late final _nome = TextEditingController(text: widget.central?.nome ?? '');
-  late final _cidade = TextEditingController(text: widget.central?.cidade ?? '');
+  late final _cidade =
+      TextEditingController(text: widget.central?.cidade ?? '');
   late final _uf = TextEditingController(text: widget.central?.uf ?? 'GO');
-  late final _endereco = TextEditingController(text: widget.central?.endereco ?? '');
-  late final _whatsapp =
-      TextEditingController(text: Validacoes.formatarTelefone(widget.central?.whatsapp ?? ''));
+  late final _endereco =
+      TextEditingController(text: widget.central?.endereco ?? '');
+  late final _whatsapp = TextEditingController(
+      text: Validacoes.formatarTelefone(widget.central?.whatsapp ?? ''));
   late bool _ativa = widget.central?.ativa ?? false;
   LatLng? _ponto;
   String? _modeloId;
@@ -87,8 +89,9 @@ class _EditorCentralState extends ConsumerState<EditorCentral> {
     }
   }
 
-  static String _km(double valor) =>
-      valor == valor.roundToDouble() ? valor.toStringAsFixed(0) : valor.toStringAsFixed(1).replaceAll('.', ',');
+  static String _km(double valor) => valor == valor.roundToDouble()
+      ? valor.toStringAsFixed(0)
+      : valor.toStringAsFixed(1).replaceAll('.', ',');
 
   @override
   void dispose() {
@@ -153,11 +156,13 @@ class _EditorCentralState extends ConsumerState<EditorCentral> {
       if (permissao == LocationPermission.denied) {
         permissao = await Geolocator.requestPermission();
       }
-      if (permissao == LocationPermission.denied || permissao == LocationPermission.deniedForever) {
+      if (permissao == LocationPermission.denied ||
+          permissao == LocationPermission.deniedForever) {
         throw const ErroDeNegocio('Sem permissão de localização.');
       }
       final posicao = await Geolocator.getCurrentPosition(
-        locationSettings: const LocationSettings(accuracy: LocationAccuracy.high, timeLimit: Duration(seconds: 20)),
+        locationSettings: const LocationSettings(
+            accuracy: LocationAccuracy.high, timeLimit: Duration(seconds: 20)),
       );
       if (mounted) {
         _moverPara(LatLng(posicao.latitude, posicao.longitude));
@@ -184,7 +189,9 @@ class _EditorCentralState extends ConsumerState<EditorCentral> {
     final faixas = <FaixaEntrega>[];
     for (final linha in _faixas) {
       final km = double.tryParse(linha.km.text.trim().replaceAll(',', '.'));
-      final taxa = linha.taxa.text.trim().isEmpty ? Dinheiro.zero : Dinheiro.lerReais(linha.taxa.text);
+      final taxa = linha.taxa.text.trim().isEmpty
+          ? Dinheiro.zero
+          : Dinheiro.lerReais(linha.taxa.text);
       if (km == null || km <= 0 || km > 300 || taxa == null) {
         return null;
       }
@@ -200,14 +207,17 @@ class _EditorCentralState extends ConsumerState<EditorCentral> {
     }
     final ponto = _ponto;
     if (ponto == null) {
-      mostrarMensagem(context, 'Marque a localização da central no mapa.', erro: true);
+      mostrarMensagem(context, 'Marque a localização da central no mapa.',
+          erro: true);
       return;
     }
     // Com central modelo, as faixas vêm copiadas dela.
     final copiarDoModelo = _nova && _modeloId != null;
     final faixas = copiarDoModelo ? const <FaixaEntrega>[] : _lerFaixas();
     if (faixas == null || (!copiarDoModelo && faixas.isEmpty)) {
-      mostrarMensagem(context, 'Confira as faixas de entrega (km de 1 a 300 e taxa em reais).', erro: true);
+      mostrarMensagem(context,
+          'Confira as faixas de entrega (km de 1 a 300 e taxa em reais).',
+          erro: true);
       return;
     }
     setState(() => _salvando = true);
@@ -247,7 +257,8 @@ class _EditorCentralState extends ConsumerState<EditorCentral> {
         await gestao.salvarFaixas(id, faixas);
       }
       if (mounted) {
-        mostrarMensagem(context, _nova ? 'Central criada.' : 'Central atualizada.');
+        mostrarMensagem(
+            context, _nova ? 'Central criada.' : 'Central atualizada.');
         Navigator.of(context).pop(true);
       }
     } catch (erro) {
@@ -263,11 +274,13 @@ class _EditorCentralState extends ConsumerState<EditorCentral> {
 
   @override
   Widget build(BuildContext context) {
-    final centrais = ref.watch(provedorCentrais).valueOrNull ?? const <Central>[];
+    final centrais =
+        ref.watch(provedorCentrais).valueOrNull ?? const <Central>[];
     final tema = Theme.of(context);
     final ponto = _ponto;
     return Scaffold(
-      appBar: AppBar(title: Text(_nova ? 'Nova central' : widget.central!.nome)),
+      appBar:
+          AppBar(title: Text(_nova ? 'Nova central' : widget.central!.nome)),
       body: Form(
         key: _formulario,
         child: ListView(
@@ -282,12 +295,14 @@ class _EditorCentralState extends ConsumerState<EditorCentral> {
                     value: _ativa,
                     onChanged: (v) => setState(() => _ativa = v),
                     title: const Text('Central ativa'),
-                    subtitle: const Text('Ativa: os clientes próximos já podem pedir dela.'),
+                    subtitle: const Text(
+                        'Ativa: os clientes próximos já podem pedir dela.'),
                   ),
                   const SizedBox(height: 8),
                   TextFormField(
                     controller: _nome,
-                    decoration: const InputDecoration(labelText: 'Nome (ex.: Central Goiatuba)'),
+                    decoration: const InputDecoration(
+                        labelText: 'Nome (ex.: Central Goiatuba)'),
                     validator: Validacoes.nome,
                   ),
                   const SizedBox(height: 12),
@@ -299,8 +314,10 @@ class _EditorCentralState extends ConsumerState<EditorCentral> {
                         child: TextFormField(
                           controller: _cidade,
                           textCapitalization: TextCapitalization.words,
-                          decoration: const InputDecoration(labelText: 'Cidade'),
-                          validator: (v) => Validacoes.obrigatorio(v, campo: 'a cidade'),
+                          decoration:
+                              const InputDecoration(labelText: 'Cidade'),
+                          validator: (v) =>
+                              Validacoes.obrigatorio(v, campo: 'a cidade'),
                         ),
                       ),
                       const SizedBox(width: 12),
@@ -308,7 +325,9 @@ class _EditorCentralState extends ConsumerState<EditorCentral> {
                         child: TextFormField(
                           controller: _uf,
                           textCapitalization: TextCapitalization.characters,
-                          inputFormatters: [LengthLimitingTextInputFormatter(2)],
+                          inputFormatters: [
+                            LengthLimitingTextInputFormatter(2)
+                          ],
                           decoration: const InputDecoration(labelText: 'UF'),
                           validator: Validacoes.uf,
                         ),
@@ -327,8 +346,11 @@ class _EditorCentralState extends ConsumerState<EditorCentral> {
                   TextFormField(
                     controller: _whatsapp,
                     keyboardType: TextInputType.phone,
-                    inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'[0-9() \-]'))],
-                    decoration: const InputDecoration(labelText: 'WhatsApp da central (com DDD)'),
+                    inputFormatters: [
+                      FilteringTextInputFormatter.allow(RegExp(r'[0-9() \-]'))
+                    ],
+                    decoration: const InputDecoration(
+                        labelText: 'WhatsApp da central (com DDD)'),
                     validator: Validacoes.telefoneOpcional,
                   ),
                   if (_nova) ...[
@@ -339,13 +361,17 @@ class _EditorCentralState extends ConsumerState<EditorCentral> {
                       expandedInsets: EdgeInsets.zero,
                       onSelected: (id) => setState(() => _modeloId = id),
                       dropdownMenuEntries: [
-                        const DropdownMenuEntry<String?>(value: null, label: 'Não copiar (começar do zero)'),
-                        for (final c in centrais) DropdownMenuEntry<String?>(value: c.id, label: c.nome),
+                        const DropdownMenuEntry<String?>(
+                            value: null, label: 'Não copiar (começar do zero)'),
+                        for (final c in centrais)
+                          DropdownMenuEntry<String?>(
+                              value: c.id, label: c.nome),
                       ],
                     ),
                   ],
                   const TituloSecao('Localização da central'),
-                  const Text('A central atende os clientes mais perto deste ponto. Toque no mapa para ajustar.'),
+                  const Text(
+                      'A central atende os clientes mais perto deste ponto. Toque no mapa para ajustar.'),
                   const SizedBox(height: 8),
                   Wrap(
                     spacing: 8,
@@ -372,14 +398,18 @@ class _EditorCentralState extends ConsumerState<EditorCentral> {
                       child: FlutterMap(
                         mapController: _mapa,
                         options: MapOptions(
-                          initialCenter: ponto ?? const LatLng(-18.0105, -49.3658),
+                          initialCenter:
+                              ponto ?? const LatLng(-18.0105, -49.3658),
                           initialZoom: ponto == null ? 11 : 16,
-                          onTap: (_, posicao) => setState(() => _ponto = posicao),
+                          onTap: (_, posicao) =>
+                              setState(() => _ponto = posicao),
                         ),
                         children: [
                           TileLayer(
-                            urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-                            userAgentPackageName: 'br.com.fortalezadigitalsecurity.gasagua',
+                            urlTemplate:
+                                'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                            userAgentPackageName:
+                                'br.com.fortalezadigitalsecurity.gasagua',
                           ),
                           if (ponto != null)
                             MarkerLayer(
@@ -389,12 +419,15 @@ class _EditorCentralState extends ConsumerState<EditorCentral> {
                                   width: 48,
                                   height: 48,
                                   alignment: Alignment.topCenter,
-                                  child: Icon(Icons.location_pin, size: 48, color: tema.colorScheme.error),
+                                  child: Icon(Icons.location_pin,
+                                      size: 48, color: tema.colorScheme.error),
                                 ),
                               ],
                             ),
                           const RichAttributionWidget(
-                            attributions: [TextSourceAttribution('OpenStreetMap')],
+                            attributions: [
+                              TextSourceAttribution('OpenStreetMap')
+                            ],
                           ),
                         ],
                       ),
@@ -413,7 +446,8 @@ class _EditorCentralState extends ConsumerState<EditorCentral> {
                     acao: _nova && _modeloId != null
                         ? null
                         : TextButton.icon(
-                            onPressed: () => setState(() => _faixas.add(_LinhaFaixa('', '0,00'))),
+                            onPressed: () => setState(
+                                () => _faixas.add(_LinhaFaixa('', '0,00'))),
                             icon: const Icon(Icons.add),
                             label: const Text('Faixa'),
                           ),
@@ -433,35 +467,44 @@ class _EditorCentralState extends ConsumerState<EditorCentral> {
                   const SizedBox(height: 8),
                   if (!_carregouFaixas) const LinearProgressIndicator(),
                   if (!(_nova && _modeloId != null))
-                  for (var i = 0; i < _faixas.length; i++)
-                    Padding(
-                      key: ObjectKey(_faixas[i]),
-                      padding: const EdgeInsets.only(bottom: 8),
-                      child: Row(
-                        children: [
-                          Expanded(
-                            child: TextField(
-                              controller: _faixas[i].km,
-                              keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                              decoration: const InputDecoration(labelText: 'Até (km)'),
+                    for (var i = 0; i < _faixas.length; i++)
+                      Padding(
+                        key: ObjectKey(_faixas[i]),
+                        padding: const EdgeInsets.only(bottom: 8),
+                        child: Row(
+                          children: [
+                            Expanded(
+                              child: TextField(
+                                controller: _faixas[i].km,
+                                keyboardType:
+                                    const TextInputType.numberWithOptions(
+                                        decimal: true),
+                                decoration: const InputDecoration(
+                                    labelText: 'Até (km)'),
+                              ),
                             ),
-                          ),
-                          const SizedBox(width: 12),
-                          Expanded(
-                            child: TextField(
-                              controller: _faixas[i].taxa,
-                              keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                              decoration: const InputDecoration(labelText: 'Taxa (R\$)', prefixText: 'R\$ '),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: TextField(
+                                controller: _faixas[i].taxa,
+                                keyboardType:
+                                    const TextInputType.numberWithOptions(
+                                        decimal: true),
+                                decoration: const InputDecoration(
+                                    labelText: 'Taxa (R\$)',
+                                    prefixText: 'R\$ '),
+                              ),
                             ),
-                          ),
-                          IconButton(
-                            tooltip: 'Tirar esta faixa',
-                            onPressed: _faixas.length <= 1 ? null : () => _removerFaixa(i),
-                            icon: const Icon(Icons.delete_outline),
-                          ),
-                        ],
+                            IconButton(
+                              tooltip: 'Tirar esta faixa',
+                              onPressed: _faixas.length <= 1
+                                  ? null
+                                  : () => _removerFaixa(i),
+                              icon: const Icon(Icons.delete_outline),
+                            ),
+                          ],
+                        ),
                       ),
-                    ),
                   const SizedBox(height: 24),
                   BotaoPrincipal(
                     icone: Icons.check,

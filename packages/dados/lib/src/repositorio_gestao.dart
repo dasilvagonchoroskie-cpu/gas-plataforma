@@ -25,7 +25,8 @@ class RepositorioGestao {
   }
 
   Future<Central?> central(String id) async {
-    final dados = await _cliente.from('centrais').select().eq('id', id).maybeSingle();
+    final dados =
+        await _cliente.from('centrais').select().eq('id', id).maybeSingle();
     return dados == null ? null : Central.deJson(dados);
   }
 
@@ -62,7 +63,8 @@ class RepositorioGestao {
       'endereco': central.endereco.trim(),
       'latitude': central.latitude,
       'longitude': central.longitude,
-      'whatsapp': (central.whatsapp ?? '').trim().isEmpty ? null : central.whatsapp,
+      'whatsapp':
+          (central.whatsapp ?? '').trim().isEmpty ? null : central.whatsapp,
       'ativa': central.ativa,
     }).eq('id', central.id);
   }
@@ -79,7 +81,8 @@ class RepositorioGestao {
   /// Troca todas as faixas da central pelas informadas.
   Future<void> salvarFaixas(String centralId, List<FaixaEntrega> faixas) async {
     if (faixas.isEmpty) {
-      throw const ErroDeNegocio('A central precisa de pelo menos uma faixa de entrega.');
+      throw const ErroDeNegocio(
+          'A central precisa de pelo menos uma faixa de entrega.');
     }
     final distancias = faixas.map((f) => f.ateKm).toSet();
     if (distancias.length != faixas.length) {
@@ -101,7 +104,8 @@ class RepositorioGestao {
   // -------------------------------------------------------------------------
 
   Future<List<Produto>> produtos() async {
-    final linhas = await _cliente.from('produtos').select().order('ordem').order('nome');
+    final linhas =
+        await _cliente.from('produtos').select().order('ordem').order('nome');
     return linhas.map(Produto.deJson).toList();
   }
 
@@ -151,7 +155,8 @@ class RepositorioGestao {
   Future<List<ItemCatalogo>> precos(String centralId) async {
     final linhas = await _cliente
         .from('precos_central')
-        .select('central_id, produto_id, preco_centavos, disponivel, produtos(*)')
+        .select(
+            'central_id, produto_id, preco_centavos, disponivel, produtos(*)')
         .eq('central_id', centralId);
     return linhas.map(ItemCatalogo.deJson).toList()
       ..sort((a, b) => a.produto.ordem.compareTo(b.produto.ordem));
@@ -172,7 +177,8 @@ class RepositorioGestao {
   }
 
   /// A central só liga/desliga a disponibilidade (o valor é do dono).
-  Future<void> definirDisponivel(String centralId, String produtoId, bool disponivel) async {
+  Future<void> definirDisponivel(
+      String centralId, String produtoId, bool disponivel) async {
     await _cliente
         .from('precos_central')
         .update({'disponivel': disponivel})
@@ -224,7 +230,8 @@ class RepositorioGestao {
     ]);
   }
 
-  Future<void> atualizarJanela(String id, {int? capacidade, bool? ativa}) async {
+  Future<void> atualizarJanela(String id,
+      {int? capacidade, bool? ativa}) async {
     await _cliente.from('janelas_entrega').update({
       if (capacidade != null) 'capacidade': capacidade,
       if (ativa != null) 'ativa': ativa,
@@ -290,7 +297,8 @@ class RepositorioGestao {
     });
   }
 
-  Future<void> definirAlertaMinimo(String centralId, String produtoId, int minimo) async {
+  Future<void> definirAlertaMinimo(
+      String centralId, String produtoId, int minimo) async {
     await _cliente
         .from('estoque_central')
         .update({'alerta_minimo': minimo})
@@ -298,7 +306,8 @@ class RepositorioGestao {
         .eq('produto_id', produtoId);
   }
 
-  Future<List<MovimentoEstoque>> movimentos(String centralId, {int limite = 100}) async {
+  Future<List<MovimentoEstoque>> movimentos(String centralId,
+      {int limite = 100}) async {
     final linhas = await _cliente
         .from('movimentos_estoque')
         .select('*, produtos(nome)')
@@ -312,8 +321,10 @@ class RepositorioGestao {
   // Entregadores
   // -------------------------------------------------------------------------
 
-  Future<List<Entregador>> entregadores(String centralId, {bool somenteAtivos = false}) async {
-    var consulta = _cliente.from('entregadores').select().eq('central_id', centralId);
+  Future<List<Entregador>> entregadores(String centralId,
+      {bool somenteAtivos = false}) async {
+    var consulta =
+        _cliente.from('entregadores').select().eq('central_id', centralId);
     if (somenteAtivos) {
       consulta = consulta.eq('ativo', true);
     }
@@ -334,7 +345,9 @@ class RepositorioGestao {
       'ativo': ativo,
     };
     if (id == null) {
-      await _cliente.from('entregadores').insert({...dados, 'central_id': centralId});
+      await _cliente
+          .from('entregadores')
+          .insert({...dados, 'central_id': centralId});
     } else {
       await _cliente.from('entregadores').update(dados).eq('id', id);
     }
@@ -354,7 +367,8 @@ class RepositorioGestao {
     }
     final termo = busca.trim().replaceAll(RegExp(r'[,()%*]'), ' ').trim();
     if (termo.isNotEmpty) {
-      consulta = consulta.or('nome.ilike.%$termo%,email.ilike.%$termo%,telefone.ilike.%$termo%');
+      consulta = consulta.or(
+          'nome.ilike.%$termo%,email.ilike.%$termo%,telefone.ilike.%$termo%');
     }
     final linhas = await consulta.order('nome').limit(300);
     return linhas.map((l) => Perfil.deJson(l)).toList();
@@ -382,7 +396,8 @@ class RepositorioGestao {
         'central_id': centralId,
       });
 
-  Future<void> mudarPapel(String usuarioId, PapelPerfil papel, {String? centralId}) =>
+  Future<void> mudarPapel(String usuarioId, PapelPerfil papel,
+          {String? centralId}) =>
       _adminUsuarios({
         'acao': 'mudar_papel',
         'usuario_id': usuarioId,
@@ -390,41 +405,53 @@ class RepositorioGestao {
         'central_id': centralId,
       });
 
-  Future<void> definirAtivo(String usuarioId, bool ativo) =>
-      _adminUsuarios({'acao': 'definir_ativo', 'usuario_id': usuarioId, 'ativo': ativo});
+  Future<void> definirAtivo(String usuarioId, bool ativo) => _adminUsuarios(
+      {'acao': 'definir_ativo', 'usuario_id': usuarioId, 'ativo': ativo});
 
-  Future<void> redefinirSenha(String usuarioId, String senha) =>
-      _adminUsuarios({'acao': 'redefinir_senha', 'usuario_id': usuarioId, 'senha': senha});
+  Future<void> redefinirSenha(String usuarioId, String senha) => _adminUsuarios(
+      {'acao': 'redefinir_senha', 'usuario_id': usuarioId, 'senha': senha});
 
   // -------------------------------------------------------------------------
   // Relatórios e auditoria
   // -------------------------------------------------------------------------
 
-  Map<String, dynamic> _periodo(DateTime inicio, DateTime fim, String? centralId) => {
+  Map<String, dynamic> _periodo(
+          DateTime inicio, DateTime fim, String? centralId) =>
+      {
         'p_inicio': Datas.paraBanco(inicio),
         'p_fim': Datas.paraBanco(fim),
         'p_central_id': centralId,
       };
 
-  Future<List<ResumoCentral>> resumoCentrais(DateTime inicio, DateTime fim, {String? centralId}) async {
-    final linhas = await _cliente.rpc('resumo_centrais', params: _periodo(inicio, fim, centralId))
-        as List<dynamic>;
-    return linhas.map((l) => ResumoCentral.deJson(Map<String, dynamic>.from(l as Map))).toList();
+  Future<List<ResumoCentral>> resumoCentrais(DateTime inicio, DateTime fim,
+      {String? centralId}) async {
+    final linhas = await _cliente.rpc('resumo_centrais',
+        params: _periodo(inicio, fim, centralId)) as List<dynamic>;
+    return linhas
+        .map((l) => ResumoCentral.deJson(Map<String, dynamic>.from(l as Map)))
+        .toList();
   }
 
-  Future<List<VendaProduto>> vendasPorProduto(DateTime inicio, DateTime fim, {String? centralId}) async {
-    final linhas = await _cliente.rpc('relatorio_produtos', params: _periodo(inicio, fim, centralId))
-        as List<dynamic>;
-    return linhas.map((l) => VendaProduto.deJson(Map<String, dynamic>.from(l as Map))).toList();
+  Future<List<VendaProduto>> vendasPorProduto(DateTime inicio, DateTime fim,
+      {String? centralId}) async {
+    final linhas = await _cliente.rpc('relatorio_produtos',
+        params: _periodo(inicio, fim, centralId)) as List<dynamic>;
+    return linhas
+        .map((l) => VendaProduto.deJson(Map<String, dynamic>.from(l as Map)))
+        .toList();
   }
 
-  Future<List<VendaDia>> vendasPorDia(DateTime inicio, DateTime fim, {String? centralId}) async {
-    final linhas = await _cliente.rpc('relatorio_por_dia', params: _periodo(inicio, fim, centralId))
-        as List<dynamic>;
-    return linhas.map((l) => VendaDia.deJson(Map<String, dynamic>.from(l as Map))).toList();
+  Future<List<VendaDia>> vendasPorDia(DateTime inicio, DateTime fim,
+      {String? centralId}) async {
+    final linhas = await _cliente.rpc('relatorio_por_dia',
+        params: _periodo(inicio, fim, centralId)) as List<dynamic>;
+    return linhas
+        .map((l) => VendaDia.deJson(Map<String, dynamic>.from(l as Map)))
+        .toList();
   }
 
-  Future<List<RegistroAuditoria>> auditoria({String? tabela, int limite = 200}) async {
+  Future<List<RegistroAuditoria>> auditoria(
+      {String? tabela, int limite = 200}) async {
     var consulta = _cliente.from('auditoria').select('*, perfis(nome)');
     if (tabela != null) {
       consulta = consulta.eq('tabela', tabela);

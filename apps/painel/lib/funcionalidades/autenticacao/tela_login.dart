@@ -35,7 +35,9 @@ class _TelaLoginState extends ConsumerState<TelaLogin> {
     }
     setState(() => _carregando = true);
     try {
-      await ref.read(provedorConta).entrar(email: _email.text, senha: _senha.text);
+      await ref
+          .read(provedorConta)
+          .entrar(email: _email.text, senha: _senha.text);
     } catch (erro) {
       if (mounted) {
         mostrarMensagem(context, mensagemDeErro(erro), erro: true);
@@ -52,7 +54,8 @@ class _TelaLoginState extends ConsumerState<TelaLogin> {
       context,
       titulo: 'Esqueci minha senha',
       rotulo: 'E-mail da conta',
-      mensagem: 'Vamos mandar um link para criar uma senha nova. Se não chegar, '
+      mensagem:
+          'Vamos mandar um link para criar uma senha nova. Se não chegar, '
           'peça ao dono da revenda para redefinir sua senha no painel.',
       rotuloConfirmar: 'Enviar link',
       maximo: 254,
@@ -67,7 +70,8 @@ class _TelaLoginState extends ConsumerState<TelaLogin> {
     try {
       await ref.read(provedorConta).recuperarSenha(email);
       if (mounted) {
-        mostrarMensagem(context, 'Se o e-mail estiver cadastrado, o link chega em alguns minutos.');
+        mostrarMensagem(context,
+            'Se o e-mail estiver cadastrado, o link chega em alguns minutos.');
       }
     } catch (erro) {
       if (mounted) {
@@ -95,15 +99,18 @@ class _TelaLoginState extends ConsumerState<TelaLogin> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
-                          Icon(Icons.dashboard_outlined, size: 56, color: tema.colorScheme.primary),
+                          Icon(Icons.dashboard_outlined,
+                              size: 56, color: tema.colorScheme.primary),
                           const SizedBox(height: 12),
                           Text(
                             'Painel Gás e Água',
                             textAlign: TextAlign.center,
-                            style: tema.textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w800),
+                            style: tema.textTheme.headlineSmall
+                                ?.copyWith(fontWeight: FontWeight.w800),
                           ),
                           const SizedBox(height: 4),
-                          const Text('Acesso do dono e das centrais', textAlign: TextAlign.center),
+                          const Text('Acesso do dono e das centrais',
+                              textAlign: TextAlign.center),
                           const SizedBox(height: 28),
                           TextFormField(
                             controller: _email,
@@ -126,12 +133,18 @@ class _TelaLoginState extends ConsumerState<TelaLogin> {
                               labelText: 'Senha',
                               prefixIcon: const Icon(Icons.lock_outline),
                               suffixIcon: IconButton(
-                                tooltip: _mostrarSenha ? 'Esconder senha' : 'Mostrar senha',
-                                icon: Icon(_mostrarSenha ? Icons.visibility_off : Icons.visibility),
-                                onPressed: () => setState(() => _mostrarSenha = !_mostrarSenha),
+                                tooltip: _mostrarSenha
+                                    ? 'Esconder senha'
+                                    : 'Mostrar senha',
+                                icon: Icon(_mostrarSenha
+                                    ? Icons.visibility_off
+                                    : Icons.visibility),
+                                onPressed: () => setState(
+                                    () => _mostrarSenha = !_mostrarSenha),
                               ),
                             ),
-                            validator: (v) => (v ?? '').isEmpty ? 'Digite sua senha.' : null,
+                            validator: (v) =>
+                                (v ?? '').isEmpty ? 'Digite sua senha.' : null,
                           ),
                           const SizedBox(height: 24),
                           BotaoPrincipal(
@@ -141,7 +154,9 @@ class _TelaLoginState extends ConsumerState<TelaLogin> {
                             aoPressionar: _entrar,
                           ),
                           const SizedBox(height: 8),
-                          TextButton(onPressed: _esqueci, child: const Text('Esqueci minha senha')),
+                          TextButton(
+                              onPressed: _esqueci,
+                              child: const Text('Esqueci minha senha')),
                         ],
                       ),
                     ),

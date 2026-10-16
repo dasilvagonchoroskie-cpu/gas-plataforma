@@ -27,9 +27,11 @@ class _MapaEnderecoState extends State<MapaEndereco> {
   @override
   void didUpdateWidget(covariant MapaEndereco antigo) {
     super.didUpdateWidget(antigo);
-    final mudou = antigo.latitude != widget.latitude || antigo.longitude != widget.longitude;
+    final mudou = antigo.latitude != widget.latitude ||
+        antigo.longitude != widget.longitude;
     if (mudou) {
-      _controle.move(LatLng(widget.latitude, widget.longitude), _controle.camera.zoom);
+      _controle.move(
+          LatLng(widget.latitude, widget.longitude), _controle.camera.zoom);
     }
   }
 
@@ -45,7 +47,8 @@ class _MapaEnderecoState extends State<MapaEndereco> {
           options: MapOptions(
             initialCenter: ponto,
             initialZoom: 17,
-            onTap: (_, posicao) => widget.aoMover(posicao.latitude, posicao.longitude),
+            onTap: (_, posicao) =>
+                widget.aoMover(posicao.latitude, posicao.longitude),
           ),
           children: [
             TileLayer(

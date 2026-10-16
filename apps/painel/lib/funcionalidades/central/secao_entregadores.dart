@@ -7,7 +7,8 @@ import 'package:nucleo/nucleo.dart';
 
 import '../../estado/provedores.dart';
 
-final _provedorEntregadores = FutureProvider.autoDispose.family<List<Entregador>, String>(
+final _provedorEntregadores =
+    FutureProvider.autoDispose.family<List<Entregador>, String>(
   (ref, centralId) => ref.watch(provedorGestao).entregadores(centralId),
 );
 
@@ -17,8 +18,10 @@ class SecaoEntregadores extends ConsumerWidget {
 
   final String centralId;
 
-  Future<void> _editar(BuildContext context, WidgetRef ref, [Entregador? entregador]) async {
-    final dados = await showDialog<({String nome, String telefone, bool ativo})>(
+  Future<void> _editar(BuildContext context, WidgetRef ref,
+      [Entregador? entregador]) async {
+    final dados =
+        await showDialog<({String nome, String telefone, bool ativo})>(
       context: context,
       builder: (_) => _DialogoEntregador(entregador: entregador),
     );
@@ -51,7 +54,8 @@ class SecaoEntregadores extends ConsumerWidget {
       loading: () => const Carregando(),
       error: (erro, _) => EstadoErro(
         mensagem: mensagemDeErro(erro),
-        aoTentarNovamente: () => ref.invalidate(_provedorEntregadores(centralId)),
+        aoTentarNovamente: () =>
+            ref.invalidate(_provedorEntregadores(centralId)),
       ),
       data: (lista) => ListView(
         padding: const EdgeInsets.all(16),
@@ -69,7 +73,8 @@ class SecaoEntregadores extends ConsumerWidget {
                     label: const Text('Novo'),
                   ),
                 ),
-                const Text('Escolha quem leva cada pedido no detalhe do pedido.'),
+                const Text(
+                    'Escolha quem leva cada pedido no detalhe do pedido.'),
                 const SizedBox(height: 12),
                 if (lista.isEmpty) const Text('Nenhum entregador cadastrado.'),
                 for (final e in lista)
@@ -124,7 +129,8 @@ class _DialogoEntregadorState extends State<_DialogoEntregador> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: Text(widget.entregador == null ? 'Novo entregador' : 'Editar entregador'),
+      title: Text(
+          widget.entregador == null ? 'Novo entregador' : 'Editar entregador'),
       content: Form(
         key: _formulario,
         child: Column(
@@ -140,8 +146,11 @@ class _DialogoEntregadorState extends State<_DialogoEntregador> {
             TextFormField(
               controller: _telefone,
               keyboardType: TextInputType.phone,
-              inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'[0-9() \-]'))],
-              decoration: const InputDecoration(labelText: 'Celular (opcional)'),
+              inputFormatters: [
+                FilteringTextInputFormatter.allow(RegExp(r'[0-9() \-]'))
+              ],
+              decoration:
+                  const InputDecoration(labelText: 'Celular (opcional)'),
               validator: Validacoes.telefoneOpcional,
             ),
             SwitchListTile(
@@ -154,11 +163,17 @@ class _DialogoEntregadorState extends State<_DialogoEntregador> {
         ),
       ),
       actions: [
-        TextButton(onPressed: () => Navigator.of(context).pop(), child: const Text('Voltar')),
+        TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Text('Voltar')),
         FilledButton(
           onPressed: () {
             if (_formulario.currentState?.validate() ?? false) {
-              Navigator.of(context).pop((nome: _nome.text.trim(), telefone: _telefone.text, ativo: _ativo));
+              Navigator.of(context).pop((
+                nome: _nome.text.trim(),
+                telefone: _telefone.text,
+                ativo: _ativo
+              ));
             }
           },
           child: const Text('Salvar'),

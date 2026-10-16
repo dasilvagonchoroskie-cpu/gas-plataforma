@@ -42,7 +42,9 @@ class TelaCarrinho extends ConsumerWidget {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(linha.item.produto.nome,
-                                      style: Theme.of(context).textTheme.titleMedium),
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .titleMedium),
                                   Text(
                                     '${linha.quantidade} x ${linha.item.preco.formatarEmReais()} = '
                                     '${linha.total.formatarEmReais()}',
@@ -53,7 +55,9 @@ class TelaCarrinho extends ConsumerWidget {
                             IconButton.filledTonal(
                               tooltip: 'Tirar um',
                               onPressed: () => controle.remover(linha.item),
-                              icon: Icon(linha.quantidade == 1 ? Icons.delete_outline : Icons.remove),
+                              icon: Icon(linha.quantidade == 1
+                                  ? Icons.delete_outline
+                                  : Icons.remove),
                             ),
                             SizedBox(
                               width: 36,
@@ -65,9 +69,10 @@ class TelaCarrinho extends ConsumerWidget {
                             ),
                             IconButton.filled(
                               tooltip: 'Pôr mais um',
-                              onPressed: linha.quantidade >= Carrinho.quantidadeMaxima
-                                  ? null
-                                  : () => controle.adicionar(linha.item),
+                              onPressed:
+                                  linha.quantidade >= Carrinho.quantidadeMaxima
+                                      ? null
+                                      : () => controle.adicionar(linha.item),
                               icon: const Icon(Icons.add),
                             ),
                           ],
@@ -76,7 +81,9 @@ class TelaCarrinho extends ConsumerWidget {
                     ),
                   ),
                 const SizedBox(height: 8),
-                LinhaValor(rotulo: 'Produtos', valor: carrinho.subtotal.formatarEmReais()),
+                LinhaValor(
+                    rotulo: 'Produtos',
+                    valor: carrinho.subtotal.formatarEmReais()),
                 LinhaValor(
                   rotulo: 'Entrega',
                   valor: taxa.ehZero ? 'Grátis' : taxa.formatarEmReais(),

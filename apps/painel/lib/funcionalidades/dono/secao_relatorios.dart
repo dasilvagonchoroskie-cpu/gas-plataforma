@@ -17,7 +17,8 @@ typedef RelatorioPeriodo = ({
   List<VendaDia> dias,
 });
 
-final _provedorRelatorio = FutureProvider.autoDispose.family<RelatorioPeriodo, _Consulta>((ref, c) async {
+final _provedorRelatorio = FutureProvider.autoDispose
+    .family<RelatorioPeriodo, _Consulta>((ref, c) async {
   final gestao = ref.watch(provedorGestao);
   final resultados = await Future.wait<Object>([
     gestao.resumoCentrais(c.inicio, c.fim, centralId: c.centralId),
@@ -46,7 +47,9 @@ ResumoCentral somarResumos(List<ResumoCentral> centrais) {
     cancelados: centrais.fold(0, (s, c) => s + c.cancelados),
     emAberto: centrais.fold(0, (s, c) => s + c.emAberto),
     faturamento: faturamento,
-    ticketMedio: entregues == 0 ? Dinheiro.zero : Dinheiro(faturamento.centavos ~/ entregues),
+    ticketMedio: entregues == 0
+        ? Dinheiro.zero
+        : Dinheiro(faturamento.centavos ~/ entregues),
   );
 }
 
@@ -69,7 +72,8 @@ String relatorioEmCsv(RelatorioPeriodo r, String periodo) {
           '${c.emAberto};${valor(c.faturamento)};${valor(c.ticketMedio)}',
     '',
     'Produto;Quantidade entregue;Valor (R\$)',
-    for (final p in r.produtos) '${celula(p.produtoNome)};${p.quantidade};${valor(p.valor)}',
+    for (final p in r.produtos)
+      '${celula(p.produtoNome)};${p.quantidade};${valor(p.valor)}',
     '',
     'Dia;Pedidos;Entregues;Cancelados;Faturamento (R\$)',
     for (final d in r.dias)
@@ -143,11 +147,14 @@ class _SecaoRelatoriosState extends ConsumerState<SecaoRelatorios> {
         if (escolhido == null) {
           return;
         }
-        inicio = DateTime.utc(escolhido.start.year, escolhido.start.month, escolhido.start.day);
-        fim = DateTime.utc(escolhido.end.year, escolhido.end.month, escolhido.end.day);
+        inicio = DateTime.utc(
+            escolhido.start.year, escolhido.start.month, escolhido.start.day);
+        fim = DateTime.utc(
+            escolhido.end.year, escolhido.end.month, escolhido.end.day);
         if (fim.difference(inicio).inDays > 366) {
           if (mounted) {
-            mostrarMensagem(context, 'Escolha um período de até um ano.', erro: true);
+            mostrarMensagem(context, 'Escolha um período de até um ano.',
+                erro: true);
           }
           return;
         }
@@ -194,9 +201,12 @@ class _SecaoRelatoriosState extends ConsumerState<SecaoRelatorios> {
               if (relatorio.hasValue)
                 OutlinedButton.icon(
                   onPressed: () async {
-                    await Clipboard.setData(ClipboardData(text: relatorioEmCsv(relatorio.requireValue, _textoPeriodo)));
+                    await Clipboard.setData(ClipboardData(
+                        text: relatorioEmCsv(
+                            relatorio.requireValue, _textoPeriodo)));
                     if (context.mounted) {
-                      mostrarMensagem(context, 'Relatório copiado. Cole numa planilha (Excel ou Google Planilhas).');
+                      mostrarMensagem(context,
+                          'Relatório copiado. Cole numa planilha (Excel ou Google Planilhas).');
                     }
                   },
                   icon: const Icon(Icons.table_view_outlined),
@@ -206,12 +216,15 @@ class _SecaoRelatoriosState extends ConsumerState<SecaoRelatorios> {
           ),
           TituloSecao('Período: $_textoPeriodo'),
           relatorio.when(
-            loading: () => const Padding(padding: EdgeInsets.all(32), child: Carregando()),
+            loading: () =>
+                const Padding(padding: EdgeInsets.all(32), child: Carregando()),
             error: (erro, _) => EstadoErro(
               mensagem: mensagemDeErro(erro),
-              aoTentarNovamente: () => ref.invalidate(_provedorRelatorio(consulta)),
+              aoTentarNovamente: () =>
+                  ref.invalidate(_provedorRelatorio(consulta)),
             ),
-            data: (r) => _Conteudo(relatorio: r, mostrarCentrais: _centralId == null),
+            data: (r) =>
+                _Conteudo(relatorio: r, mostrarCentrais: _centralId == null),
           ),
         ],
       ),
@@ -228,7 +241,8 @@ class _Conteudo extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final total = somarResumos(relatorio.centrais);
-    final maiorDia = relatorio.dias.fold(0, (m, d) => d.faturamento.centavos > m ? d.faturamento.centavos : m);
+    final maiorDia = relatorio.dias.fold(
+        0, (m, d) => d.faturamento.centavos > m ? d.faturamento.centavos : m);
     final tema = Theme.of(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -266,9 +280,12 @@ class _Conteudo extends StatelessWidget {
           ),
         ],
         const TituloSecao('Produtos entregues'),
-        if (relatorio.produtos.isEmpty) const Text('Nenhuma entrega concluída no período.'),
+        if (relatorio.produtos.isEmpty)
+          const Text('Nenhuma entrega concluída no período.'),
         for (final p in relatorio.produtos)
-          LinhaValor(rotulo: '${p.quantidade}x ${p.produtoNome}', valor: p.valor.formatarEmReais()),
+          LinhaValor(
+              rotulo: '${p.quantidade}x ${p.produtoNome}',
+              valor: p.valor.formatarEmReais()),
         if (relatorio.dias.length > 1) ...[
           const TituloSecao('Dia a dia'),
           for (final d in relatorio.dias)
@@ -282,8 +299,11 @@ class _Conteudo extends StatelessWidget {
                       borderRadius: BorderRadius.circular(6),
                       child: LinearProgressIndicator(
                         minHeight: 14,
-                        value: maiorDia == 0 ? 0 : d.faturamento.centavos / maiorDia,
-                        backgroundColor: tema.colorScheme.surfaceContainerHighest,
+                        value: maiorDia == 0
+                            ? 0
+                            : d.faturamento.centavos / maiorDia,
+                        backgroundColor:
+                            tema.colorScheme.surfaceContainerHighest,
                       ),
                     ),
                   ),

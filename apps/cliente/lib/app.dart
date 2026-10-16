@@ -18,7 +18,8 @@ import 'funcionalidades/tela_principal.dart';
 
 /// Nome que aparece no app. Pode ser trocado na compilação para a marca da
 /// revenda (--dart-define=NOME_APP=...).
-const String nomeDoApp = String.fromEnvironment('NOME_APP', defaultValue: 'Gás e Água');
+const String nomeDoApp =
+    String.fromEnvironment('NOME_APP', defaultValue: 'Gás e Água');
 
 const _rotasSemLogin = {'/entrar', '/cadastro', '/recuperar-senha'};
 
@@ -41,13 +42,18 @@ final provedorRoteador = Provider<GoRouter>((ref) {
     },
     routes: [
       GoRoute(path: '/', builder: (context, estado) => const TelaPrincipal()),
-      GoRoute(path: '/entrar', builder: (context, estado) => const TelaEntrar()),
-      GoRoute(path: '/cadastro', builder: (context, estado) => const TelaCadastro()),
+      GoRoute(
+          path: '/entrar', builder: (context, estado) => const TelaEntrar()),
+      GoRoute(
+          path: '/cadastro',
+          builder: (context, estado) => const TelaCadastro()),
       GoRoute(
         path: '/recuperar-senha',
         builder: (context, estado) => const TelaRecuperarSenha(),
       ),
-      GoRoute(path: '/enderecos', builder: (context, estado) => const TelaEnderecos()),
+      GoRoute(
+          path: '/enderecos',
+          builder: (context, estado) => const TelaEnderecos()),
       GoRoute(
         path: '/enderecos/novo',
         builder: (context, estado) => const TelaEditarEndereco(),
@@ -57,9 +63,14 @@ final provedorRoteador = Provider<GoRouter>((ref) {
         builder: (context, estado) =>
             TelaEditarEndereco(enderecoId: estado.pathParameters['id']),
       ),
-      GoRoute(path: '/carrinho', builder: (context, estado) => const TelaCarrinho()),
-      GoRoute(path: '/horario', builder: (context, estado) => const TelaHorario()),
-      GoRoute(path: '/finalizar', builder: (context, estado) => const TelaFinalizar()),
+      GoRoute(
+          path: '/carrinho',
+          builder: (context, estado) => const TelaCarrinho()),
+      GoRoute(
+          path: '/horario', builder: (context, estado) => const TelaHorario()),
+      GoRoute(
+          path: '/finalizar',
+          builder: (context, estado) => const TelaFinalizar()),
       GoRoute(
         path: '/pedido/:id',
         builder: (context, estado) =>

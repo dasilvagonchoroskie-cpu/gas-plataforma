@@ -37,7 +37,8 @@ class AbaInicio extends ConsumerWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('Entregar em', style: Theme.of(context).textTheme.bodyMedium),
+                Text('Entregar em',
+                    style: Theme.of(context).textTheme.bodyMedium),
                 Row(
                   children: [
                     Flexible(
@@ -65,14 +66,16 @@ class AbaInicio extends ConsumerWidget {
             return EstadoVazio(
               icone: Icons.home_outlined,
               titulo: 'Onde vamos entregar?',
-              mensagem: 'Cadastre seu endereço para ver os produtos e preços da central mais perto de você.',
+              mensagem:
+                  'Cadastre seu endereço para ver os produtos e preços da central mais perto de você.',
               rotuloAcao: 'Cadastrar endereço',
               aoAcionar: () => context.push('/enderecos/novo'),
             );
           }
           return RefreshIndicator(
             onRefresh: () => _recarregar(ref),
-            child: _ConteudoCatalogo(endereco: atual, aoVerPedidos: aoVerPedidos),
+            child:
+                _ConteudoCatalogo(endereco: atual, aoVerPedidos: aoVerPedidos),
           );
         },
       ),
@@ -104,7 +107,8 @@ class _ConteudoCatalogo extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final atendimento = ref.watch(provedorAtendimento);
     return atendimento.when(
-      loading: () => const Carregando(mensagem: 'Procurando a central mais perto...'),
+      loading: () =>
+          const Carregando(mensagem: 'Procurando a central mais perto...'),
       error: (erro, _) => EstadoErro(
         mensagem: mensagemDeErro(erro),
         aoTentarNovamente: () => ref.invalidate(provedorAtendimento),
@@ -118,7 +122,8 @@ class _ConteudoCatalogo extends ConsumerWidget {
               EstadoVazio(
                 icone: Icons.location_off_outlined,
                 titulo: 'Ainda não entregamos aí',
-                mensagem: 'Nenhuma central atende "${endereco.linhaPrincipal}". '
+                mensagem:
+                    'Nenhuma central atende "${endereco.linhaPrincipal}". '
                     'Se o endereço estiver errado, corrija ou cadastre outro.',
                 rotuloAcao: 'Trocar endereço',
                 aoAcionar: () => context.push('/enderecos'),
@@ -141,7 +146,8 @@ class _ListaProdutos extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final catalogo = ref.watch(provedorCatalogo);
-    final pedidos = ref.watch(provedorMeusPedidos).valueOrNull ?? const <Pedido>[];
+    final pedidos =
+        ref.watch(provedorMeusPedidos).valueOrNull ?? const <Pedido>[];
     final emAndamento = pedidos.where((p) => p.status.emAndamento).toList();
     final ultimo = pedidos.isEmpty ? null : pedidos.first;
 
@@ -152,14 +158,19 @@ class _ListaProdutos extends ConsumerWidget {
         aoTentarNovamente: () => ref.invalidate(provedorCatalogo),
       ),
       data: (itens) {
-        final gas = itens.where((i) => i.produto.categoria == CategoriaProduto.gas).toList();
-        final agua = itens.where((i) => i.produto.categoria == CategoriaProduto.agua).toList();
+        final gas = itens
+            .where((i) => i.produto.categoria == CategoriaProduto.gas)
+            .toList();
+        final agua = itens
+            .where((i) => i.produto.categoria == CategoriaProduto.agua)
+            .toList();
         return ListView(
           physics: const AlwaysScrollableScrollPhysics(),
           padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
           children: [
             if (emAndamento.isNotEmpty)
-              _CartaoPedidoEmAndamento(pedido: emAndamento.first, aoVerPedidos: aoVerPedidos),
+              _CartaoPedidoEmAndamento(
+                  pedido: emAndamento.first, aoVerPedidos: aoVerPedidos),
             _CartaoCentral(atendimento: atendimento),
             if (ultimo != null && emAndamento.isEmpty)
               _CartaoRepetir(ultimo: ultimo, catalogo: itens),
@@ -169,7 +180,8 @@ class _ListaProdutos extends ConsumerWidget {
                 child: EstadoVazio(
                   icone: Icons.inventory_2_outlined,
                   titulo: 'Sem produtos agora',
-                  mensagem: 'A central está sem produtos disponíveis no momento. Tente mais tarde ou chame no WhatsApp.',
+                  mensagem:
+                      'A central está sem produtos disponíveis no momento. Tente mais tarde ou chame no WhatsApp.',
                 ),
               ),
             if (gas.isNotEmpty) ...[
@@ -209,7 +221,8 @@ class _CartaoCentral extends StatelessWidget {
       child: ListTile(
         leading: const Icon(Icons.store_mall_directory_outlined, size: 32),
         title: Text(atendimento.centralNome),
-        subtitle: Text('$taxa · ${atendimento.distanciaKm.toStringAsFixed(1).replaceAll('.', ',')} km'),
+        subtitle: Text(
+            '$taxa · ${atendimento.distanciaKm.toStringAsFixed(1).replaceAll('.', ',')} km'),
         trailing: atendimento.whatsapp == null
             ? null
             : IconButton(
@@ -227,7 +240,8 @@ class _CartaoCentral extends StatelessWidget {
 }
 
 class _CartaoPedidoEmAndamento extends StatelessWidget {
-  const _CartaoPedidoEmAndamento({required this.pedido, required this.aoVerPedidos});
+  const _CartaoPedidoEmAndamento(
+      {required this.pedido, required this.aoVerPedidos});
 
   final Pedido pedido;
   final VoidCallback aoVerPedidos;
@@ -240,8 +254,10 @@ class _CartaoPedidoEmAndamento extends StatelessWidget {
       child: Card(
         color: cores.primaryContainer,
         child: ListTile(
-          leading: Icon(Icons.local_shipping_outlined, color: cores.onPrimaryContainer, size: 32),
-          title: Text('Pedido nº ${pedido.numero}: ${pedido.status.rotuloCliente}'),
+          leading: Icon(Icons.local_shipping_outlined,
+              color: cores.onPrimaryContainer, size: 32),
+          title: Text(
+              'Pedido nº ${pedido.numero}: ${pedido.status.rotuloCliente}'),
           subtitle: Text(pedido.horario),
           trailing: const Icon(Icons.chevron_right),
           onTap: () => context.push('/pedido/${pedido.id}'),
@@ -265,14 +281,17 @@ class _CartaoRepetir extends ConsumerWidget {
       catalogo,
     );
     if (carrinho.vazio) {
-      mostrarMensagem(context, 'Os produtos do último pedido não estão disponíveis agora.', erro: true);
+      mostrarMensagem(
+          context, 'Os produtos do último pedido não estão disponíveis agora.',
+          erro: true);
       return;
     }
     ref.read(provedorCarrinho.notifier).substituir(carrinho);
     final finalizacao = ref.read(provedorFinalizacao.notifier)
       ..recomecar()
       ..escolherPagamento(ultimo.formaPagamento);
-    if (ultimo.formaPagamento == FormaPagamento.dinheiro && ultimo.trocoPara.centavos > 0) {
+    if (ultimo.formaPagamento == FormaPagamento.dinheiro &&
+        ultimo.trocoPara.centavos > 0) {
       finalizacao.definirTroco(ultimo.trocoPara);
     }
     context.push('/horario');
@@ -288,7 +307,8 @@ class _CartaoRepetir extends ConsumerWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              Text('Seu último pedido', style: Theme.of(context).textTheme.titleMedium),
+              Text('Seu último pedido',
+                  style: Theme.of(context).textTheme.titleMedium),
               const SizedBox(height: 4),
               Text(ultimo.resumoItens),
               const SizedBox(height: 12),

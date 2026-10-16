@@ -40,14 +40,16 @@ class _TelaEditarEnderecoState extends ConsumerState<TelaEditarEndereco> {
   bool _salvando = false;
   bool _carregou = false;
 
-  RepositorioEnderecos get _repositorio => ref.read(provedorRepositorioEnderecos);
+  RepositorioEnderecos get _repositorio =>
+      ref.read(provedorRepositorioEnderecos);
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
     if (!_carregou && widget.enderecoId != null) {
       _carregou = true;
-      final lista = ref.read(provedorEnderecos).valueOrNull ?? const <Endereco>[];
+      final lista =
+          ref.read(provedorEnderecos).valueOrNull ?? const <Endereco>[];
       for (final e in lista) {
         if (e.id == widget.enderecoId) {
           _apelido.text = e.apelido;
@@ -59,7 +61,8 @@ class _TelaEditarEnderecoState extends ConsumerState<TelaEditarEndereco> {
           _uf.text = e.uf;
           _complemento.text = e.complemento ?? '';
           _referencia.text = e.referencia ?? '';
-          _localizacao = Localizacao(latitude: e.latitude, longitude: e.longitude);
+          _localizacao =
+              Localizacao(latitude: e.latitude, longitude: e.longitude);
           _pinoAjustadoAMao = true;
         }
       }
@@ -69,7 +72,15 @@ class _TelaEditarEnderecoState extends ConsumerState<TelaEditarEndereco> {
   @override
   void dispose() {
     for (final controle in [
-      _apelido, _cep, _logradouro, _numero, _bairro, _cidade, _uf, _complemento, _referencia,
+      _apelido,
+      _cep,
+      _logradouro,
+      _numero,
+      _bairro,
+      _cidade,
+      _uf,
+      _complemento,
+      _referencia,
     ]) {
       controle.dispose();
     }
@@ -118,13 +129,15 @@ class _TelaEditarEnderecoState extends ConsumerState<TelaEditarEndereco> {
     setState(() => _usandoGps = true);
     try {
       if (!await Geolocator.isLocationServiceEnabled()) {
-        throw const ErroDeNegocio('Ligue a localização (GPS) do celular e tente de novo.');
+        throw const ErroDeNegocio(
+            'Ligue a localização (GPS) do celular e tente de novo.');
       }
       var permissao = await Geolocator.checkPermission();
       if (permissao == LocationPermission.denied) {
         permissao = await Geolocator.requestPermission();
       }
-      if (permissao == LocationPermission.denied || permissao == LocationPermission.deniedForever) {
+      if (permissao == LocationPermission.denied ||
+          permissao == LocationPermission.deniedForever) {
         throw const ErroDeNegocio(
           'Sem permissão de localização. Você pode digitar o endereço pelo CEP.',
         );
@@ -135,7 +148,8 @@ class _TelaEditarEnderecoState extends ConsumerState<TelaEditarEndereco> {
           timeLimit: Duration(seconds: 20),
         ),
       );
-      final achado = await _repositorio.enderecoDoGps(posicao.latitude, posicao.longitude);
+      final achado =
+          await _repositorio.enderecoDoGps(posicao.latitude, posicao.longitude);
       if (!mounted) {
         return;
       }
@@ -161,7 +175,8 @@ class _TelaEditarEnderecoState extends ConsumerState<TelaEditarEndereco> {
           _uf.text = achado.uf;
         }
       });
-      mostrarMensagem(context, 'Localização encontrada. Confira o número e o pino no mapa.');
+      mostrarMensagem(context,
+          'Localização encontrada. Confira o número e o pino no mapa.');
     } catch (erro) {
       _erro(erro);
     } finally {
@@ -208,8 +223,10 @@ class _TelaEditarEnderecoState extends ConsumerState<TelaEditarEndereco> {
         bairro: _bairro.text,
         cidade: _cidade.text,
         uf: _uf.text,
-        complemento: _complemento.text.trim().isEmpty ? null : _complemento.text.trim(),
-        referencia: _referencia.text.trim().isEmpty ? null : _referencia.text.trim(),
+        complemento:
+            _complemento.text.trim().isEmpty ? null : _complemento.text.trim(),
+        referencia:
+            _referencia.text.trim().isEmpty ? null : _referencia.text.trim(),
         latitude: localizacao.latitude,
         longitude: localizacao.longitude,
       );
@@ -234,7 +251,8 @@ class _TelaEditarEnderecoState extends ConsumerState<TelaEditarEndereco> {
     final localizacao = _localizacao;
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.enderecoId == null ? 'Novo endereço' : 'Editar endereço'),
+        title: Text(
+            widget.enderecoId == null ? 'Novo endereço' : 'Editar endereço'),
       ),
       body: SafeArea(
         child: Form(
@@ -262,7 +280,8 @@ class _TelaEditarEnderecoState extends ConsumerState<TelaEditarEndereco> {
                 decoration: const InputDecoration(
                   labelText: 'Nome do endereço (ex.: Casa, Trabalho)',
                 ),
-                validator: (v) => Validacoes.obrigatorio(v, campo: 'o nome do endereço'),
+                validator: (v) =>
+                    Validacoes.obrigatorio(v, campo: 'o nome do endereço'),
               ),
               const SizedBox(height: 12),
               TextFormField(
@@ -321,7 +340,8 @@ class _TelaEditarEnderecoState extends ConsumerState<TelaEditarEndereco> {
                         }
                       },
                       decoration: const InputDecoration(labelText: 'Número'),
-                      validator: (v) => Validacoes.obrigatorio(v, campo: 'o número (ou "s/n")'),
+                      validator: (v) => Validacoes.obrigatorio(v,
+                          campo: 'o número (ou "s/n")'),
                     ),
                   ),
                   const SizedBox(width: 12),
@@ -329,7 +349,8 @@ class _TelaEditarEnderecoState extends ConsumerState<TelaEditarEndereco> {
                     flex: 2,
                     child: TextFormField(
                       controller: _complemento,
-                      decoration: const InputDecoration(labelText: 'Complemento (opcional)'),
+                      decoration: const InputDecoration(
+                          labelText: 'Complemento (opcional)'),
                     ),
                   ),
                 ],
@@ -351,7 +372,8 @@ class _TelaEditarEnderecoState extends ConsumerState<TelaEditarEndereco> {
                       controller: _cidade,
                       textCapitalization: TextCapitalization.words,
                       decoration: const InputDecoration(labelText: 'Cidade'),
-                      validator: (v) => Validacoes.obrigatorio(v, campo: 'a cidade'),
+                      validator: (v) =>
+                          Validacoes.obrigatorio(v, campo: 'a cidade'),
                     ),
                   ),
                   const SizedBox(width: 12),

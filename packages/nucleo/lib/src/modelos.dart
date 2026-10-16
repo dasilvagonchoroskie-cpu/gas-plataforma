@@ -83,7 +83,8 @@ final class Perfil {
         email: _textoOuNulo(json['email']),
         papel: PapelPerfil.deValor(_texto(json['papel'], 'cliente')),
         ativo: _logico(json['ativo'], true),
-        centralId: centralId ?? _textoOuNulo(_objeto(json['operadores_central'])?['central_id']),
+        centralId: centralId ??
+            _textoOuNulo(_objeto(json['operadores_central'])?['central_id']),
         criadoEm: Datas.lerInstante(json['criado_em']),
       );
 
@@ -610,9 +611,8 @@ final class Pedido {
   String get horario =>
       '${Datas.rotuloDia(dataEntrega)}, ${Datas.formatarIntervalo(horaInicio, horaFim)}';
 
-  String get resumoItens => itens
-      .map((i) => '${i.quantidade}x ${i.produtoNome}')
-      .join(', ');
+  String get resumoItens =>
+      itens.map((i) => '${i.quantidade}x ${i.produtoNome}').join(', ');
 
   /// Troco que o entregador precisa levar (só em dinheiro).
   Dinheiro get trocoALevar =>
@@ -852,8 +852,12 @@ final class RegistroAuditoria {
         tabela: _texto(json['tabela']),
         registroId: _textoOuNulo(json['registro_id']),
         quem: _textoOuNulo(_objeto(json['perfis'])?['nome']),
-        antes: json['antes'] is Map ? Map<String, dynamic>.from(json['antes'] as Map) : null,
-        depois: json['depois'] is Map ? Map<String, dynamic>.from(json['depois'] as Map) : null,
+        antes: json['antes'] is Map
+            ? Map<String, dynamic>.from(json['antes'] as Map)
+            : null,
+        depois: json['depois'] is Map
+            ? Map<String, dynamic>.from(json['depois'] as Map)
+            : null,
         criadoEm: Datas.lerInstante(json['criado_em']) ?? Datas.hoje(),
       );
 
