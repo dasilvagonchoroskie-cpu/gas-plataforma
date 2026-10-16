@@ -1,6 +1,8 @@
--- Fase 1 — funções de conta: aparelhos para notificação e exclusão de conta.
--- (Separadas das funções de pedido porque contêm DELETE e pedem confirmação
--- própria ao aplicar.)
+-- Funções de conta: aparelhos para notificação e exclusão de conta (LGPD).
+--
+-- As linhas que precisam ser apagadas (ficha, endereços, aparelhos e fotos)
+-- são removidas pela Edge Function excluir-conta, com a chave do servidor,
+-- logo depois desta função conferir as regras e anonimizar perfil e pedidos.
 
 -- ---------------------------------------------------------------------------
 -- Aparelhos para notificação
@@ -28,21 +30,14 @@ begin
     raise exception 'Plataforma inválida.' using errcode = '22023';
   end if;
 
+  -- Aparelhos que desinstalaram o app são removidos pela função "notificar"
+  -- quando o Firebase avisa que o token não vale mais.
   insert into public.dispositivos_push (perfil_id, token, plataforma)
   values (auth.uid(), p_token, p_plataforma)
   on conflict (token) do update
   set perfil_id = excluded.perfil_id,
       plataforma = excluded.plataforma,
       atualizado_em = now();
-
-  -- No máximo 5 aparelhos por pessoa: remove os mais antigos.
-  delete from public.dispositivos_push
-  where id in (
-    select id from public.dispositivos_push
-    where perfil_id = auth.uid()
-    order by atualizado_em desc
-    offset 5
-  );
 end;
 $$;
 
@@ -51,7 +46,8 @@ $$;
 -- ---------------------------------------------------------------------------
 
 -- Chamada pela Edge Function excluir-conta antes de apagar o login. Os pedidos
--- ficam para os relatórios, mas sem nome, telefone e endereço completo.
+-- ficam para os relatórios, mas sem nome, telefone e endereço completo. Em
+-- seguida a Edge Function apaga a ficha, os endereços, os aparelhos e as fotos.
 create or replace function public.anonimizar_minha_conta()
 returns void
 language plpgsql
@@ -81,6 +77,10 @@ begin
     raise exception 'Você tem um pedido em andamento. Aguarde a entrega ou cancele antes de excluir a conta.'
       using errcode = 'P0001';
   end if;
+  if coalesce((select sum(valor_centavos) from public.lancamentos_credito where cliente_id = v_usuario), 0) > 0 then
+    raise exception 'Você tem valor em aberto no crediário. Acerte com a loja antes de excluir a conta.'
+      using errcode = 'P0001';
+  end if;
 
   update public.pedidos
   set cliente_nome = 'Cliente removido',
@@ -95,9 +95,6 @@ begin
       longitude_entrega = round(longitude_entrega::numeric, 2)::double precision,
       observacao = null
   where cliente_id = v_usuario;
-
-  delete from public.enderecos where cliente_id = v_usuario;
-  delete from public.dispositivos_push where perfil_id = v_usuario;
 
   update public.perfis
   set nome = 'Conta excluída',

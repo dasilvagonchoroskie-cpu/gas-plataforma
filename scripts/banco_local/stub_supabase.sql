@@ -94,3 +94,18 @@ alter default privileges in schema public grant all on functions to anon, authen
 alter default privileges in schema public grant all on sequences to anon, authenticated, service_role;
 
 create extension if not exists pgtap with schema extensions;
+
+-- Igual à função do Storage do Supabase: pastas do caminho do arquivo.
+create or replace function storage.foldername(name text)
+returns text[]
+language plpgsql
+immutable
+as $$
+declare
+  _parts text[];
+begin
+  select string_to_array(name, '/') into _parts;
+  return _parts[1:array_length(_parts, 1) - 1];
+end;
+$$;
+grant execute on function storage.foldername(text) to anon, authenticated, service_role;

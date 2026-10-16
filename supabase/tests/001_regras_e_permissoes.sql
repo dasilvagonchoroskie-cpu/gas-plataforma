@@ -120,6 +120,21 @@ insert into public.enderecos (id, cliente_id, apelido, cep, logradouro, numero, 
   ('e0000000-0000-4000-8000-000000000002', 'a0000000-0000-4000-8000-000000000005', 'Casa', '75600000', 'Rua Dois', '20', 'Centro', 'Cidade B', 'GO', 10.48, 10.0),
   ('e0000000-0000-4000-8000-000000000003', 'a0000000-0000-4000-8000-000000000004', 'Sítio', '75600000', 'Estrada', 'km 9', 'Zona rural', 'Longe', 'GO', 12.0, 12.0);
 
+-- Fichas de cadastro dos clientes de teste (obrigatórias para pedir).
+insert into public.fichas_cliente (
+  cliente_id, cpf, rg, data_nascimento, nome_mae, endereco_id, central_id, empresa, profissao,
+  renda_mensal_centavos, referencia1_nome, referencia1_telefone, referencia1_relacao,
+  referencia2_nome, referencia2_telefone, referencia2_relacao, documento_caminho, comprovante_caminho
+) values
+  ('a0000000-0000-4000-8000-000000000004', '12345678909', '1234567', '1980-01-01', 'Mãe Um',
+   'e0000000-0000-4000-8000-000000000001', 'b0000000-0000-4000-8000-00000000000a', 'Autônomo', 'Pedreiro',
+   300000, 'Referência Um', '64999990101', 'Irmão', 'Referência Dois', '64999990102', 'Vizinho',
+   'a0000000-0000-4000-8000-000000000004/documento.jpg', 'a0000000-0000-4000-8000-000000000004/comprovante.jpg'),
+  ('a0000000-0000-4000-8000-000000000005', '98765432100', '7654321', '1975-05-05', 'Mãe Dois',
+   'e0000000-0000-4000-8000-000000000002', 'b0000000-0000-4000-8000-00000000000b', 'Mercado Dois', 'Caixa',
+   200000, 'Referência Três', '64999990103', 'Patrão', 'Referência Quatro', '64999990104', 'Amiga',
+   'a0000000-0000-4000-8000-000000000005/documento.jpg', 'a0000000-0000-4000-8000-000000000005/comprovante.jpg');
+
 select is(
   (select cep || '/' || uf from public.enderecos where id = 'e0000000-0000-4000-8000-000000000001'),
   '75600000/GO',
@@ -738,11 +753,13 @@ select is(
   'Cliente removido/Endereço removido',
   'Pedidos do cliente excluído ficam sem dados pessoais'
 );
-select is(
-  (select count(*)::integer from public.enderecos where cliente_id = 'a0000000-0000-4000-8000-000000000005')
-  + (select count(*)::integer from public.dispositivos_push where perfil_id = 'a0000000-0000-4000-8000-000000000005'),
-  0,
-  'Endereços e aparelhos do cliente excluído são apagados'
+-- Ficha, endereços, aparelhos e fotos são apagados em seguida pela Edge
+-- Function excluir-conta (com a chave do servidor).
+select ok(
+  has_table_privilege('service_role', 'public.fichas_cliente', 'delete')
+  and has_table_privilege('service_role', 'public.enderecos', 'delete')
+  and has_table_privilege('service_role', 'public.dispositivos_push', 'delete'),
+  'A função do servidor pode apagar ficha, endereços e aparelhos da conta excluída'
 );
 
 -- Segredos do servidor: só a chave service_role (Edge Functions) pode ler.
