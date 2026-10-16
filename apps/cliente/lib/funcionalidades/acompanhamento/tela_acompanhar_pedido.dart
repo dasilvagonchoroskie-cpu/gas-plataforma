@@ -88,8 +88,12 @@ class TelaAcompanharPedido extends ConsumerWidget {
                       const Divider(),
                       LinhaValor(rotulo: 'Total', valor: p.total.formatarEmReais(), destaque: true),
                       const SizedBox(height: 8),
-                      Text('Pagamento na entrega: ${p.formaPagamento.rotulo}'
-                          '${p.trocoPara.centavos > 0 ? ' (troco para ${p.trocoPara.formatarEmReais()})' : ''}'),
+                      Text(
+                        p.formaPagamento.naEntrega
+                            ? 'Pagamento na entrega: ${p.formaPagamento.rotulo}'
+                                '${p.trocoPara.centavos > 0 ? ' (troco para ${p.trocoPara.formatarEmReais()})' : ''}'
+                            : 'No crediário (fiado): o valor entra na sua conta quando o pedido for entregue.',
+                      ),
                       if (p.itens.any((i) => i.trocaVasilhame)) ...[
                         const SizedBox(height: 8),
                         const Text('Deixe o vasilhame vazio separado para a troca.'),

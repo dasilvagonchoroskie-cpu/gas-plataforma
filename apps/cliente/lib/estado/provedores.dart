@@ -24,6 +24,10 @@ final provedorRepositorioPedidos = Provider<RepositorioPedidos>(
   (ref) => RepositorioPedidos(ref.watch(provedorCliente)),
 );
 
+final provedorRepositorioCredito = Provider<RepositorioCredito>(
+  (ref) => RepositorioCredito(ref.watch(provedorCliente)),
+);
+
 // ---------------------------------------------------------------------------
 // Login
 // ---------------------------------------------------------------------------
@@ -248,4 +252,34 @@ final provedorPedidoAoVivo =
   await for (final _ in repositorio.mudancasDoPedido(id)) {
     yield await repositorio.pedido(id);
   }
+});
+
+// ---------------------------------------------------------------------------
+// Ficha de cadastro e crediário
+// ---------------------------------------------------------------------------
+
+/// Ficha do cliente logado (nula enquanto não enviar).
+final provedorMinhaFicha = FutureProvider<FichaCliente?>((ref) async {
+  if (ref.watch(provedorUsuarioId) == null) {
+    return null;
+  }
+  return ref.watch(provedorRepositorioCredito).minhaFicha();
+});
+
+/// Situação do crediário do cliente logado.
+final provedorMeuCredito = FutureProvider<ResumoCredito?>((ref) async {
+  if (ref.watch(provedorUsuarioId) == null) {
+    return null;
+  }
+  // Recarrega junto com a ficha (aprovação, envio).
+  await ref.watch(provedorMinhaFicha.future);
+  return ref.watch(provedorRepositorioCredito).resumo();
+});
+
+final provedorMeuExtrato = FutureProvider.autoDispose<List<LancamentoCredito>>((ref) async {
+  final id = ref.watch(provedorUsuarioId);
+  if (id == null) {
+    return const [];
+  }
+  return ref.watch(provedorRepositorioCredito).extrato(id);
 });

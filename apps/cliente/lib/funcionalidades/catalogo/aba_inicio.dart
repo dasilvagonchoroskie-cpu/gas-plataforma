@@ -161,6 +161,7 @@ class _ListaProdutos extends ConsumerWidget {
             if (emAndamento.isNotEmpty)
               _CartaoPedidoEmAndamento(pedido: emAndamento.first, aoVerPedidos: aoVerPedidos),
             _CartaoCentral(atendimento: atendimento),
+            const _CartaoFicha(),
             if (ultimo != null && emAndamento.isEmpty)
               _CartaoRepetir(ultimo: ultimo, catalogo: itens),
             if (itens.isEmpty)
@@ -245,6 +246,89 @@ class _CartaoPedidoEmAndamento extends StatelessWidget {
           subtitle: Text(pedido.horario),
           trailing: const Icon(Icons.chevron_right),
           onTap: () => context.push('/pedido/${pedido.id}'),
+        ),
+      ),
+    );
+  }
+}
+
+/// Lembra o cliente de preencher a ficha (obrigatória para pedir) e mostra o
+/// crediário quando aprovado.
+class _CartaoFicha extends ConsumerWidget {
+  const _CartaoFicha();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final ficha = ref.watch(provedorMinhaFicha);
+    if (!ficha.hasValue) {
+      return const SizedBox.shrink();
+    }
+    final atual = ficha.requireValue;
+    final tema = Theme.of(context);
+    final (IconData icone, String titulo, String texto, String? acao, String rota) = atual == null
+        ? (
+            Icons.badge_outlined,
+            'Complete sua ficha de cadastro',
+            'Ela é obrigatória para fazer pedidos e serve para liberar o crediário (fiado).',
+            'Preencher ficha',
+            '/ficha',
+          )
+        : switch (atual.status) {
+            StatusFicha.pendente => (
+                Icons.hourglass_top,
+                'Ficha em análise',
+                'Você já pode pedir pagando na entrega. O crediário fica liberado depois da aprovação.',
+                null,
+                '/ficha',
+              ),
+            StatusFicha.recusada => (
+                Icons.error_outline,
+                'Ficha não aprovada',
+                atual.motivo == null
+                    ? 'Confira os dados e envie de novo.'
+                    : 'Motivo: ${atual.motivo}. Corrija e envie de novo.',
+                'Corrigir ficha',
+                '/ficha',
+              ),
+            StatusFicha.aprovada => (
+                Icons.account_balance_wallet_outlined,
+                'Crediário liberado',
+                atual.creditoBloqueado
+                    ? 'Seu crediário está bloqueado. Fale com a loja.'
+                    : 'Limite de ${atual.limite.formatarEmReais()}. Toque para ver quanto está livre.',
+                null,
+                '/crediario',
+              ),
+          };
+    final destaque = atual == null || atual.status == StatusFicha.recusada;
+    return Padding(
+      padding: const EdgeInsets.only(top: 12),
+      child: Card(
+        color: destaque ? tema.colorScheme.errorContainer : null,
+        child: InkWell(
+          borderRadius: BorderRadius.circular(16),
+          onTap: () => context.push(rota),
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Row(
+                  children: [
+                    Icon(icone),
+                    const SizedBox(width: 10),
+                    Expanded(child: Text(titulo, style: tema.textTheme.titleMedium)),
+                  ],
+                ),
+                const SizedBox(height: 6),
+                Text(texto),
+                if (acao != null) ...[
+                  const SizedBox(height: 12),
+                  BotaoPrincipal(rotulo: acao, aoPressionar: () => context.push(rota)),
+                ],
+              ],
+            ),
+          ),
         ),
       ),
     );

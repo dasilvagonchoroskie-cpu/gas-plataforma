@@ -12,6 +12,8 @@ import 'funcionalidades/autenticacao/tela_recuperar_senha.dart';
 import 'funcionalidades/carrinho/tela_carrinho.dart';
 import 'funcionalidades/enderecos/tela_editar_endereco.dart';
 import 'funcionalidades/enderecos/tela_enderecos.dart';
+import 'funcionalidades/ficha/tela_crediario.dart';
+import 'funcionalidades/ficha/tela_ficha.dart';
 import 'funcionalidades/pedido/tela_finalizar.dart';
 import 'funcionalidades/pedido/tela_horario.dart';
 import 'funcionalidades/tela_principal.dart';
@@ -57,6 +59,8 @@ final provedorRoteador = Provider<GoRouter>((ref) {
         builder: (context, estado) =>
             TelaEditarEndereco(enderecoId: estado.pathParameters['id']),
       ),
+      GoRoute(path: '/ficha', builder: (context, estado) => const TelaFicha()),
+      GoRoute(path: '/crediario', builder: (context, estado) => const TelaCrediario()),
       GoRoute(path: '/carrinho', builder: (context, estado) => const TelaCarrinho()),
       GoRoute(path: '/horario', builder: (context, estado) => const TelaHorario()),
       GoRoute(path: '/finalizar', builder: (context, estado) => const TelaFinalizar()),

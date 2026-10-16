@@ -114,6 +114,18 @@ class AbaPerfil extends ConsumerWidget {
                       trailing: const Icon(Icons.chevron_right),
                       onTap: () => context.push('/enderecos'),
                     ),
+                    ListTile(
+                      leading: const Icon(Icons.badge_outlined),
+                      title: const Text('Minha ficha de cadastro'),
+                      trailing: const Icon(Icons.chevron_right),
+                      onTap: () => context.push('/ficha'),
+                    ),
+                    ListTile(
+                      leading: const Icon(Icons.account_balance_wallet_outlined),
+                      title: const Text('Meu crediário'),
+                      trailing: const Icon(Icons.chevron_right),
+                      onTap: () => context.push('/crediario'),
+                    ),
                     if (atendimento?.whatsapp != null)
                       ListTile(
                         leading: const Icon(Icons.chat_outlined),

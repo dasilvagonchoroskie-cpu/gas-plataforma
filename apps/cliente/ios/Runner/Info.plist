@@ -4,6 +4,10 @@
 <dict>
 	<key>CADisableMinimumFrameDurationOnPhone</key>
 	<true/>
+	<key>NSCameraUsageDescription</key>
+	<string>Usamos a câmera só para você tirar a foto do documento e do comprovante de endereço da sua ficha de cadastro.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Usamos suas fotos só para você escolher a foto do documento e do comprovante de endereço da sua ficha de cadastro.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>Usamos a sua localização só para preencher o endereço de entrega e achar a central mais perto.</string>
 	<key>LSApplicationQueriesSchemes</key>

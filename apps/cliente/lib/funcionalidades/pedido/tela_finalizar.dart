@@ -81,7 +81,9 @@ class _TelaFinalizarState extends ConsumerState<TelaFinalizar> {
           );
       ref.read(provedorCarrinho.notifier).limpar();
       ref.read(provedorFinalizacao.notifier).recomecar();
-      ref.invalidate(provedorMeusPedidos);
+      ref
+        ..invalidate(provedorMeusPedidos)
+        ..invalidate(provedorMeuCredito);
       if (mounted) {
         context.go('/pedido/${criado.id}');
       }
@@ -105,12 +107,50 @@ class _TelaFinalizarState extends ConsumerState<TelaFinalizar> {
     final taxa = atendimento?.taxaEntrega ?? Dinheiro.zero;
     final horario = dados.horario;
     final tema = Theme.of(context);
+    final ficha = ref.watch(provedorMinhaFicha);
+    final semFicha = ficha.hasValue && ficha.requireValue == null;
+    final credito = ref.watch(provedorMeuCredito).valueOrNull;
+    final total = carrinho.subtotal + taxa;
+    final mostrarFiado = credito?.status == StatusFicha.aprovada;
+    final fiadoLivre = mostrarFiado && credito!.podeComprarFiado && credito.disponivel >= total;
+    if (dados.formaPagamento == FormaPagamento.crediario && !fiadoLivre && credito != null) {
+      // Ex.: repetiu um pedido fiado, mas agora o limite não cobre.
+      WidgetsBinding.instance.addPostFrameCallback(
+        (_) => ref.read(provedorFinalizacao.notifier).escolherPagamento(FormaPagamento.dinheiro),
+      );
+    }
+    final formas = [
+      FormaPagamento.dinheiro,
+      FormaPagamento.cartaoNaEntrega,
+      FormaPagamento.pixNaEntrega,
+      if (mostrarFiado) FormaPagamento.crediario,
+    ];
 
     return Scaffold(
       appBar: AppBar(title: const Text('Confirmar pedido')),
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
+          if (semFicha)
+            Padding(
+              padding: const EdgeInsets.only(bottom: 10),
+              child: Card(
+                color: tema.colorScheme.errorContainer,
+                child: Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      Text('Falta a sua ficha de cadastro', style: tema.textTheme.titleMedium),
+                      const SizedBox(height: 4),
+                      const Text('Ela é obrigatória para fazer o primeiro pedido. Leva poucos minutos.'),
+                      const SizedBox(height: 12),
+                      BotaoPrincipal(rotulo: 'Preencher ficha', aoPressionar: () => context.push('/ficha')),
+                    ],
+                  ),
+                ),
+              ),
+            ),
           Card(
             child: ListTile(
               leading: const Icon(Icons.place_outlined),
@@ -132,21 +172,32 @@ class _TelaFinalizarState extends ConsumerState<TelaFinalizar> {
               trailing: TextButton(onPressed: () => context.pop(), child: const Text('Trocar')),
             ),
           ),
-          const TituloSecao('Como vai pagar na entrega?'),
-          for (final forma in FormaPagamento.values)
+          const TituloSecao('Como vai pagar?'),
+          for (final forma in formas)
             Padding(
               padding: const EdgeInsets.only(bottom: 8),
               child: Card(
                 color: dados.formaPagamento == forma ? tema.colorScheme.primaryContainer : null,
                 child: ListTile(
+                  enabled: forma != FormaPagamento.crediario || fiadoLivre,
                   leading: Icon(
                     switch (forma) {
                       FormaPagamento.dinheiro => Icons.payments_outlined,
                       FormaPagamento.cartaoNaEntrega => Icons.credit_card,
                       FormaPagamento.pixNaEntrega => Icons.qr_code_2,
+                      FormaPagamento.crediario => Icons.account_balance_wallet_outlined,
                     },
                   ),
                   title: Text(forma.rotulo),
+                  subtitle: forma != FormaPagamento.crediario || credito == null
+                      ? null
+                      : Text(
+                          credito.bloqueado
+                              ? 'Seu crediário está bloqueado. Fale com a loja.'
+                              : fiadoLivre
+                                  ? 'Livre: ${credito.disponivel.formatarEmReais()}'
+                                  : 'Livre: ${credito.disponivel.formatarEmReais()} — este pedido passa do limite.',
+                        ),
                   trailing: dados.formaPagamento == forma ? const Icon(Icons.check_circle) : null,
                   onTap: () => ref.read(provedorFinalizacao.notifier).escolherPagamento(forma),
                 ),
@@ -186,8 +237,10 @@ class _TelaFinalizarState extends ConsumerState<TelaFinalizar> {
           LinhaValor(rotulo: 'Entrega', valor: taxa.ehZero ? 'Grátis' : taxa.formatarEmReais()),
           const Divider(),
           LinhaValor(
-            rotulo: 'Total a pagar na entrega',
-            valor: (carrinho.subtotal + taxa).formatarEmReais(),
+            rotulo: dados.formaPagamento == FormaPagamento.crediario
+                ? 'Total no crediário (fiado)'
+                : 'Total a pagar na entrega',
+            valor: total.formatarEmReais(),
             destaque: true,
           ),
         ],
@@ -199,7 +252,7 @@ class _TelaFinalizarState extends ConsumerState<TelaFinalizar> {
             icone: Icons.check_circle_outline,
             rotulo: 'Confirmar pedido',
             carregando: _enviando,
-            aoPressionar: horario == null || carrinho.vazio ? null : _confirmar,
+            aoPressionar: horario == null || carrinho.vazio || semFicha ? null : _confirmar,
           ),
         ),
       ),

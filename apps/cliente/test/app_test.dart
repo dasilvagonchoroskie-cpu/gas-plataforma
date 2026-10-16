@@ -2,6 +2,7 @@ import 'package:cliente/app.dart';
 import 'package:cliente/estado/provedores.dart';
 import 'package:cliente/funcionalidades/autenticacao/tela_entrar.dart';
 import 'package:cliente/funcionalidades/catalogo/cartao_produto.dart';
+import 'package:cliente/funcionalidades/ficha/tela_ficha.dart';
 import 'package:design_system/design_system.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -67,5 +68,32 @@ void main() {
     await tester.pump();
     expect(find.text('2'), findsOneWidget);
     expect(container.read(provedorCarrinho).subtotal, const Dinheiro(22000));
+  });
+
+  testWidgets('ficha confere CPF, idade e referências antes de enviar', (tester) async {
+    tester.view.physicalSize = const Size(800, 2400);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.reset);
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          provedorMinhaFicha.overrideWith((ref) async => null),
+          provedorEnderecos.overrideWith((ref) async => const <Endereco>[]),
+        ],
+        child: MaterialApp(theme: criarTemaPlataforma(), home: const TelaFicha()),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    await tester.enterText(find.widgetWithText(TextFormField, 'CPF'), '123.456.789-00');
+    await tester.enterText(find.widgetWithText(TextFormField, 'Data de nascimento'), '01012015');
+    await tester.ensureVisible(find.text('Enviar ficha'));
+    await tester.tap(find.text('Enviar ficha'));
+    await tester.pump();
+
+    expect(find.text('CPF inválido. Confira os números.'), findsOneWidget);
+    expect(find.text('O cadastro é só para maiores de 18 anos.'), findsOneWidget);
+    expect(find.text('01/01/2015'), findsOneWidget);
+    expect(find.text('Cadastrar meu endereço'), findsOneWidget);
   });
 }
