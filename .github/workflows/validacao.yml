@@ -151,28 +151,47 @@ jobs:
           done
           echo 'disponivel=true' >> "$GITHUB_OUTPUT"
 
-      - name: Gerar os APKs (cliente e painel)
+      - name: Gerar os APKs (cliente, Super Central e Central)
         shell: bash
         run: |
           set -euo pipefail
-          for app in cliente painel; do
-            echo "::group::APK $app"
+          echo '::group::APK cliente'
+          (
+            cd apps/cliente
+            flutter pub get
+            flutter build apk --release \
+              --dart-define-from-file=../../config/ambiente_dev.json \
+              --build-number="${{ github.run_number }}"
+          )
+          echo '::endgroup::'
+          # O painel sai em dois aplicativos do mesmo código.
+          for tipo in supercentral central; do
+            echo "::group::APK $tipo"
             (
-              cd "apps/$app"
+              cd apps/painel
               flutter pub get
-              flutter build apk --release \
+              flutter build apk --release --flavor "$tipo" \
                 --dart-define-from-file=../../config/ambiente_dev.json \
+                --dart-define=PAINEL="$tipo" \
                 --build-number="${{ github.run_number }}"
             )
             echo '::endgroup::'
           done
 
-      - name: Gerar o painel web
+      - name: Gerar os painéis web (Super Central e Central)
         shell: bash
         run: |
           set -euo pipefail
           cd apps/painel
-          flutter build web --release --dart-define-from-file=../../config/ambiente_dev.json
+          for tipo in supercentral central; do
+            nome="$([[ $tipo == supercentral ]] && echo 'Super Central' || echo 'Central')"
+            flutter build web --release \
+              --dart-define-from-file=../../config/ambiente_dev.json \
+              --dart-define=PAINEL="$tipo"
+            sed -i "s/Painel Gás e Água/$nome/g" build/web/index.html build/web/manifest.json
+            rm -rf "build/web-$tipo"
+            mv build/web "build/web-$tipo"
+          done
 
       - name: Apagar a chave do runner
         if: always()
@@ -187,16 +206,24 @@ jobs:
           set -euo pipefail
           pasta="$(mktemp -d)"
           versao="$(grep '^version:' apps/cliente/pubspec.yaml | awk '{print $2}' | cut -d+ -f1)"
+          saida=apps/painel/build/app/outputs/flutter-apk
           cp apps/cliente/build/app/outputs/flutter-apk/app-release.apk "$pasta/gas-agua-cliente.apk"
-          cp apps/painel/build/app/outputs/flutter-apk/app-release.apk "$pasta/gas-agua-painel.apk"
-          (cd apps/painel/build/web && tar -czf "$pasta/painel-web.tar.gz" .)
+          cp "$saida/app-supercentral-release.apk" "$pasta/gas-agua-super-central.apk"
+          cp "$saida/app-central-release.apk" "$pasta/gas-agua-central.apk"
+          (cd apps/painel/build/web-supercentral && tar -czf "$pasta/painel-web-super-central.tar.gz" .)
+          (cd apps/painel/build/web-central && tar -czf "$pasta/painel-web-central.tar.gz" .)
           cd "$pasta"
-          sha256sum gas-agua-cliente.apk gas-agua-painel.apk painel-web.tar.gz > SHA256SUMS.txt
+          sha256sum *.apk *.tar.gz > SHA256SUMS.txt
           {
             echo "Versão: $versao (build ${{ github.run_number }})"
             echo "Commit: ${GITHUB_SHA}"
             echo "Assinado com a chave da revenda: ${ASSINADO}"
             echo "Gerado em (UTC): $(date -u '+%Y-%m-%d %H:%M')"
+            echo
+            echo "gas-agua-cliente.apk        app de pedidos do cliente"
+            echo "gas-agua-super-central.apk  Super Central (só o dono entra)"
+            echo "gas-agua-central.apk        Central (só o funcionário da loja entra)"
+            echo "painel-web-*.tar.gz         as mesmas duas versões para o navegador"
           } > LEIA-ME.txt
           git init -q -b entregas
           git config user.name 'github-actions[bot]'
