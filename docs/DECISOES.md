@@ -26,3 +26,12 @@
 - **Fotos dos produtos:** só o dono envia ou troca; não há exclusão pelo app (menor privilégio).
 - **Funções que os logados podem chamar** são as RPC de negócio, que conferem quem chamou por dentro; o visitante (anon) não executa nenhuma função.
 - Aviso do Supabase sobre `pg_net` no esquema `public` é só cosmético (nenhum objeto dele fica em `public`); será ajustado na criação da produção.
+
+## Decisões de 16/10/2026 (tarde, pedido do Evandro)
+
+- O painel do dono se chama **Super Central** (o dono "toma conta de todas as lojas").
+- **Ficha de cadastro obrigatória** para todo cliente antes do primeiro pedido (modelo de ficha de crediário de loja). Enquanto não é aprovada, o cliente já pode pedir pagando na entrega.
+- **Quem aprova:** o dono. Ele pode liberar, nas configurações da seção Clientes, que as centrais aprovem as fichas da região delas, com um **limite máximo** opcional que a central pode dar.
+- **Crediário (fiado) com limite:** limite livre = limite − o que deve − pedidos fiado ainda não entregues. A compra entra na conta quando o pedido é entregue. Dono e centrais registram pagamentos; ajustes manuais só o dono, com motivo (vai para a auditoria).
+- **LGPD:** CPF, RG, renda e fotos ficam só com o cliente, o dono e a central que analisa (quando liberado). Fotos num bucket privado, abertas por link temporário. A auditoria não copia CPF. O cliente com valor em aberto não exclui a conta; ao excluir, a ficha e as fotos são apagadas.
+- **Exclusão de dados pela Edge Function:** como a tela de confirmação de comandos de exclusão não abre para o Evandro (nem no celular nem pela web), as funções do banco não apagam linhas; quem apaga ficha, endereços, aparelhos e fotos na exclusão de conta é a Edge Function `excluir-conta`, com a chave do servidor. Aparelhos inválidos continuam sendo removidos pela função `notificar`.

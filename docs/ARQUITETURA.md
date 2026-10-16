@@ -1,12 +1,19 @@
 # Plataforma de pedidos de gás e água: arquitetura e plano de construção
 
-**Versão 2 · 16/10/2026 · Piloto: central de Goiatuba**
+**Versão 3 · 16/10/2026 · Piloto: central de Goiatuba**
 
 > Mudanças da versão 2, pedidas por Evandro em 16/10/2026: o dono abre quantas
 > centrais quiser, em qualquer cidade; o pedido cai sempre na **central mais
 > próxima** do endereço do cliente (não há mais escolha de cidade); e a central
 > que não tiver a mercadoria **transfere o pedido** para outra central. Detalhes
 > nas seções 2, 4, 7 e 8 e em `docs/DECISOES.md`.
+>
+> Versão 3 (16/10/2026, também pedida pelo Evandro): o painel do dono passa a
+> se chamar **Super Central**; todo cliente preenche uma **ficha de cadastro**
+> (como a de crediário de loja) antes do primeiro pedido; o dono aprova as
+> fichas e define um **limite de crediário (fiado)**, podendo liberar as
+> centrais para aprovar também, com teto; o sistema controla **quem deve**,
+> as compras fiado e os pagamentos.
 
 ## 1. Leia primeiro (instruções para o Claude Code)
 
@@ -40,6 +47,7 @@ Princípio de qualidade: sólido e simples. Um backend só (sem microsserviços)
 - App do cliente (Android e iOS): cadastro, endereço (CEP, mapa ou GPS), catálogo da central mais próxima, carrinho, escolha de data e horário, pedido, acompanhamento, histórico e repetir o último pedido.
 - Notificações push a cada mudança de status.
 - Pagamento na entrega: dinheiro (com troco), cartão na maquininha ou Pix na entrega.
+- Ficha de cadastro obrigatória (CPF, RG, nascimento, nome da mãe, moradia, trabalho, renda, duas referências, foto do documento e do comprovante) e crediário (fiado) com limite por cliente, aprovação pelo dono (ou pelas centrais, se ele liberar), conta de quem deve e registro de pagamentos.
 
 ### Previsto na arquitetura, fora do piloto (módulos à parte; o banco já fica preparado)
 
@@ -128,9 +136,12 @@ Regras gerais: todo valor em dinheiro é guardado em centavos (número inteiro),
 - `itens_pedido`: `id`, `pedido_id`, `produto_id`, `quantidade`, `preco_unitario_centavos` (copiado no momento do pedido)
 - `historico_status`: `id`, `pedido_id`, `central_id`, `status`, `evento` (`status`, `transferencia` ou `entregador`), `observacao`, `por_perfil_id`, `criado_em`
 - `dispositivos_push`: `id`, `perfil_id`, `token`, `plataforma`, `atualizado_em`
+- `configuracoes` (uma linha): `centrais_aprovam_credito`, `limite_maximo_central_centavos`
+- `fichas_cliente`: `cliente_id`, `cpf` (único, com dígito conferido), `rg`, `data_nascimento` (18+), `nome_mae`, `endereco_id` (moradia), `central_id` (central da região), `empresa`, `profissao`, `telefone_trabalho`, `renda_mensal_centavos`, duas referências (nome, telefone, relação), `documento_caminho` e `comprovante_caminho` (bucket privado `fichas`), `status` (`pendente`, `aprovada`, `recusada`), `limite_centavos`, `credito_bloqueado`, `motivo`, `analisado_por`, `analisado_em`
+- `lancamentos_credito`: `id`, `cliente_id`, `central_id`, `pedido_id` (compra), `tipo` (`compra`, `pagamento`, `ajuste`), `valor_centavos` (positivo aumenta a dívida), `forma`, `observacao`, `por_perfil_id`, `criado_em`
 - `auditoria`: `id`, `por_perfil_id`, `acao`, `tabela`, `registro_id`, `antes`, `depois`, `criado_em`
 
-Tipos: `status_pedido` (`novo`, `confirmado`, `em_rota`, `entregue`, `cancelado`) e `forma_pagamento` (`dinheiro`, `cartao_na_entrega`, `pix_na_entrega`).
+Tipos: `status_pedido` (`novo`, `confirmado`, `em_rota`, `entregue`, `cancelado`) e `forma_pagamento` (`dinheiro`, `cartao_na_entrega`, `pix_na_entrega`, `crediario`).
 
 ### Funções do banco (RPC)
 
@@ -142,7 +153,8 @@ Tipos: `status_pedido` (`novo`, `confirmado`, `em_rota`, `entregue`, `cancelado`
 - `atribuir_entregador`, `movimentar_estoque`: operação da central.
 - `criar_central(...)`: só o dono. Cria a central (com faixa e horários padrão) e, se escolhida, copia preços, horários e faixas de uma central modelo. O operador é vinculado depois, na tela de usuários.
 - `resumo_centrais`, `relatorio_produtos`, `relatorio_por_dia`: relatórios por período (o operador só vê a própria central).
-- `registrar_dispositivo`, `anonimizar_minha_conta`: aparelho para notificações e exclusão de conta (LGPD).
+- `registrar_dispositivo`, `anonimizar_minha_conta`: aparelho para notificações e exclusão de conta (LGPD). A ficha, os endereços, os aparelhos e as fotos são apagados em seguida pela Edge Function `excluir-conta`.
+- Crediário: `enviar_ficha` (cliente), `analisar_ficha` e `definir_bloqueio_credito` (dono, ou central liberada dentro do teto), `listar_fichas`, `ficha_completa`, `resumo_credito`, `devedores`, `registrar_pagamento_credito` (dono e central) e `ajustar_credito` (só o dono). Gatilhos no pedido: sem ficha não há pedido; fiado só com ficha aprovada, sem bloqueio e dentro do limite livre (limite − devido − pedidos fiado em aberto, com trava contra dois pedidos ao mesmo tempo); ao entregar um pedido fiado, a compra entra na conta.
 
 Índices: pedidos (`central_id`, `status`, `criado_em`), pedidos (`cliente_id`, `criado_em`), `precos_central` (`central_id`) e índices em todas as chaves estrangeiras.
 
@@ -150,15 +162,15 @@ Tipos: `status_pedido` (`novo`, `confirmado`, `em_rota`, `entregue`, `cancelado`
 
 ### App do cliente
 
-Abertura, login e cadastro (e-mail e senha; telefone obrigatório), endereços (CEP com preenchimento automático, pino no mapa ou GPS, e aviso se nenhuma central atende o local), início com catálogo de gás e água, carrinho, escolha de data e horário, resumo e forma de pagamento, acompanhamento do pedido em tempo real, meus pedidos (com repetir em um toque), perfil e exclusão da conta, e botão para falar com a central pelo WhatsApp.
+Abertura, login e cadastro (e-mail e senha; telefone obrigatório), ficha de cadastro (obrigatória antes do primeiro pedido, com fotos pela câmera ou galeria), meu crediário (limite, quanto deve, quanto está livre e extrato), endereços (CEP com preenchimento automático, pino no mapa ou GPS, e aviso se nenhuma central atende o local), início com catálogo de gás e água, carrinho, escolha de data e horário, resumo e forma de pagamento, acompanhamento do pedido em tempo real, meus pedidos (com repetir em um toque), perfil e exclusão da conta, e botão para falar com a central pelo WhatsApp.
 
 ### Painel da central
 
-Login, fila de pedidos em quadro (novos, confirmados, em rota, entregues) com aviso sonoro de pedido novo, detalhe do pedido (ligar ou chamar o cliente no WhatsApp, rota no mapa, troco), transferência para outra central, janelas e capacidade, bloqueios de agenda, estoque (ajustes com motivo), disponibilidade dos produtos (o preço é do dono), entregadores e resumo do dia.
+Login, fila de pedidos em quadro (novos, confirmados, em rota, entregues) com aviso sonoro de pedido novo, detalhe do pedido (ligar ou chamar o cliente no WhatsApp, rota no mapa, troco), transferência para outra central, janelas e capacidade, bloqueios de agenda, estoque (ajustes com motivo), disponibilidade dos produtos (o preço é do dono), crediário (quem deve, registrar pagamento e, se o dono liberar, aprovar fichas da região), entregadores e resumo do dia.
 
-### Painel do dono
+### Painel do dono (Super Central)
 
-Login, visão geral com um cartão por central (pedidos de hoje e faturamento), pedidos de qualquer central, centrais (lista, nova central em qualquer cidade, ponto no mapa, faixas de entrega, editar, ativar e desativar), produtos com foto, preços por central (ou o mesmo preço em todas), usuários (criar operador e vincular a uma central, mudar papel, desativar, senha nova), relatórios por período, central e produto (com cópia para planilha) e auditoria.
+Login, visão geral com um cartão por central (pedidos de hoje e faturamento), pedidos de qualquer central, centrais (lista, nova central em qualquer cidade, ponto no mapa, faixas de entrega, editar, ativar e desativar), produtos com foto, preços por central (ou o mesmo preço em todas), clientes (fichas para aprovar, com fotos e referências; limite; bloqueio; quem deve; pagamentos e ajustes; configuração de quem aprova), usuários (criar operador e vincular a uma central, mudar papel, desativar, senha nova), relatórios por período, central e produto (com cópia para planilha) e auditoria.
 
 ### Requisitos de uso
 
