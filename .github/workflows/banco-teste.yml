@@ -1,22 +1,38 @@
-name: Teste local do rascunho de banco
+name: Testes do banco (Supabase local)
 
 on:
+  push:
+    branches: [main]
+    paths:
+      - 'supabase/migrations/**'
+      - 'supabase/tests/**'
+      - 'supabase/seed.sql'
+      - '.github/workflows/banco-teste.yml'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'supabase/migrations/**'
+      - 'supabase/tests/**'
+      - 'supabase/seed.sql'
+      - '.github/workflows/banco-teste.yml'
   workflow_dispatch:
 
 permissions:
   contents: read
 
 concurrency:
-  group: banco-teste-rascunho-${{ github.ref }}
+  group: banco-teste-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
   testar-em-supabase-local:
-    name: Supabase temporário no runner
+    name: Migrations, seed e testes pgTAP num Supabase temporário
     runs-on: ubuntu-latest
     timeout-minutes: 45
+    permissions:
+      contents: write
     steps:
-      - name: Baixar somente o código do repositório
+      - name: Baixar o código
         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
           persist-credentials: false
@@ -30,37 +46,67 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          pasta_temporaria="$(mktemp -d "$RUNNER_TEMP/supabase-banco-teste.XXXXXX")"
-          echo "SUPABASE_TEST_DIR=$pasta_temporaria" >> "$GITHUB_ENV"
-          cd "$pasta_temporaria"
+          pasta="$(mktemp -d "$RUNNER_TEMP/supabase-banco-teste.XXXXXX")"
+          echo "SUPABASE_TEST_DIR=$pasta" >> "$GITHUB_ENV"
+          cd "$pasta"
           supabase init
           mkdir -p supabase/migrations supabase/tests
-          cp "$GITHUB_WORKSPACE/docs/rascunhos/fase1/esquema_inicial.sql" \
-            supabase/migrations/20261014170000_esquema_inicial.sql
-          cp "$GITHUB_WORKSPACE/docs/rascunhos/fase1/testes_isolamento.sql" \
-            supabase/tests/isolamento.sql
-          cp "$GITHUB_WORKSPACE/docs/rascunhos/fase1/seed_ficticio.sql" \
-            supabase/seed.sql
+          cp "$GITHUB_WORKSPACE"/supabase/migrations/*.sql supabase/migrations/
+          cp "$GITHUB_WORKSPACE"/supabase/tests/*.sql supabase/tests/
+          cp "$GITHUB_WORKSPACE/supabase/seed.sql" supabase/seed.sql
 
-      - name: Iniciar apenas o Supabase local do runner
+      - name: Iniciar o Supabase local (aplica migrations e seed)
         shell: bash
         run: |
           set -euo pipefail
           cd "$SUPABASE_TEST_DIR"
-          supabase start
+          supabase start 2>&1 | tee "$RUNNER_TEMP/inicio.txt"
 
-      - name: Executar testes pgTAP locais
+      - name: Executar testes pgTAP
+        id: testes
+        continue-on-error: true
         shell: bash
         run: |
           set -euo pipefail
           cd "$SUPABASE_TEST_DIR"
-          supabase test db
+          supabase test db 2>&1 | tee "$RUNNER_TEMP/testes.txt"
+
+      - name: Publicar o relatório no ramo ci-relatorio-banco
+        if: always() && github.event_name != 'pull_request'
+        shell: bash
+        env:
+          TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          pasta="$(mktemp -d)"
+          {
+            echo "Testes do banco — commit ${GITHUB_SHA}"
+            echo "Resultado: ${{ steps.testes.outcome }}"
+            echo
+            echo '### Início do Supabase'
+            tail -n 60 "$RUNNER_TEMP/inicio.txt" 2>/dev/null || echo '(sem saída)'
+            echo
+            echo '### Testes'
+            cat "$RUNNER_TEMP/testes.txt" 2>/dev/null || echo '(sem saída)'
+          } > "$pasta/relatorio.txt"
+          cd "$pasta"
+          git init -q -b ci-relatorio-banco
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add relatorio.txt
+          git commit -q -m "relatório do banco de ${GITHUB_SHA::7}"
+          git push -q --force "https://x-access-token:${TOKEN}@github.com/${GITHUB_REPOSITORY}.git" ci-relatorio-banco
+
+      - name: Encerrar com o resultado dos testes
+        if: steps.testes.outcome != 'success'
+        run: |
+          echo '::error::Algum teste do banco falhou. Veja o ramo ci-relatorio-banco.'
+          exit 1
 
       - name: Encerrar e remover somente o diretório temporário
         if: always()
         shell: bash
         run: |
-          set -euo pipefail
           if [[ -n "${SUPABASE_TEST_DIR:-}" && -d "$SUPABASE_TEST_DIR" ]]; then
             cd "$SUPABASE_TEST_DIR"
             supabase stop --no-backup || true

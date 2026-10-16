@@ -1,7 +1,26 @@
 # Migrations do banco
 
-Ainda não há migrations nem projeto Supabase conectado. A criação do esquema, políticas RLS e funções RPC pertence à Fase 1 e não está autorizada nesta etapa de preparação.
+Cada arquivo é uma mudança versionada do banco, aplicada em ordem pelo número
+no começo do nome. O número é o mesmo registrado no projeto Supabase, para o
+histórico local e o do servidor baterem.
 
-Quando a Fase 1 for autorizada, cada mudança será pequena, revisada, numerada e versionada neste diretório. Todas as tabelas devem ter RLS habilitada; a aplicação não substitui a autorização no banco. Produção nunca será alterada manualmente: somente migrations revisadas e aprovadas poderão mudar o banco.
+| Arquivo | O que faz |
+|---|---|
+| `…112043_tipos_e_tabelas` | Tipos, tabelas, restrições e índices |
+| `…112129_funcoes_auxiliares_e_gatilhos` | Quem é dono/operador, distância, normalização, auditoria |
+| `…112208_permissoes_e_rls` | Permissões mínimas e RLS em todas as tabelas |
+| `…112603_funcoes_de_negocio` | Central mais próxima, agenda, pedido, status, transferência, estoque, criar central |
+| `…112700_relatorios` | Resumo por central, por produto e por dia |
+| `…115107_segredos_do_servidor` | Leitura de segredos do Vault só pelas Edge Functions |
+| `…130000_funcoes_de_conta` | Aparelhos para notificação e exclusão de conta (LGPD) |
+| `…130100_realtime_storage_notificacoes` | Tempo real, fotos dos produtos, aviso de eventos e travas finais |
 
-Os testes devem cobrir permissões concedidas e negadas, inclusive provar que um operador da central A não acessa dados da central B e que o cliente acessa apenas os próprios dados autorizados. Esquema e políticas detalhados devem seguir `docs/ARQUITETURA.md`.
+Os dois últimos ainda **aguardam aprovação** para serem aplicados no projeto de
+desenvolvimento (contêm comandos de exclusão, que pedem confirmação). Quando
+aplicados, o arquivo é renomeado para o número registrado no servidor.
+
+Regras: nunca alterar o banco direto; toda mudança nova vira um arquivo aqui;
+segredos nunca entram em migrations (ficam no Vault, cadastrados à parte).
+
+Testes: `scripts/testar_banco_local.sh` (Postgres local) e o fluxo
+"Testes do banco" no GitHub (Supabase completo e temporário).

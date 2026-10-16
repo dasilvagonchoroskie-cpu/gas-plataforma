@@ -2,7 +2,14 @@
 
 O Supabase é o backend aprovado para esta plataforma: um único projeto por ambiente, usando Postgres, Auth, Realtime, Storage e Edge Functions. Não serão usados microsserviços. O Firebase Cloud Messaging fica restrito ao envio de notificações push.
 
-**Estado:** Evandro informou que vinculou o Supabase ao GitHub. Ainda falta confirmar qual projeto está conectado e revisar as opções de implantação. Usar somente o projeto gratuito de desenvolvimento em organização separada; produção não existe e não será criada nem acessada nesta etapa.
+**Estado:** projeto de desenvolvimento `cytxdxnansmzptzhnrfq` (conta da plataforma, plano gratuito). Produção ainda não existe; será criada na fase prevista na arquitetura, com aprovação.
+
+- `migrations/` — mudanças versionadas do banco (ver o README da pasta).
+- `tests/` — testes pgTAP de regras e permissões.
+- `seed.sql` — dados fictícios só para desenvolvimento.
+- `functions/` — Edge Functions: `cadastro`, `admin-usuarios`, `excluir-conta`, `endereco`, `notificar`, `assinatura-android`.
+
+Segredos do servidor ficam no Vault (`notificar_url`, `notificar_segredo`, `android_chave_*`) e são lidos só pelas Edge Functions (função `segredo_do_servidor`, restrita à `service_role`). O único segredo de Edge Function que falta cadastrar é `FCM_CONTA_SERVICO` (Firebase, para notificações).
 
 ## Regras obrigatórias
 
@@ -15,4 +22,4 @@ O Supabase é o backend aprovado para esta plataforma: um único projeto por amb
 
 ## Etapas
 
-Migrations, RLS, RPC, seed com dados de teste e testes de isolamento pertencem à Fase 1 e não devem ser antecipados. Antes dela, confirmar com Evandro que a integração aponta somente para o projeto gratuito de desenvolvimento e aguardar autorização explícita.
+Fase 1 (banco, RLS, RPC, seed e testes) concluída no desenvolvimento, com os testes passando. Detalhes e pendências em `docs/PROGRESSO.md`.
