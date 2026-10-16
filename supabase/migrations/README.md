@@ -13,11 +13,13 @@ histórico local e o do servidor baterem.
 | `…112700_relatorios` | Resumo por central, por produto e por dia |
 | `…115107_segredos_do_servidor` | Leitura de segredos do Vault só pelas Edge Functions |
 | `…115737_realtime_storage_notificacoes` | Tempo real, fotos dos produtos, aviso de eventos e travas das funções |
-| `…140000_funcoes_de_conta` | Aparelhos para notificação e exclusão de conta (LGPD) |
+| `…155152_forma_pagamento_crediario` | Nova forma de pagamento "crediário" (fiado) |
+| `…155401_crediario` | Configurações, ficha do cliente, conta do crediário, regras do fiado e fotos privadas |
+| `…160132_funcoes_de_conta` | Aparelhos para notificação e exclusão de conta (LGPD) |
 
-O último ainda **aguarda aprovação** para ser aplicado no projeto de
-desenvolvimento (contém comandos de exclusão de dados, que pedem confirmação).
-Quando aplicado, o arquivo é renomeado para o número registrado no servidor.
+Todos já estão aplicados no projeto de desenvolvimento. As funções do banco
+não apagam linhas: na exclusão de conta, quem apaga ficha, endereços, aparelhos
+e fotos é a função do servidor `excluir-conta`.
 
 Regras: nunca alterar o banco direto; toda mudança nova vira um arquivo aqui;
 segredos nunca entram em migrations (ficam no Vault, cadastrados à parte).
