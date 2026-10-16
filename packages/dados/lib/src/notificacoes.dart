@@ -186,8 +186,8 @@ class RepositorioNotificacoes {
   final SupabaseClient _cliente;
 
   Future<Map<String, dynamic>> _chamar(Map<String, dynamic> corpo) async {
-    final resposta = await _cliente.functions
-        .invoke('configurar-notificacoes', body: corpo);
+    final resposta =
+        await _cliente.functions.invoke('configurar-notificacoes', body: corpo);
     final dados = resposta.data;
     return dados is Map<String, dynamic> ? dados : const {};
   }
