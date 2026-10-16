@@ -1,3 +1,14 @@
+import java.util.Properties
+
+// Chave de assinatura da revenda. O arquivo key.properties só existe na esteira
+// de build (é criado na hora e apagado no fim); nunca vai para o repositório.
+val propriedadesChave = Properties().apply {
+    val arquivo = rootProject.file("key.properties")
+    if (arquivo.exists()) {
+        arquivo.inputStream().use { load(it) }
+    }
+}
+
 plugins {
     id("com.android.application")
     // The Flutter Gradle Plugin must be applied after the Android and Kotlin Gradle plugins.
@@ -5,7 +16,7 @@ plugins {
 }
 
 android {
-    namespace = "com.example.cliente"
+    namespace = "br.com.fortalezadigitalsecurity.gasagua.cliente"
     compileSdk = flutter.compileSdkVersion
     ndkVersion = flutter.ndkVersion
 
@@ -15,8 +26,7 @@ android {
     }
 
     defaultConfig {
-        // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
-        applicationId = "com.example.cliente"
+        applicationId = "br.com.fortalezadigitalsecurity.gasagua.cliente"
         // You can update the following values to match your application needs.
         // For more information, see: https://flutter.dev/to/review-gradle-config.
         minSdk = flutter.minSdkVersion
@@ -29,11 +39,26 @@ android {
         versionName = flutter.versionName
     }
 
+    signingConfigs {
+        if (!propriedadesChave.isEmpty()) {
+            create("revenda") {
+                storeFile = file(propriedadesChave.getProperty("storeFile"))
+                storePassword = propriedadesChave.getProperty("storePassword")
+                keyAlias = propriedadesChave.getProperty("keyAlias")
+                keyPassword = propriedadesChave.getProperty("keyPassword")
+            }
+        }
+    }
+
     buildTypes {
         release {
-            // TODO: Add your own signing config for the release build.
-            // Signing with the debug keys for now, so `flutter run --release` works.
-            signingConfig = signingConfigs.getByName("debug")
+            // Com a chave da revenda quando disponível; sem ela (em testes
+            // locais), usa a chave de depuração.
+            signingConfig = if (propriedadesChave.isEmpty()) {
+                signingConfigs.getByName("debug")
+            } else {
+                signingConfigs.getByName("revenda")
+            }
         }
     }
 }
