@@ -35,7 +35,8 @@ class PainelDono extends ConsumerWidget {
             final certeza = await confirmar(
               context,
               titulo: 'Sair do painel?',
-              mensagem: 'Você vai precisar do e-mail e da senha para entrar de novo.',
+              mensagem:
+                  'Você vai precisar do e-mail e da senha para entrar de novo.',
               rotuloConfirmar: 'Sair',
             );
             if (certeza) {
@@ -45,20 +46,44 @@ class PainelDono extends ConsumerWidget {
         ),
       ],
       secoes: [
-        const SecaoPainel(rotulo: 'Visão geral', icone: Icons.dashboard_outlined, conteudo: SecaoVisaoGeral()),
-        const SecaoPainel(rotulo: 'Pedidos', icone: Icons.receipt_long_outlined, conteudo: SecaoPedidosDono()),
-        const SecaoPainel(rotulo: 'Centrais', icone: Icons.store_outlined, conteudo: SecaoCentrais()),
+        const SecaoPainel(
+            rotulo: 'Visão geral',
+            icone: Icons.dashboard_outlined,
+            conteudo: SecaoVisaoGeral()),
+        const SecaoPainel(
+            rotulo: 'Pedidos',
+            icone: Icons.receipt_long_outlined,
+            conteudo: SecaoPedidosDono()),
+        const SecaoPainel(
+            rotulo: 'Centrais',
+            icone: Icons.store_outlined,
+            conteudo: SecaoCentrais()),
         SecaoPainel(
           rotulo: 'Clientes',
           icone: Icons.badge_outlined,
           contador: fichasPendentes,
           conteudo: const SecaoClientes(ehDono: true),
         ),
-        const SecaoPainel(rotulo: 'Produtos', icone: Icons.inventory_2_outlined, conteudo: SecaoProdutos()),
-        const SecaoPainel(rotulo: 'Preços', icone: Icons.sell_outlined, conteudo: SecaoPrecos()),
-        const SecaoPainel(rotulo: 'Usuários', icone: Icons.group_outlined, conteudo: SecaoUsuarios()),
-        const SecaoPainel(rotulo: 'Relatórios', icone: Icons.insights_outlined, conteudo: SecaoRelatorios()),
-        const SecaoPainel(rotulo: 'Auditoria', icone: Icons.history, conteudo: SecaoAuditoria()),
+        const SecaoPainel(
+            rotulo: 'Produtos',
+            icone: Icons.inventory_2_outlined,
+            conteudo: SecaoProdutos()),
+        const SecaoPainel(
+            rotulo: 'Preços',
+            icone: Icons.sell_outlined,
+            conteudo: SecaoPrecos()),
+        const SecaoPainel(
+            rotulo: 'Usuários',
+            icone: Icons.group_outlined,
+            conteudo: SecaoUsuarios()),
+        const SecaoPainel(
+            rotulo: 'Relatórios',
+            icone: Icons.insights_outlined,
+            conteudo: SecaoRelatorios()),
+        const SecaoPainel(
+            rotulo: 'Auditoria',
+            icone: Icons.history,
+            conteudo: SecaoAuditoria()),
       ],
     );
   }
@@ -79,7 +104,8 @@ class SeletorCentral extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final centrais = ref.watch(provedorCentrais).valueOrNull ?? const <Central>[];
+    final centrais =
+        ref.watch(provedorCentrais).valueOrNull ?? const <Central>[];
     return DropdownMenu<String?>(
       key: ValueKey('seletor-${selecionada ?? 'todas'}-${centrais.length}'),
       initialSelection: selecionada,
@@ -87,7 +113,9 @@ class SeletorCentral extends ConsumerWidget {
       width: 320,
       onSelected: aoEscolher,
       dropdownMenuEntries: [
-        if (permitirTodas) const DropdownMenuEntry<String?>(value: null, label: 'Todas as centrais'),
+        if (permitirTodas)
+          const DropdownMenuEntry<String?>(
+              value: null, label: 'Todas as centrais'),
         for (final c in centrais)
           DropdownMenuEntry<String?>(
             value: c.id,

@@ -74,7 +74,8 @@ abstract final class Validacoes {
     return digito(9) == int.parse(cpf[9]) && digito(10) == int.parse(cpf[10]);
   }
 
-  static String? cpf(String? valor) => cpfValido(valor) ? null : 'CPF inválido. Confira os números.';
+  static String? cpf(String? valor) =>
+      cpfValido(valor) ? null : 'CPF inválido. Confira os números.';
 
   /// "52998224725" → "529.982.247-25".
   static String formatarCpf(String? valor) {

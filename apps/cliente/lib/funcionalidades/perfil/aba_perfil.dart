@@ -12,7 +12,8 @@ import '../../estado/provedores.dart';
 class AbaPerfil extends ConsumerWidget {
   const AbaPerfil({super.key});
 
-  Future<void> _editar(BuildContext context, WidgetRef ref, Perfil perfil) async {
+  Future<void> _editar(
+      BuildContext context, WidgetRef ref, Perfil perfil) async {
     final salvou = await showDialog<bool>(
       context: context,
       builder: (context) => _DialogoEditarPerfil(perfil: perfil),
@@ -29,7 +30,8 @@ class AbaPerfil extends ConsumerWidget {
     final certeza = await confirmar(
       context,
       titulo: 'Sair da conta?',
-      mensagem: 'Para pedir de novo, você vai precisar entrar com e-mail e senha.',
+      mensagem:
+          'Para pedir de novo, você vai precisar entrar com e-mail e senha.',
       rotuloConfirmar: 'Sair',
     );
     if (certeza) {
@@ -42,7 +44,8 @@ class AbaPerfil extends ConsumerWidget {
     final primeira = await confirmar(
       context,
       titulo: 'Excluir minha conta',
-      mensagem: 'Seus dados pessoais e endereços serão apagados e você não poderá mais entrar '
+      mensagem:
+          'Seus dados pessoais e endereços serão apagados e você não poderá mais entrar '
           'com este e-mail. O histórico de vendas fica sem seu nome, só para os relatórios da revenda.',
       rotuloConfirmar: 'Continuar',
       perigoso: true,
@@ -95,7 +98,8 @@ class AbaPerfil extends ConsumerWidget {
                 child: ListTile(
                   leading: const CircleAvatar(child: Icon(Icons.person)),
                   title: Text(p.nome),
-                  subtitle: Text('${Validacoes.formatarTelefone(p.telefone)}\n${p.email ?? ''}'),
+                  subtitle: Text(
+                      '${Validacoes.formatarTelefone(p.telefone)}\n${p.email ?? ''}'),
                   isThreeLine: true,
                   trailing: IconButton(
                     tooltip: 'Editar meus dados',
@@ -121,7 +125,8 @@ class AbaPerfil extends ConsumerWidget {
                       onTap: () => context.push('/ficha'),
                     ),
                     ListTile(
-                      leading: const Icon(Icons.account_balance_wallet_outlined),
+                      leading:
+                          const Icon(Icons.account_balance_wallet_outlined),
                       title: const Text('Meu crediário'),
                       trailing: const Icon(Icons.chevron_right),
                       onTap: () => context.push('/crediario'),
@@ -129,7 +134,8 @@ class AbaPerfil extends ConsumerWidget {
                     if (atendimento?.whatsapp != null)
                       ListTile(
                         leading: const Icon(Icons.chat_outlined),
-                        title: Text('Falar com a ${atendimento?.centralNome ?? 'central'}'),
+                        title: Text(
+                            'Falar com a ${atendimento?.centralNome ?? 'central'}'),
                         trailing: const Icon(Icons.chevron_right),
                         onTap: () => abrirWhatsapp(
                           context,
@@ -164,7 +170,8 @@ class AbaPerfil extends ConsumerWidget {
                 onPressed: () => _excluirConta(context, ref),
                 icon: const Icon(Icons.delete_forever_outlined),
                 label: const Text('Excluir minha conta'),
-                style: TextButton.styleFrom(foregroundColor: Theme.of(context).colorScheme.error),
+                style: TextButton.styleFrom(
+                    foregroundColor: Theme.of(context).colorScheme.error),
               ),
             ],
           );
@@ -180,14 +187,15 @@ class _DialogoEditarPerfil extends ConsumerStatefulWidget {
   final Perfil perfil;
 
   @override
-  ConsumerState<_DialogoEditarPerfil> createState() => _DialogoEditarPerfilState();
+  ConsumerState<_DialogoEditarPerfil> createState() =>
+      _DialogoEditarPerfilState();
 }
 
 class _DialogoEditarPerfilState extends ConsumerState<_DialogoEditarPerfil> {
   final _formulario = GlobalKey<FormState>();
   late final _nome = TextEditingController(text: widget.perfil.nome);
-  late final _telefone =
-      TextEditingController(text: Validacoes.formatarTelefone(widget.perfil.telefone));
+  late final _telefone = TextEditingController(
+      text: Validacoes.formatarTelefone(widget.perfil.telefone));
   bool _salvando = false;
 
   @override
@@ -203,7 +211,9 @@ class _DialogoEditarPerfilState extends ConsumerState<_DialogoEditarPerfil> {
     }
     setState(() => _salvando = true);
     try {
-      await ref.read(provedorConta).atualizarPerfil(nome: _nome.text, telefone: _telefone.text);
+      await ref
+          .read(provedorConta)
+          .atualizarPerfil(nome: _nome.text, telefone: _telefone.text);
       if (mounted) {
         Navigator.of(context).pop(true);
       }
@@ -234,7 +244,9 @@ class _DialogoEditarPerfilState extends ConsumerState<_DialogoEditarPerfil> {
             TextFormField(
               controller: _telefone,
               keyboardType: TextInputType.phone,
-              inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'[0-9() \-]'))],
+              inputFormatters: [
+                FilteringTextInputFormatter.allow(RegExp(r'[0-9() \-]'))
+              ],
               decoration: const InputDecoration(labelText: 'Celular com DDD'),
               validator: Validacoes.celular,
             ),
@@ -242,7 +254,9 @@ class _DialogoEditarPerfilState extends ConsumerState<_DialogoEditarPerfil> {
         ),
       ),
       actions: [
-        TextButton(onPressed: () => Navigator.of(context).pop(false), child: const Text('Voltar')),
+        TextButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            child: const Text('Voltar')),
         FilledButton(
           onPressed: _salvando ? null : _salvar,
           child: Text(_salvando ? 'Salvando...' : 'Salvar'),

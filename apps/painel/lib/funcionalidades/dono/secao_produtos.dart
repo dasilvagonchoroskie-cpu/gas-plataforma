@@ -1,5 +1,3 @@
-import 'dart:typed_data';
-
 import 'package:dados/dados.dart';
 import 'package:design_system/design_system.dart';
 import 'package:flutter/material.dart';
@@ -15,7 +13,8 @@ import '../../estado/provedores.dart';
 class SecaoProdutos extends ConsumerWidget {
   const SecaoProdutos({super.key});
 
-  Future<void> _abrir(BuildContext context, WidgetRef ref, [Produto? produto]) async {
+  Future<void> _abrir(BuildContext context, WidgetRef ref,
+      [Produto? produto]) async {
     final salvou = await Navigator.of(context).push<bool>(
       MaterialPageRoute(builder: (_) => EditorProduto(produto: produto)),
     );
@@ -61,7 +60,8 @@ class SecaoProdutos extends ConsumerWidget {
                   padding: const EdgeInsets.only(bottom: 10),
                   child: Card(
                     child: ListTile(
-                      leading: _Miniatura(url: p.fotoUrl, categoria: p.categoria),
+                      leading:
+                          _Miniatura(url: p.fotoUrl, categoria: p.categoria),
                       title: Text(p.nome),
                       subtitle: Text(
                         '${p.categoria.rotulo} · '
@@ -90,7 +90,9 @@ class _Miniatura extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final icone = Icon(
-      categoria == CategoriaProduto.gas ? Icons.propane_tank_outlined : Icons.water_drop_outlined,
+      categoria == CategoriaProduto.gas
+          ? Icons.propane_tank_outlined
+          : Icons.water_drop_outlined,
       size: 32,
     );
     final endereco = url;
@@ -104,7 +106,8 @@ class _Miniatura extends StatelessWidget {
         width: 56,
         height: 56,
         fit: BoxFit.cover,
-        errorBuilder: (_, __, ___) => SizedBox(width: 56, height: 56, child: Center(child: icone)),
+        errorBuilder: (_, __, ___) =>
+            SizedBox(width: 56, height: 56, child: Center(child: icone)),
       ),
     );
   }
@@ -125,9 +128,12 @@ class _EditorProdutoState extends ConsumerState<EditorProduto> {
 
   final _formulario = GlobalKey<FormState>();
   late final _nome = TextEditingController(text: widget.produto?.nome ?? '');
-  late final _descricao = TextEditingController(text: widget.produto?.descricao ?? '');
-  late final _ordem = TextEditingController(text: '${widget.produto?.ordem ?? 0}');
-  late CategoriaProduto _categoria = widget.produto?.categoria ?? CategoriaProduto.gas;
+  late final _descricao =
+      TextEditingController(text: widget.produto?.descricao ?? '');
+  late final _ordem =
+      TextEditingController(text: '${widget.produto?.ordem ?? 0}');
+  late CategoriaProduto _categoria =
+      widget.produto?.categoria ?? CategoriaProduto.gas;
   late bool _troca = widget.produto?.trocaVasilhame ?? true;
   late bool _ativo = widget.produto?.ativo ?? true;
   late String? _fotoUrl = widget.produto?.fotoUrl;
@@ -159,7 +165,8 @@ class _EditorProdutoState extends ConsumerState<EditorProduto> {
       final bytes = await arquivo.readAsBytes();
       if (bytes.length > _tamanhoMaximo) {
         if (mounted) {
-          mostrarMensagem(context, 'A foto passa de 2 MB. Escolha uma menor.', erro: true);
+          mostrarMensagem(context, 'A foto passa de 2 MB. Escolha uma menor.',
+              erro: true);
         }
         return;
       }
@@ -172,7 +179,8 @@ class _EditorProdutoState extends ConsumerState<EditorProduto> {
                   : 'image/jpeg');
       if (!const {'image/jpeg', 'image/png', 'image/webp'}.contains(tipo)) {
         if (mounted) {
-          mostrarMensagem(context, 'Use uma foto JPG, PNG ou WEBP.', erro: true);
+          mostrarMensagem(context, 'Use uma foto JPG, PNG ou WEBP.',
+              erro: true);
         }
         return;
       }
@@ -210,7 +218,8 @@ class _EditorProdutoState extends ConsumerState<EditorProduto> {
         ordem: int.tryParse(_ordem.text.trim()) ?? 0,
       );
       if (mounted) {
-        mostrarMensagem(context, _novo ? 'Produto cadastrado.' : 'Produto atualizado.');
+        mostrarMensagem(
+            context, _novo ? 'Produto cadastrado.' : 'Produto atualizado.');
         Navigator.of(context).pop(true);
       }
     } catch (erro) {
@@ -236,13 +245,16 @@ class _EditorProdutoState extends ConsumerState<EditorProduto> {
         fotoUrl,
         height: 180,
         fit: BoxFit.contain,
-        errorBuilder: (_, __, ___) => const SizedBox(height: 180, child: Icon(Icons.broken_image, size: 48)),
+        errorBuilder: (_, __, ___) => const SizedBox(
+            height: 180, child: Icon(Icons.broken_image, size: 48)),
       );
     } else {
-      foto = const SizedBox(height: 120, child: Center(child: Text('Sem foto')));
+      foto =
+          const SizedBox(height: 120, child: Center(child: Text('Sem foto')));
     }
     return Scaffold(
-      appBar: AppBar(title: Text(_novo ? 'Novo produto' : widget.produto!.nome)),
+      appBar:
+          AppBar(title: Text(_novo ? 'Novo produto' : widget.produto!.nome)),
       body: Form(
         key: _formulario,
         child: ListView(
@@ -265,7 +277,9 @@ class _EditorProdutoState extends ConsumerState<EditorProduto> {
                               OutlinedButton.icon(
                                 onPressed: _salvando ? null : _escolherFoto,
                                 icon: const Icon(Icons.photo_library_outlined),
-                                label: Text(fotoNova == null && fotoUrl == null ? 'Escolher foto' : 'Trocar foto'),
+                                label: Text(fotoNova == null && fotoUrl == null
+                                    ? 'Escolher foto'
+                                    : 'Trocar foto'),
                               ),
                               if (fotoNova != null || fotoUrl != null)
                                 TextButton(
@@ -286,7 +300,8 @@ class _EditorProdutoState extends ConsumerState<EditorProduto> {
                   const SizedBox(height: 12),
                   TextFormField(
                     controller: _nome,
-                    decoration: const InputDecoration(labelText: 'Nome (ex.: Gás P13 - troca)'),
+                    decoration: const InputDecoration(
+                        labelText: 'Nome (ex.: Gás P13 - troca)'),
                     validator: Validacoes.nome,
                   ),
                   const SizedBox(height: 12),
@@ -296,7 +311,8 @@ class _EditorProdutoState extends ConsumerState<EditorProduto> {
                         ButtonSegment(value: c, label: Text(c.rotulo)),
                     ],
                     selected: {_categoria},
-                    onSelectionChanged: (s) => setState(() => _categoria = s.first),
+                    onSelectionChanged: (s) =>
+                        setState(() => _categoria = s.first),
                   ),
                   const SizedBox(height: 12),
                   TextFormField(
@@ -304,7 +320,8 @@ class _EditorProdutoState extends ConsumerState<EditorProduto> {
                     maxLines: 3,
                     minLines: 1,
                     maxLength: 300,
-                    decoration: const InputDecoration(labelText: 'Descrição (opcional)'),
+                    decoration: const InputDecoration(
+                        labelText: 'Descrição (opcional)'),
                   ),
                   SwitchListTile(
                     value: _troca,
@@ -319,16 +336,21 @@ class _EditorProdutoState extends ConsumerState<EditorProduto> {
                     value: _ativo,
                     onChanged: (v) => setState(() => _ativo = v),
                     title: const Text('Produto ativo'),
-                    subtitle: const Text('Desligado: some do aplicativo de todas as centrais.'),
+                    subtitle: const Text(
+                        'Desligado: some do aplicativo de todas as centrais.'),
                   ),
                   const SizedBox(height: 8),
                   TextFormField(
                     controller: _ordem,
                     keyboardType: TextInputType.number,
-                    inputFormatters: [FilteringTextInputFormatter.digitsOnly, LengthLimitingTextInputFormatter(3)],
+                    inputFormatters: [
+                      FilteringTextInputFormatter.digitsOnly,
+                      LengthLimitingTextInputFormatter(3)
+                    ],
                     decoration: const InputDecoration(
                       labelText: 'Posição na lista',
-                      helperText: 'Número menor aparece primeiro no aplicativo.',
+                      helperText:
+                          'Número menor aparece primeiro no aplicativo.',
                     ),
                   ),
                   const SizedBox(height: 24),

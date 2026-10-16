@@ -60,7 +60,8 @@ void main() {
       ]);
     });
 
-    test('repetir pedido usa preços atuais e ignora o que saiu do catálogo', () {
+    test('repetir pedido usa preços atuais e ignora o que saiu do catálogo',
+        () {
       final carrinho = Carrinho.aPartirDe(
         {'gas': 2, 'sumiu': 1},
         [_item('gas', 11500), agua],
@@ -92,8 +93,10 @@ void main() {
 
     test('converte os valores do banco', () {
       expect(StatusPedido.deValor('em_rota'), StatusPedido.emRota);
-      expect(FormaPagamento.deValor('pix_na_entrega'), FormaPagamento.pixNaEntrega);
-      expect(PapelPerfil.deValor('operador_central'), PapelPerfil.operadorCentral);
+      expect(FormaPagamento.deValor('pix_na_entrega'),
+          FormaPagamento.pixNaEntrega);
+      expect(
+          PapelPerfil.deValor('operador_central'), PapelPerfil.operadorCentral);
       expect(() => StatusPedido.deValor('x'), throwsFormatException);
     });
   });
@@ -117,8 +120,10 @@ void main() {
       expect(Validacoes.formatarTelefone('64999990000'), '(64) 99999-0000');
       expect(Validacoes.formatarTelefone('6430000000'), '(64) 3000-0000');
       expect(Validacoes.formatarCep('75600000'), '75600-000');
-      expect(Validacoes.whatsappInternacional('(64) 99999-0000'), '5564999990000');
-      expect(Validacoes.whatsappInternacional('5564999990000'), '5564999990000');
+      expect(
+          Validacoes.whatsappInternacional('(64) 99999-0000'), '5564999990000');
+      expect(
+          Validacoes.whatsappInternacional('5564999990000'), '5564999990000');
     });
 
     test('gera identificador único no formato UUID v4', () {
@@ -147,8 +152,10 @@ void main() {
     test('rotula hoje, amanhã e outros dias', () {
       final agora = DateTime.utc(2026, 10, 16, 15);
       expect(Datas.rotuloDia(DateTime.utc(2026, 10, 16), agora: agora), 'Hoje');
-      expect(Datas.rotuloDia(DateTime.utc(2026, 10, 17), agora: agora), 'Amanhã');
-      expect(Datas.rotuloDia(DateTime.utc(2026, 10, 19), agora: agora), 'Seg 19/10');
+      expect(
+          Datas.rotuloDia(DateTime.utc(2026, 10, 17), agora: agora), 'Amanhã');
+      expect(Datas.rotuloDia(DateTime.utc(2026, 10, 19), agora: agora),
+          'Seg 19/10');
     });
 
     test('dia da semana igual ao banco (0 = domingo)', () {
@@ -202,8 +209,16 @@ void main() {
           },
         ],
         'historico_status': [
-          {'status': 'confirmado', 'evento': 'status', 'criado_em': '2026-10-16T15:05:00Z'},
-          {'status': 'novo', 'evento': 'status', 'criado_em': '2026-10-16T15:00:00Z'},
+          {
+            'status': 'confirmado',
+            'evento': 'status',
+            'criado_em': '2026-10-16T15:05:00Z'
+          },
+          {
+            'status': 'novo',
+            'evento': 'status',
+            'criado_em': '2026-10-16T15:00:00Z'
+          },
         ],
       });
       expect(pedido.status, StatusPedido.emRota);

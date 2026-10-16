@@ -10,14 +10,18 @@ ThemeData criarTemaPlataforma({
   Color corPrimaria = corPadraoPlataforma,
   Brightness brilho = Brightness.light,
 }) {
-  final cores = ColorScheme.fromSeed(seedColor: corPrimaria, brightness: brilho);
+  final cores =
+      ColorScheme.fromSeed(seedColor: corPrimaria, brightness: brilho);
   final base = ThemeData(colorScheme: cores, useMaterial3: true);
   final textos = base.textTheme.copyWith(
     bodyLarge: base.textTheme.bodyLarge?.copyWith(fontSize: 18, height: 1.35),
     bodyMedium: base.textTheme.bodyMedium?.copyWith(fontSize: 16, height: 1.35),
-    titleMedium: base.textTheme.titleMedium?.copyWith(fontSize: 18, fontWeight: FontWeight.w600),
-    titleLarge: base.textTheme.titleLarge?.copyWith(fontSize: 22, fontWeight: FontWeight.w700),
-    labelLarge: base.textTheme.labelLarge?.copyWith(fontSize: 17, fontWeight: FontWeight.w600),
+    titleMedium: base.textTheme.titleMedium
+        ?.copyWith(fontSize: 18, fontWeight: FontWeight.w600),
+    titleLarge: base.textTheme.titleLarge
+        ?.copyWith(fontSize: 22, fontWeight: FontWeight.w700),
+    labelLarge: base.textTheme.labelLarge
+        ?.copyWith(fontSize: 17, fontWeight: FontWeight.w600),
   );
 
   const formato = RoundedRectangleBorder(

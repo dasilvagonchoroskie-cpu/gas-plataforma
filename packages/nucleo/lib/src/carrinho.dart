@@ -35,8 +35,8 @@ final class Carrinho {
   int get quantidadeTotal =>
       _itens.values.fold(0, (soma, linha) => soma + linha.quantidade);
 
-  Dinheiro get subtotal => _itens.values
-      .fold(Dinheiro.zero, (soma, linha) => soma + linha.total);
+  Dinheiro get subtotal =>
+      _itens.values.fold(Dinheiro.zero, (soma, linha) => soma + linha.total);
 
   int quantidadeDe(String produtoId) => _itens[produtoId]?.quantidade ?? 0;
 

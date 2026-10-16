@@ -13,8 +13,8 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 final provedorCliente = Provider<SupabaseClient>((ref) => clienteBackend);
 
-final provedorConta =
-    Provider<RepositorioConta>((ref) => RepositorioConta(ref.watch(provedorCliente)));
+final provedorConta = Provider<RepositorioConta>(
+    (ref) => RepositorioConta(ref.watch(provedorCliente)));
 
 final provedorRepositorioEnderecos = Provider<RepositorioEnderecos>(
   (ref) => RepositorioEnderecos(ref.watch(provedorCliente)),
@@ -65,7 +65,8 @@ final provedorEstadoDeLogin = ChangeNotifierProvider<EstadoDeLogin>(
 );
 
 /// Id do usuário logado; muda quando a pessoa entra, sai ou troca de conta.
-final provedorUsuarioId = Provider<String?>((ref) => ref.watch(provedorEstadoDeLogin).usuarioId);
+final provedorUsuarioId =
+    Provider<String?>((ref) => ref.watch(provedorEstadoDeLogin).usuarioId);
 
 final provedorPerfil = FutureProvider<Perfil?>((ref) async {
   if (ref.watch(provedorUsuarioId) == null) {
@@ -220,10 +221,12 @@ class EstadoFinalizacao extends Notifier<DadosFinalizacao> {
         limparTroco: forma != FormaPagamento.dinheiro,
       );
 
-  void definirTroco(Dinheiro? valor) =>
-      state = valor == null ? state.copiar(limparTroco: true) : state.copiar(trocoPara: valor);
+  void definirTroco(Dinheiro? valor) => state = valor == null
+      ? state.copiar(limparTroco: true)
+      : state.copiar(trocoPara: valor);
 
-  void definirObservacao(String texto) => state = state.copiar(observacao: texto);
+  void definirObservacao(String texto) =>
+      state = state.copiar(observacao: texto);
 
   /// Depois de um pedido feito, a próxima compra recebe uma chave nova.
   void recomecar() =>
@@ -231,7 +234,8 @@ class EstadoFinalizacao extends Notifier<DadosFinalizacao> {
 }
 
 final provedorFinalizacao =
-    NotifierProvider<EstadoFinalizacao, DadosFinalizacao>(EstadoFinalizacao.new);
+    NotifierProvider<EstadoFinalizacao, DadosFinalizacao>(
+        EstadoFinalizacao.new);
 
 // ---------------------------------------------------------------------------
 // Pedidos
@@ -276,7 +280,8 @@ final provedorMeuCredito = FutureProvider<ResumoCredito?>((ref) async {
   return ref.watch(provedorRepositorioCredito).resumo();
 });
 
-final provedorMeuExtrato = FutureProvider.autoDispose<List<LancamentoCredito>>((ref) async {
+final provedorMeuExtrato =
+    FutureProvider.autoDispose<List<LancamentoCredito>>((ref) async {
   final id = ref.watch(provedorUsuarioId);
   if (id == null) {
     return const [];

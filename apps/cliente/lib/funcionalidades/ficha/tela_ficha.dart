@@ -1,5 +1,3 @@
-import 'dart:typed_data';
-
 import 'package:dados/dados.dart';
 import 'package:design_system/design_system.dart';
 import 'package:flutter/material.dart';
@@ -60,10 +58,17 @@ class _FichaAprovada extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 12),
-              LinhaValor(rotulo: 'CPF', valor: Validacoes.cpfMascarado(ficha.cpf)),
-              LinhaValor(rotulo: 'Nascimento', valor: Datas.formatarData(ficha.dataNascimento)),
-              LinhaValor(rotulo: 'Trabalho', valor: '${ficha.profissao} · ${ficha.empresa}'),
-              LinhaValor(rotulo: 'Referências', valor: '${ficha.referencia1Nome}, ${ficha.referencia2Nome}'),
+              LinhaValor(
+                  rotulo: 'CPF', valor: Validacoes.cpfMascarado(ficha.cpf)),
+              LinhaValor(
+                  rotulo: 'Nascimento',
+                  valor: Datas.formatarData(ficha.dataNascimento)),
+              LinhaValor(
+                  rotulo: 'Trabalho',
+                  valor: '${ficha.profissao} · ${ficha.empresa}'),
+              LinhaValor(
+                  rotulo: 'Referências',
+                  valor: '${ficha.referencia1Nome}, ${ficha.referencia2Nome}'),
               const SizedBox(height: 12),
               const Text('Para mudar algum dado, fale com a loja.'),
               const SizedBox(height: 20),
@@ -83,7 +88,8 @@ class _FichaAprovada extends StatelessWidget {
 /// Coloca as barras enquanto a pessoa digita a data ("16101980" → "16/10/1980").
 class _MascaraData extends TextInputFormatter {
   @override
-  TextEditingValue formatEditUpdate(TextEditingValue antigo, TextEditingValue novo) {
+  TextEditingValue formatEditUpdate(
+      TextEditingValue antigo, TextEditingValue novo) {
     final digitos = novo.text.replaceAll(RegExp(r'[^0-9]'), '');
     final limitado = digitos.length > 8 ? digitos.substring(0, 8) : digitos;
     final texto = StringBuffer();
@@ -124,7 +130,14 @@ class _FormularioFicha extends ConsumerStatefulWidget {
 
 class _FormularioFichaState extends ConsumerState<_FormularioFicha> {
   static const _tamanhoMaximo = 5 * 1024 * 1024;
-  static const _relacoes = ['Pai/Mãe', 'Irmão(ã)', 'Filho(a)', 'Vizinho(a)', 'Amigo(a)', 'Patrão'];
+  static const _relacoes = [
+    'Pai/Mãe',
+    'Irmão(ã)',
+    'Filho(a)',
+    'Vizinho(a)',
+    'Amigo(a)',
+    'Patrão'
+  ];
 
   final _formulario = GlobalKey<FormState>();
   late final TextEditingController _cpf;
@@ -151,14 +164,16 @@ class _FormularioFichaState extends ConsumerState<_FormularioFicha> {
   void initState() {
     super.initState();
     final f = widget.atual;
-    TextEditingController campo(String texto) => TextEditingController(text: texto);
+    TextEditingController campo(String texto) =>
+        TextEditingController(text: texto);
     _cpf = campo(f == null ? '' : Validacoes.formatarCpf(f.cpf));
     _rg = campo(f?.rg ?? '');
     _nascimento = campo(f == null ? '' : Datas.formatarData(f.dataNascimento));
     _mae = campo(f?.nomeMae ?? '');
     _empresa = campo(f?.empresa ?? '');
     _profissao = campo(f?.profissao ?? '');
-    _telTrabalho = campo(Validacoes.formatarTelefone(f?.telefoneTrabalho ?? ''));
+    _telTrabalho =
+        campo(Validacoes.formatarTelefone(f?.telefoneTrabalho ?? ''));
     _renda = campo(f == null ? '' : f.rendaMensal.formatarParaEdicao());
     _ref1Nome = campo(f?.referencia1Nome ?? '');
     _ref1Tel = campo(Validacoes.formatarTelefone(f?.referencia1Telefone ?? ''));
@@ -172,8 +187,20 @@ class _FormularioFichaState extends ConsumerState<_FormularioFicha> {
   }
 
   List<TextEditingController> get _controles => [
-        _cpf, _rg, _nascimento, _mae, _empresa, _profissao, _telTrabalho, _renda,
-        _ref1Nome, _ref1Tel, _ref1Rel, _ref2Nome, _ref2Tel, _ref2Rel,
+        _cpf,
+        _rg,
+        _nascimento,
+        _mae,
+        _empresa,
+        _profissao,
+        _telTrabalho,
+        _renda,
+        _ref1Nome,
+        _ref1Tel,
+        _ref1Rel,
+        _ref2Nome,
+        _ref2Tel,
+        _ref2Rel,
       ];
 
   @override
@@ -198,7 +225,8 @@ class _FormularioFichaState extends ConsumerState<_FormularioFicha> {
       final bytes = await arquivo.readAsBytes();
       if (bytes.length > _tamanhoMaximo) {
         if (mounted) {
-          mostrarMensagem(context, 'A foto ficou muito grande. Tente de novo.', erro: true);
+          mostrarMensagem(context, 'A foto ficou muito grande. Tente de novo.',
+              erro: true);
         }
         return null;
       }
@@ -211,14 +239,17 @@ class _FormularioFichaState extends ConsumerState<_FormularioFicha> {
                   : 'image/jpeg');
       if (!const {'image/jpeg', 'image/png', 'image/webp'}.contains(tipo)) {
         if (mounted) {
-          mostrarMensagem(context, 'Use uma foto JPG, PNG ou WEBP.', erro: true);
+          mostrarMensagem(context, 'Use uma foto JPG, PNG ou WEBP.',
+              erro: true);
         }
         return null;
       }
       return _Foto(bytes: bytes, tipo: tipo);
     } catch (_) {
       if (mounted) {
-        mostrarMensagem(context, 'Não foi possível abrir a câmera ou a galeria.', erro: true);
+        mostrarMensagem(
+            context, 'Não foi possível abrir a câmera ou a galeria.',
+            erro: true);
       }
       return null;
     }
@@ -242,19 +273,25 @@ class _FormularioFichaState extends ConsumerState<_FormularioFicha> {
   Future<void> _enviar() async {
     final valido = _formulario.currentState?.validate() ?? false;
     if (!valido) {
-      mostrarMensagem(context, 'Confira os campos marcados em vermelho.', erro: true);
+      mostrarMensagem(context, 'Confira os campos marcados em vermelho.',
+          erro: true);
       return;
     }
     if (_enderecoId == null) {
-      mostrarMensagem(context, 'Escolha o endereço onde você mora.', erro: true);
+      mostrarMensagem(context, 'Escolha o endereço onde você mora.',
+          erro: true);
       return;
     }
     if (!_documento.tem || !_comprovante.tem) {
-      mostrarMensagem(context, 'Envie a foto do documento e a do comprovante de endereço.', erro: true);
+      mostrarMensagem(
+          context, 'Envie a foto do documento e a do comprovante de endereço.',
+          erro: true);
       return;
     }
     if (!_autorizo) {
-      mostrarMensagem(context, 'Marque a autorização para a loja analisar seus dados.', erro: true);
+      mostrarMensagem(
+          context, 'Marque a autorização para a loja analisar seus dados.',
+          erro: true);
       return;
     }
     setState(() => _enviando = true);
@@ -293,7 +330,8 @@ class _FormularioFichaState extends ConsumerState<_FormularioFicha> {
       );
       ref.invalidate(provedorMinhaFicha);
       if (mounted) {
-        mostrarMensagem(context, 'Ficha enviada! Você já pode fazer pedidos pagando na entrega.');
+        mostrarMensagem(context,
+            'Ficha enviada! Você já pode fazer pedidos pagando na entrega.');
         if (context.canPop()) {
           context.pop();
         } else {
@@ -342,7 +380,9 @@ class _FormularioFichaState extends ConsumerState<_FormularioFicha> {
           TextFormField(
             controller: controle,
             textCapitalization: TextCapitalization.sentences,
-            validator: (v) => (v ?? '').trim().length < 2 ? 'Diga quem é (ex.: irmão, vizinho).' : null,
+            validator: (v) => (v ?? '').trim().length < 2
+                ? 'Diga quem é (ex.: irmão, vizinho).'
+                : null,
             decoration: const InputDecoration(labelText: 'Quem é para você?'),
           ),
           const SizedBox(height: 6),
@@ -351,7 +391,9 @@ class _FormularioFichaState extends ConsumerState<_FormularioFicha> {
             runSpacing: 6,
             children: [
               for (final r in _relacoes)
-                ActionChip(label: Text(r), onPressed: () => setState(() => controle.text = r)),
+                ActionChip(
+                    label: Text(r),
+                    onPressed: () => setState(() => controle.text = r)),
             ],
           ),
         ],
@@ -386,7 +428,8 @@ class _FormularioFichaState extends ConsumerState<_FormularioFicha> {
                 children: [
                   Icon(Icons.check_circle, color: Colors.green),
                   SizedBox(width: 8),
-                  Expanded(child: Text('Foto já enviada. Troque só se precisar.')),
+                  Expanded(
+                      child: Text('Foto já enviada. Troque só se precisar.')),
                 ],
               ),
             const SizedBox(height: 10),
@@ -428,7 +471,8 @@ class _FormularioFichaState extends ConsumerState<_FormularioFicha> {
 
   @override
   Widget build(BuildContext context) {
-    final enderecos = ref.watch(provedorEnderecos).valueOrNull ?? const <Endereco>[];
+    final enderecos =
+        ref.watch(provedorEnderecos).valueOrNull ?? const <Endereco>[];
     final atual = widget.atual;
     final telefone = [FilteringTextInputFormatter.allow(RegExp(r'[0-9() \-]'))];
     return Form(
@@ -452,10 +496,14 @@ class _FormularioFichaState extends ConsumerState<_FormularioFicha> {
                         : null,
                     child: ListTile(
                       leading: Icon(
-                        atual.status == StatusFicha.recusada ? Icons.error_outline : Icons.hourglass_top,
+                        atual.status == StatusFicha.recusada
+                            ? Icons.error_outline
+                            : Icons.hourglass_top,
                       ),
                       title: Text(
-                        atual.status == StatusFicha.recusada ? 'Ficha não aprovada' : 'Ficha em análise',
+                        atual.status == StatusFicha.recusada
+                            ? 'Ficha não aprovada'
+                            : 'Ficha em análise',
                       ),
                       subtitle: Text(
                         atual.status == StatusFicha.recusada
@@ -479,7 +527,8 @@ class _FormularioFichaState extends ConsumerState<_FormularioFicha> {
                 _campo(
                   _rg,
                   'RG',
-                  validador: (v) => (v ?? '').trim().length < 3 ? 'Informe o RG.' : null,
+                  validador: (v) =>
+                      (v ?? '').trim().length < 3 ? 'Informe o RG.' : null,
                 ),
                 _campo(
                   _nascimento,
@@ -493,7 +542,9 @@ class _FormularioFichaState extends ConsumerState<_FormularioFicha> {
                   _mae,
                   'Nome completo da mãe',
                   maiusculas: TextCapitalization.words,
-                  validador: (v) => (v ?? '').trim().length < 3 ? 'Informe o nome da mãe.' : null,
+                  validador: (v) => (v ?? '').trim().length < 3
+                      ? 'Informe o nome da mãe.'
+                      : null,
                 ),
                 const TituloSecao('Onde você mora'),
                 if (enderecos.isEmpty)
@@ -504,13 +555,18 @@ class _FormularioFichaState extends ConsumerState<_FormularioFicha> {
                   )
                 else
                   DropdownMenu<String>(
-                    initialSelection: enderecos.any((e) => e.id == _enderecoId) ? _enderecoId : null,
+                    initialSelection: enderecos.any((e) => e.id == _enderecoId)
+                        ? _enderecoId
+                        : null,
                     label: const Text('Endereço de moradia'),
                     expandedInsets: EdgeInsets.zero,
                     onSelected: (id) => setState(() => _enderecoId = id),
                     dropdownMenuEntries: [
                       for (final e in enderecos)
-                        if (e.id != null) DropdownMenuEntry(value: e.id!, label: '${e.apelido} · ${e.linhaPrincipal}'),
+                        if (e.id != null)
+                          DropdownMenuEntry(
+                              value: e.id!,
+                              label: '${e.apelido} · ${e.linhaPrincipal}'),
                     ],
                   ),
                 const TituloSecao('Trabalho e renda'),
@@ -519,13 +575,17 @@ class _FormularioFichaState extends ConsumerState<_FormularioFicha> {
                   'Onde trabalha',
                   dica: 'Nome da empresa ou "autônomo"',
                   maiusculas: TextCapitalization.words,
-                  validador: (v) => (v ?? '').trim().length < 2 ? 'Informe onde trabalha.' : null,
+                  validador: (v) => (v ?? '').trim().length < 2
+                      ? 'Informe onde trabalha.'
+                      : null,
                 ),
                 _campo(
                   _profissao,
                   'Profissão',
                   maiusculas: TextCapitalization.sentences,
-                  validador: (v) => (v ?? '').trim().length < 2 ? 'Informe a profissão.' : null,
+                  validador: (v) => (v ?? '').trim().length < 2
+                      ? 'Informe a profissão.'
+                      : null,
                 ),
                 _campo(
                   _telTrabalho,
@@ -538,10 +598,16 @@ class _FormularioFichaState extends ConsumerState<_FormularioFicha> {
                   padding: const EdgeInsets.only(bottom: 12),
                   child: TextFormField(
                     controller: _renda,
-                    keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                    inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'[0-9.,]'))],
-                    validator: (v) => Dinheiro.lerReais(v ?? '') == null ? 'Informe a renda por mês, ex.: 2.500,00' : null,
-                    decoration: const InputDecoration(labelText: 'Renda por mês', prefixText: 'R\$ '),
+                    keyboardType:
+                        const TextInputType.numberWithOptions(decimal: true),
+                    inputFormatters: [
+                      FilteringTextInputFormatter.allow(RegExp(r'[0-9.,]'))
+                    ],
+                    validator: (v) => Dinheiro.lerReais(v ?? '') == null
+                        ? 'Informe a renda por mês, ex.: 2.500,00'
+                        : null,
+                    decoration: const InputDecoration(
+                        labelText: 'Renda por mês', prefixText: 'R\$ '),
                   ),
                 ),
                 const TituloSecao('Primeira referência'),
@@ -549,16 +615,21 @@ class _FormularioFichaState extends ConsumerState<_FormularioFicha> {
                   _ref1Nome,
                   'Nome',
                   maiusculas: TextCapitalization.words,
-                  validador: (v) => (v ?? '').trim().length < 3 ? 'Informe o nome.' : null,
+                  validador: (v) =>
+                      (v ?? '').trim().length < 3 ? 'Informe o nome.' : null,
                 ),
-                _campo(_ref1Tel, 'Telefone com DDD', teclado: TextInputType.phone, formatadores: telefone, validador: Validacoes.celular),
+                _campo(_ref1Tel, 'Telefone com DDD',
+                    teclado: TextInputType.phone,
+                    formatadores: telefone,
+                    validador: Validacoes.celular),
                 _relacao(_ref1Rel),
                 const TituloSecao('Segunda referência'),
                 _campo(
                   _ref2Nome,
                   'Nome',
                   maiusculas: TextCapitalization.words,
-                  validador: (v) => (v ?? '').trim().length < 3 ? 'Informe o nome.' : null,
+                  validador: (v) =>
+                      (v ?? '').trim().length < 3 ? 'Informe o nome.' : null,
                 ),
                 _campo(
                   _ref2Tel,
@@ -570,7 +641,8 @@ class _FormularioFichaState extends ConsumerState<_FormularioFicha> {
                     if (erro != null) {
                       return erro;
                     }
-                    return Validacoes.somenteDigitos(v) == Validacoes.somenteDigitos(_ref1Tel.text)
+                    return Validacoes.somenteDigitos(v) ==
+                            Validacoes.somenteDigitos(_ref1Tel.text)
                         ? 'Use um telefone diferente da primeira referência.'
                         : null;
                   },
@@ -586,7 +658,8 @@ class _FormularioFichaState extends ConsumerState<_FormularioFicha> {
                 const SizedBox(height: 8),
                 _cartaoFoto(
                   titulo: 'Comprovante de endereço',
-                  explicacao: 'Conta de luz, água ou telefone recente, no seu nome ou de alguém da casa.',
+                  explicacao:
+                      'Conta de luz, água ou telefone recente, no seu nome ou de alguém da casa.',
                   foto: _comprovante,
                   aoEscolher: (f) => setState(() => _comprovante = f),
                 ),

@@ -73,7 +73,8 @@ class _FilaPedidosState extends ConsumerState<FilaPedidos> {
         .read(provedorPedidos)
         .mudancasDaCentral(widget.centralId)
         .listen((_) => _agendarRecarga(), onError: (_) => _agendarRecarga());
-    _intervalo = Timer.periodic(const Duration(seconds: 45), (_) => _recarregar());
+    _intervalo =
+        Timer.periodic(const Duration(seconds: 45), (_) => _recarregar());
   }
 
   void _desligar() {
@@ -97,12 +98,15 @@ class _FilaPedidosState extends ConsumerState<FilaPedidos> {
 
   Future<void> _recarregar() async {
     try {
-      final pedidos = await ref.read(provedorPedidos).pedidosDaCentral(widget.centralId);
+      final pedidos =
+          await ref.read(provedorPedidos).pedidosDaCentral(widget.centralId);
       if (!mounted) {
         return;
       }
-      final novos = pedidos.where((p) => p.status == StatusPedido.novo).toList();
-      final chegaram = novos.where((p) => !_novosJaVistos.contains(p.id)).toList();
+      final novos =
+          pedidos.where((p) => p.status == StatusPedido.novo).toList();
+      final chegaram =
+          novos.where((p) => !_novosJaVistos.contains(p.id)).toList();
       _novosJaVistos.addAll(novos.map((p) => p.id));
       setState(() {
         _pedidos = pedidos;
@@ -144,7 +148,8 @@ class _FilaPedidosState extends ConsumerState<FilaPedidos> {
   }
 
   Future<void> _abrir(Pedido pedido) async {
-    await mostrarDetalhePedido(context, pedidoId: pedido.id, centralId: widget.centralId);
+    await mostrarDetalhePedido(context,
+        pedidoId: pedido.id, centralId: widget.centralId);
     await _recarregar();
   }
 
@@ -154,13 +159,20 @@ class _FilaPedidosState extends ConsumerState<FilaPedidos> {
       return const Carregando(mensagem: 'Carregando pedidos...');
     }
     if (_erro != null && _pedidos.isEmpty) {
-      return EstadoErro(mensagem: mensagemDeErro(_erro!), aoTentarNovamente: _recarregar);
+      return EstadoErro(
+          mensagem: mensagemDeErro(_erro!), aoTentarNovamente: _recarregar);
     }
 
     final colunas = <(String, List<Pedido>)>[
       ('Novos', _pedidos.where((p) => p.status == StatusPedido.novo).toList()),
-      ('Confirmados', _pedidos.where((p) => p.status == StatusPedido.confirmado).toList()),
-      ('Em rota', _pedidos.where((p) => p.status == StatusPedido.emRota).toList()),
+      (
+        'Confirmados',
+        _pedidos.where((p) => p.status == StatusPedido.confirmado).toList()
+      ),
+      (
+        'Em rota',
+        _pedidos.where((p) => p.status == StatusPedido.emRota).toList()
+      ),
       ('Encerrados hoje', _pedidos.where((p) => p.status.ehFinal).toList()),
     ];
 
@@ -174,12 +186,15 @@ class _FilaPedidosState extends ConsumerState<FilaPedidos> {
                   ? 'Sem conexão — tentando de novo...'
                   : 'Atualizado às ${_atualizadoEm == null ? '--' : Datas.formatarHoraDe(_atualizadoEm!)}',
               style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: _erro != null ? Theme.of(context).colorScheme.error : null,
+                    color: _erro != null
+                        ? Theme.of(context).colorScheme.error
+                        : null,
                   ),
             ),
           ),
           IconButton(
-            tooltip: _somLigado ? 'Desligar aviso sonoro' : 'Ligar aviso sonoro',
+            tooltip:
+                _somLigado ? 'Desligar aviso sonoro' : 'Ligar aviso sonoro',
             icon: Icon(_somLigado ? Icons.volume_up : Icons.volume_off),
             onPressed: () => setState(() => _somLigado = !_somLigado),
           ),
@@ -204,7 +219,8 @@ class _FilaPedidosState extends ConsumerState<FilaPedidos> {
                   children: [
                     for (final (titulo, lista) in colunas)
                       Expanded(
-                        child: _Coluna(titulo: titulo, pedidos: lista, aoAbrir: _abrir),
+                        child: _Coluna(
+                            titulo: titulo, pedidos: lista, aoAbrir: _abrir),
                       ),
                   ],
                 ),
@@ -221,7 +237,8 @@ class _FilaPedidosState extends ConsumerState<FilaPedidos> {
                 isScrollable: true,
                 tabAlignment: TabAlignment.start,
                 tabs: [
-                  for (final (titulo, lista) in colunas) Tab(text: '$titulo (${lista.length})'),
+                  for (final (titulo, lista) in colunas)
+                    Tab(text: '$titulo (${lista.length})'),
                 ],
               ),
               Expanded(
@@ -246,7 +263,8 @@ class _FilaPedidosState extends ConsumerState<FilaPedidos> {
 }
 
 class _Coluna extends StatelessWidget {
-  const _Coluna({required this.titulo, required this.pedidos, required this.aoAbrir});
+  const _Coluna(
+      {required this.titulo, required this.pedidos, required this.aoAbrir});
 
   final String titulo;
   final List<Pedido> pedidos;
@@ -265,10 +283,12 @@ class _Coluna extends StatelessWidget {
           children: [
             Padding(
               padding: const EdgeInsets.all(12),
-              child: Text('$titulo (${pedidos.length})', style: Theme.of(context).textTheme.titleMedium),
+              child: Text('$titulo (${pedidos.length})',
+                  style: Theme.of(context).textTheme.titleMedium),
             ),
             Expanded(
-              child: _ListaPedidos(pedidos: pedidos, vazio: 'Nenhum pedido.', aoAbrir: aoAbrir),
+              child: _ListaPedidos(
+                  pedidos: pedidos, vazio: 'Nenhum pedido.', aoAbrir: aoAbrir),
             ),
           ],
         ),
@@ -311,13 +331,16 @@ class _ListaPedidos extends StatelessWidget {
                 CartaoPedidoFila(pedido: pedidos[indice], aoAbrir: aoAbrir),
           );
     final atualizar = aoAtualizar;
-    return atualizar == null ? lista : RefreshIndicator(onRefresh: atualizar, child: lista);
+    return atualizar == null
+        ? lista
+        : RefreshIndicator(onRefresh: atualizar, child: lista);
   }
 }
 
 /// Cartão resumido do pedido na fila.
 class CartaoPedidoFila extends StatelessWidget {
-  const CartaoPedidoFila({required this.pedido, required this.aoAbrir, super.key});
+  const CartaoPedidoFila(
+      {required this.pedido, required this.aoAbrir, super.key});
 
   final Pedido pedido;
   final ValueChanged<Pedido> aoAbrir;
@@ -328,7 +351,9 @@ class CartaoPedidoFila extends StatelessWidget {
     final atrasado = pedido.status.emAndamento &&
         (pedido.dataEntrega.isBefore(Datas.hoje()) ||
             (pedido.dataEntrega == Datas.hoje() &&
-                pedido.horaFim.compareTo(Datas.formatarHoraDe(Datas.paraLocal(DateTime.now()))) < 0));
+                pedido.horaFim.compareTo(
+                        Datas.formatarHoraDe(Datas.paraLocal(DateTime.now()))) <
+                    0));
     return Card(
       color: tema.colorScheme.surface,
       child: InkWell(
@@ -342,7 +367,8 @@ class CartaoPedidoFila extends StatelessWidget {
               Row(
                 children: [
                   Expanded(
-                    child: Text('Nº ${pedido.numero}', style: tema.textTheme.titleMedium),
+                    child: Text('Nº ${pedido.numero}',
+                        style: tema.textTheme.titleMedium),
                   ),
                   SeloStatus(status: pedido.status, paraCentral: true),
                 ],
@@ -357,18 +383,23 @@ class CartaoPedidoFila extends StatelessWidget {
               ),
               Text('${pedido.bairro} · ${pedido.cidade}'),
               const SizedBox(height: 4),
-              Text(pedido.resumoItens, maxLines: 2, overflow: TextOverflow.ellipsis),
+              Text(pedido.resumoItens,
+                  maxLines: 2, overflow: TextOverflow.ellipsis),
               const SizedBox(height: 6),
               Wrap(
                 spacing: 6,
                 runSpacing: 6,
                 crossAxisAlignment: WrapCrossAlignment.center,
                 children: [
-                  Text(pedido.total.formatarEmReais(), style: tema.textTheme.titleMedium),
-                  Chip(label: Text(pedido.formaPagamento.rotulo), visualDensity: VisualDensity.compact),
+                  Text(pedido.total.formatarEmReais(),
+                      style: tema.textTheme.titleMedium),
+                  Chip(
+                      label: Text(pedido.formaPagamento.rotulo),
+                      visualDensity: VisualDensity.compact),
                   if (!pedido.trocoALevar.ehZero)
                     Chip(
-                      label: Text('Troco: ${pedido.trocoALevar.formatarEmReais()}'),
+                      label: Text(
+                          'Troco: ${pedido.trocoALevar.formatarEmReais()}'),
                       visualDensity: VisualDensity.compact,
                     ),
                   if (pedido.transferencias > 0)
@@ -385,7 +416,8 @@ class CartaoPedidoFila extends StatelessWidget {
                     ),
                   if (atrasado)
                     Chip(
-                      avatar: Icon(Icons.warning_amber, size: 18, color: tema.colorScheme.error),
+                      avatar: Icon(Icons.warning_amber,
+                          size: 18, color: tema.colorScheme.error),
                       label: const Text('Atrasado'),
                       visualDensity: VisualDensity.compact,
                     ),

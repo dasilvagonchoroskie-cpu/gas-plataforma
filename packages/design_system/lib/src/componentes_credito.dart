@@ -11,7 +11,8 @@ class LinhaLancamento extends StatelessWidget {
   Widget build(BuildContext context) {
     final cores = Theme.of(context).colorScheme;
     final pagou = lancamento.valor.centavos < 0;
-    final valor = pagou ? Dinheiro(-lancamento.valor.centavos) : lancamento.valor;
+    final valor =
+        pagou ? Dinheiro(-lancamento.valor.centavos) : lancamento.valor;
     final detalhe = [
       Datas.formatarDataHora(lancamento.criadoEm),
       if (lancamento.forma != null) lancamento.forma!.rotulo,

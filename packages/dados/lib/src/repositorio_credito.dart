@@ -38,7 +38,8 @@ class RepositorioCredito {
 
   /// Envia a foto (documento ou comprovante) para a pasta privada do cliente e
   /// devolve o caminho guardado na ficha.
-  Future<String> enviarFoto(Uint8List bytes, String tipoArquivo, {required String nome}) async {
+  Future<String> enviarFoto(Uint8List bytes, String tipoArquivo,
+      {required String nome}) async {
     final extensao = switch (tipoArquivo) {
       'image/png' => 'png',
       'image/webp' => 'webp',
@@ -63,11 +64,13 @@ class RepositorioCredito {
 
   /// Resumo do crediário. Sem [clienteId]: o do cliente logado.
   Future<ResumoCredito> resumo([String? clienteId]) async {
-    final dados = await _cliente.rpc('resumo_credito', params: {'p_cliente_id': clienteId});
+    final dados = await _cliente
+        .rpc('resumo_credito', params: {'p_cliente_id': clienteId});
     return ResumoCredito.deJson(Map<String, dynamic>.from(dados as Map));
   }
 
-  Future<List<LancamentoCredito>> extrato(String clienteId, {int limite = 200}) async {
+  Future<List<LancamentoCredito>> extrato(String clienteId,
+      {int limite = 200}) async {
     final linhas = await _cliente
         .from('lancamentos_credito')
         .select()
@@ -85,16 +88,20 @@ class RepositorioCredito {
   // Painéis (dono e centrais)
   // -------------------------------------------------------------------------
 
-  Future<List<ItemFicha>> fichas({StatusFicha? status, String busca = ''}) async {
+  Future<List<ItemFicha>> fichas(
+      {StatusFicha? status, String busca = ''}) async {
     final linhas = await _cliente.rpc('listar_fichas', params: {
       'p_status': status?.valor,
       'p_busca': busca.trim().isEmpty ? null : busca.trim(),
     }) as List<dynamic>;
-    return linhas.map((l) => ItemFicha.deJson(Map<String, dynamic>.from(l as Map))).toList();
+    return linhas
+        .map((l) => ItemFicha.deJson(Map<String, dynamic>.from(l as Map)))
+        .toList();
   }
 
   Future<FichaCliente> fichaCompleta(String clienteId) async {
-    final dados = await _cliente.rpc('ficha_completa', params: {'p_cliente_id': clienteId});
+    final dados = await _cliente
+        .rpc('ficha_completa', params: {'p_cliente_id': clienteId});
     return FichaCliente.deJson(Map<String, dynamic>.from(dados as Map));
   }
 
@@ -115,7 +122,8 @@ class RepositorioCredito {
     });
   }
 
-  Future<void> definirBloqueio(String clienteId, {required bool bloqueado, String? motivo}) async {
+  Future<void> definirBloqueio(String clienteId,
+      {required bool bloqueado, String? motivo}) async {
     await _cliente.rpc('definir_bloqueio_credito', params: {
       'p_cliente_id': clienteId,
       'p_bloqueado': bloqueado,
@@ -125,8 +133,11 @@ class RepositorioCredito {
 
   /// Quem deve. O dono pode filtrar por central; a central vê só os dela.
   Future<List<Devedor>> devedores({String? centralId}) async {
-    final linhas = await _cliente.rpc('devedores', params: {'p_central_id': centralId}) as List<dynamic>;
-    return linhas.map((l) => Devedor.deJson(Map<String, dynamic>.from(l as Map))).toList();
+    final linhas = await _cliente
+        .rpc('devedores', params: {'p_central_id': centralId}) as List<dynamic>;
+    return linhas
+        .map((l) => Devedor.deJson(Map<String, dynamic>.from(l as Map)))
+        .toList();
   }
 
   Future<ResumoCredito> registrarPagamento({
@@ -139,7 +150,8 @@ class RepositorioCredito {
       'p_cliente_id': clienteId,
       'p_valor_centavos': valor.centavos,
       'p_forma': forma.valor,
-      'p_observacao': (observacao ?? '').trim().isEmpty ? null : observacao!.trim(),
+      'p_observacao':
+          (observacao ?? '').trim().isEmpty ? null : observacao!.trim(),
     });
     return ResumoCredito.deJson(Map<String, dynamic>.from(dados as Map));
   }
@@ -168,7 +180,8 @@ class RepositorioCredito {
   Future<void> salvarConfiguracoes(Configuracoes configuracoes) async {
     await _cliente.from('configuracoes').update({
       'centrais_aprovam_credito': configuracoes.centraisAprovamCredito,
-      'limite_maximo_central_centavos': configuracoes.limiteMaximoCentral?.centavos,
+      'limite_maximo_central_centavos':
+          configuracoes.limiteMaximoCentral?.centavos,
     }).eq('id', true);
   }
 }

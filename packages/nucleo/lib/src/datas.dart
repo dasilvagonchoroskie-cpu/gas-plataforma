@@ -76,7 +76,8 @@ abstract final class Datas {
   static int idade(DateTime nascimento, {DateTime? agora}) {
     final h = hoje(agora);
     var anos = h.year - nascimento.year;
-    if (h.month < nascimento.month || (h.month == nascimento.month && h.day < nascimento.day)) {
+    if (h.month < nascimento.month ||
+        (h.month == nascimento.month && h.day < nascimento.day)) {
       anos--;
     }
     return anos;

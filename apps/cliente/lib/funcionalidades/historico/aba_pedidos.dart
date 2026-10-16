@@ -50,7 +50,8 @@ class AbaPedidos extends ConsumerWidget {
               padding: const EdgeInsets.all(16),
               itemCount: ordenados.length,
               separatorBuilder: (context, indice) => const SizedBox(height: 12),
-              itemBuilder: (context, indice) => _CartaoPedido(pedido: ordenados[indice]),
+              itemBuilder: (context, indice) =>
+                  _CartaoPedido(pedido: ordenados[indice]),
             ),
           );
         },
@@ -79,7 +80,8 @@ class _CartaoPedido extends StatelessWidget {
               Row(
                 children: [
                   Expanded(
-                    child: Text('Pedido nº ${pedido.numero}', style: tema.textTheme.titleMedium),
+                    child: Text('Pedido nº ${pedido.numero}',
+                        style: tema.textTheme.titleMedium),
                   ),
                   SeloStatus(status: pedido.status),
                 ],

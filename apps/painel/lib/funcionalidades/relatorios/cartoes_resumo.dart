@@ -13,10 +13,22 @@ class CartoesResumo extends StatelessWidget {
       spacing: 12,
       runSpacing: 12,
       children: [
-        CartaoNumero(rotulo: 'Pedidos', valor: '${resumo.pedidos}', icone: Icons.receipt_long),
-        CartaoNumero(rotulo: 'Em aberto', valor: '${resumo.emAberto}', icone: Icons.pending_actions),
-        CartaoNumero(rotulo: 'Entregues', valor: '${resumo.entregues}', icone: Icons.done_all),
-        CartaoNumero(rotulo: 'Cancelados', valor: '${resumo.cancelados}', icone: Icons.cancel_outlined),
+        CartaoNumero(
+            rotulo: 'Pedidos',
+            valor: '${resumo.pedidos}',
+            icone: Icons.receipt_long),
+        CartaoNumero(
+            rotulo: 'Em aberto',
+            valor: '${resumo.emAberto}',
+            icone: Icons.pending_actions),
+        CartaoNumero(
+            rotulo: 'Entregues',
+            valor: '${resumo.entregues}',
+            icone: Icons.done_all),
+        CartaoNumero(
+            rotulo: 'Cancelados',
+            valor: '${resumo.cancelados}',
+            icone: Icons.cancel_outlined),
         CartaoNumero(
           rotulo: 'Faturamento',
           valor: resumo.faturamento.formatarEmReais(),
@@ -60,7 +72,9 @@ class CartaoNumero extends StatelessWidget {
             children: [
               Icon(icone, color: tema.colorScheme.primary),
               const SizedBox(height: 8),
-              Text(valor, style: tema.textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w800)),
+              Text(valor,
+                  style: tema.textTheme.headlineSmall
+                      ?.copyWith(fontWeight: FontWeight.w800)),
               Text(rotulo, style: tema.textTheme.bodyMedium),
             ],
           ),

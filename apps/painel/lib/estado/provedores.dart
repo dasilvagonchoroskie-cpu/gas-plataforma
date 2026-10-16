@@ -8,17 +8,17 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 final provedorCliente = Provider<SupabaseClient>((ref) => clienteBackend);
 
-final provedorConta =
-    Provider<RepositorioConta>((ref) => RepositorioConta(ref.watch(provedorCliente)));
+final provedorConta = Provider<RepositorioConta>(
+    (ref) => RepositorioConta(ref.watch(provedorCliente)));
 
-final provedorPedidos =
-    Provider<RepositorioPedidos>((ref) => RepositorioPedidos(ref.watch(provedorCliente)));
+final provedorPedidos = Provider<RepositorioPedidos>(
+    (ref) => RepositorioPedidos(ref.watch(provedorCliente)));
 
-final provedorGestao =
-    Provider<RepositorioGestao>((ref) => RepositorioGestao(ref.watch(provedorCliente)));
+final provedorGestao = Provider<RepositorioGestao>(
+    (ref) => RepositorioGestao(ref.watch(provedorCliente)));
 
-final provedorEnderecos =
-    Provider<RepositorioEnderecos>((ref) => RepositorioEnderecos(ref.watch(provedorCliente)));
+final provedorEnderecos = Provider<RepositorioEnderecos>(
+    (ref) => RepositorioEnderecos(ref.watch(provedorCliente)));
 
 /// Avisa a tela raiz sempre que alguém entra ou sai.
 class EstadoDeLogin extends ChangeNotifier {
@@ -48,10 +48,11 @@ class EstadoDeLogin extends ChangeNotifier {
   }
 }
 
-final provedorEstadoDeLogin =
-    ChangeNotifierProvider<EstadoDeLogin>((ref) => EstadoDeLogin(ref.watch(provedorConta)));
+final provedorEstadoDeLogin = ChangeNotifierProvider<EstadoDeLogin>(
+    (ref) => EstadoDeLogin(ref.watch(provedorConta)));
 
-final provedorUsuarioId = Provider<String?>((ref) => ref.watch(provedorEstadoDeLogin).usuarioId);
+final provedorUsuarioId =
+    Provider<String?>((ref) => ref.watch(provedorEstadoDeLogin).usuarioId);
 
 final provedorPerfil = FutureProvider<Perfil?>((ref) async {
   if (ref.watch(provedorUsuarioId) == null) {
@@ -75,8 +76,8 @@ final provedorProdutos = FutureProvider<List<Produto>>((ref) async {
 // Ficha de cadastro e crediário
 // ---------------------------------------------------------------------------
 
-final provedorCredito =
-    Provider<RepositorioCredito>((ref) => RepositorioCredito(ref.watch(provedorCliente)));
+final provedorCredito = Provider<RepositorioCredito>(
+    (ref) => RepositorioCredito(ref.watch(provedorCliente)));
 
 /// Configurações da revenda (o dono altera; a central só lê).
 final provedorConfiguracoes = FutureProvider<Configuracoes>((ref) async {
@@ -88,7 +89,8 @@ final provedorConfiguracoes = FutureProvider<Configuracoes>((ref) async {
 final provedorFichasPendentes = FutureProvider<int>((ref) async {
   ref.watch(provedorUsuarioId);
   try {
-    final fichas = await ref.watch(provedorCredito).fichas(status: StatusFicha.pendente);
+    final fichas =
+        await ref.watch(provedorCredito).fichas(status: StatusFicha.pendente);
     return fichas.length;
   } catch (_) {
     return 0;

@@ -7,15 +7,18 @@ import 'package:nucleo/nucleo.dart';
 
 import '../../estado/provedores.dart';
 
-final _provedorEstoque = FutureProvider.autoDispose.family<List<ItemEstoque>, String>(
+final _provedorEstoque =
+    FutureProvider.autoDispose.family<List<ItemEstoque>, String>(
   (ref, centralId) => ref.watch(provedorGestao).estoque(centralId),
 );
 
-final _provedorPrecos = FutureProvider.autoDispose.family<List<ItemCatalogo>, String>(
+final _provedorPrecos =
+    FutureProvider.autoDispose.family<List<ItemCatalogo>, String>(
   (ref, centralId) => ref.watch(provedorGestao).precos(centralId),
 );
 
-final _provedorMovimentos = FutureProvider.autoDispose.family<List<MovimentoEstoque>, String>(
+final _provedorMovimentos =
+    FutureProvider.autoDispose.family<List<MovimentoEstoque>, String>(
   (ref, centralId) => ref.watch(provedorGestao).movimentos(centralId),
 );
 
@@ -31,7 +34,8 @@ class SecaoEstoque extends ConsumerWidget {
     ref.invalidate(_provedorMovimentos(centralId));
   }
 
-  Future<void> _movimentar(BuildContext context, WidgetRef ref, _LinhaEstoque linha) async {
+  Future<void> _movimentar(
+      BuildContext context, WidgetRef ref, _LinhaEstoque linha) async {
     final dados = await showDialog<_Movimento>(
       context: context,
       builder: (_) => _DialogoMovimento(linha: linha),
@@ -59,7 +63,8 @@ class SecaoEstoque extends ConsumerWidget {
     }
   }
 
-  Future<void> _alerta(BuildContext context, WidgetRef ref, _LinhaEstoque linha) async {
+  Future<void> _alerta(
+      BuildContext context, WidgetRef ref, _LinhaEstoque linha) async {
     final texto = await pedirTexto(
       context,
       titulo: 'Avisar quando tiver pouco',
@@ -71,7 +76,8 @@ class SecaoEstoque extends ConsumerWidget {
     }
     final minimo = int.tryParse(texto);
     if (minimo == null || minimo < 0) {
-      mostrarMensagem(context, 'Digite um número a partir de zero.', erro: true);
+      mostrarMensagem(context, 'Digite um número a partir de zero.',
+          erro: true);
       return;
     }
     try {
@@ -85,7 +91,9 @@ class SecaoEstoque extends ConsumerWidget {
               motivo: 'Início do controle de estoque',
             );
       }
-      await ref.read(provedorGestao).definirAlertaMinimo(centralId, linha.produtoId, minimo);
+      await ref
+          .read(provedorGestao)
+          .definirAlertaMinimo(centralId, linha.produtoId, minimo);
       _atualizar(ref);
     } catch (erro) {
       if (context.mounted) {
@@ -97,18 +105,22 @@ class SecaoEstoque extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final estoque = ref.watch(_provedorEstoque(centralId));
-    final precos = ref.watch(_provedorPrecos(centralId)).valueOrNull ?? const <ItemCatalogo>[];
+    final precos = ref.watch(_provedorPrecos(centralId)).valueOrNull ??
+        const <ItemCatalogo>[];
     final movimentos = ref.watch(_provedorMovimentos(centralId));
     final tema = Theme.of(context);
 
     return estoque.when(
       loading: () => const Carregando(),
-      error: (erro, _) => EstadoErro(mensagem: mensagemDeErro(erro), aoTentarNovamente: () => _atualizar(ref)),
+      error: (erro, _) => EstadoErro(
+          mensagem: mensagemDeErro(erro),
+          aoTentarNovamente: () => _atualizar(ref)),
       data: (itens) {
         final linhas = <_LinhaEstoque>[
           for (final i in itens) _LinhaEstoque.deEstoque(i),
           for (final p in precos)
-            if (!itens.any((i) => i.produtoId == p.produto.id)) _LinhaEstoque.semRegistro(p.produto),
+            if (!itens.any((i) => i.produtoId == p.produto.id))
+              _LinhaEstoque.semRegistro(p.produto),
         ]..sort((a, b) => a.nome.compareTo(b.nome));
         return RefreshIndicator(
           onRefresh: () async => _atualizar(ref),
@@ -121,11 +133,14 @@ class SecaoEstoque extends ConsumerWidget {
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
                     const TituloSecao('Estoque agora'),
-                    if (linhas.isEmpty) const Text('Nenhum produto cadastrado para esta central.'),
+                    if (linhas.isEmpty)
+                      const Text(
+                          'Nenhum produto cadastrado para esta central.'),
                     for (final linha in linhas)
                       Card(
                         color: linha.negativo || linha.baixo
-                            ? tema.colorScheme.errorContainer.withValues(alpha: 0.5)
+                            ? tema.colorScheme.errorContainer
+                                .withValues(alpha: 0.5)
                             : null,
                         child: Padding(
                           padding: const EdgeInsets.all(12),
@@ -135,28 +150,35 @@ class SecaoEstoque extends ConsumerWidget {
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    Text(linha.nome, style: tema.textTheme.titleMedium),
+                                    Text(linha.nome,
+                                        style: tema.textTheme.titleMedium),
                                     Text(
                                       'Cheios: ${linha.cheios}'
                                       '${linha.troca ? '   ·   Vazios: ${linha.vazios}' : ''}',
                                       style: tema.textTheme.bodyLarge,
                                     ),
                                     if (linha.negativo)
-                                      Text('Estoque negativo: faça uma contagem.',
-                                          style: TextStyle(color: tema.colorScheme.error)),
+                                      Text(
+                                          'Estoque negativo: faça uma contagem.',
+                                          style: TextStyle(
+                                              color: tema.colorScheme.error)),
                                     if (!linha.negativo && linha.baixo)
-                                      Text('Pouco estoque (aviso em ${linha.alertaMinimo}).',
-                                          style: TextStyle(color: tema.colorScheme.error)),
+                                      Text(
+                                          'Pouco estoque (aviso em ${linha.alertaMinimo}).',
+                                          style: TextStyle(
+                                              color: tema.colorScheme.error)),
                                   ],
                                 ),
                               ),
                               IconButton(
                                 tooltip: 'Aviso de pouco estoque',
-                                icon: const Icon(Icons.notifications_active_outlined),
+                                icon: const Icon(
+                                    Icons.notifications_active_outlined),
                                 onPressed: () => _alerta(context, ref, linha),
                               ),
                               FilledButton.tonal(
-                                onPressed: () => _movimentar(context, ref, linha),
+                                onPressed: () =>
+                                    _movimentar(context, ref, linha),
                                 child: const Text('Movimentar'),
                               ),
                             ],
@@ -174,8 +196,12 @@ class SecaoEstoque extends ConsumerWidget {
                                 ListTile(
                                   dense: true,
                                   leading: Icon(
-                                    m.deltaCheios >= 0 ? Icons.arrow_downward : Icons.arrow_upward,
-                                    color: m.deltaCheios >= 0 ? Colors.green.shade700 : tema.colorScheme.error,
+                                    m.deltaCheios >= 0
+                                        ? Icons.arrow_downward
+                                        : Icons.arrow_upward,
+                                    color: m.deltaCheios >= 0
+                                        ? Colors.green.shade700
+                                        : tema.colorScheme.error,
                                   ),
                                   title: Text(
                                     '${m.produtoNome}: cheios ${_sinal(m.deltaCheios)}'
@@ -280,9 +306,12 @@ class _DialogoMovimentoState extends State<_DialogoMovimento> {
   String get _ajuda => switch (_tipo) {
         TipoMovimentoEstoque.entrada =>
           'Chegou carga: some os cheios que chegaram e os vazios que foram devolvidos ao fornecedor.',
-        TipoMovimentoEstoque.saida => 'Saída sem venda: perda, vazamento, devolução.',
-        TipoMovimentoEstoque.ajuste => 'Correção: use número negativo para tirar (ex.: -2).',
-        TipoMovimentoEstoque.contagem => 'Digite quanto tem agora, contado na central.',
+        TipoMovimentoEstoque.saida =>
+          'Saída sem venda: perda, vazamento, devolução.',
+        TipoMovimentoEstoque.ajuste =>
+          'Correção: use número negativo para tirar (ex.: -2).',
+        TipoMovimentoEstoque.contagem =>
+          'Digite quanto tem agora, contado na central.',
         TipoMovimentoEstoque.entregaPedido => '',
       };
 
@@ -314,7 +343,8 @@ class _DialogoMovimentoState extends State<_DialogoMovimento> {
       setState(() => _erro = 'Escreva o motivo.');
       return;
     }
-    Navigator.of(context).pop(_Movimento(_tipo, cheios, vazios, _motivo.text.trim()));
+    Navigator.of(context)
+        .pop(_Movimento(_tipo, cheios, vazios, _motivo.text.trim()));
   }
 
   @override
@@ -349,31 +379,42 @@ class _DialogoMovimentoState extends State<_DialogoMovimento> {
             TextField(
               controller: _cheios,
               keyboardType: const TextInputType.numberWithOptions(signed: true),
-              inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'^-?\d*'))],
-              decoration: InputDecoration(labelText: contagem ? 'Cheios contados' : 'Cheios'),
+              inputFormatters: [
+                FilteringTextInputFormatter.allow(RegExp(r'^-?\d*'))
+              ],
+              decoration: InputDecoration(
+                  labelText: contagem ? 'Cheios contados' : 'Cheios'),
             ),
             if (widget.linha.troca) ...[
               const SizedBox(height: 12),
               TextField(
                 controller: _vazios,
-                keyboardType: const TextInputType.numberWithOptions(signed: true),
-                inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'^-?\d*'))],
-                decoration: InputDecoration(labelText: contagem ? 'Vazios contados' : 'Vazios'),
+                keyboardType:
+                    const TextInputType.numberWithOptions(signed: true),
+                inputFormatters: [
+                  FilteringTextInputFormatter.allow(RegExp(r'^-?\d*'))
+                ],
+                decoration: InputDecoration(
+                    labelText: contagem ? 'Vazios contados' : 'Vazios'),
               ),
             ],
             const SizedBox(height: 12),
             TextField(
               controller: _motivo,
               maxLength: 200,
-              decoration: const InputDecoration(labelText: 'Motivo (obrigatório)'),
+              decoration:
+                  const InputDecoration(labelText: 'Motivo (obrigatório)'),
             ),
             if (_erro != null)
-              Text(_erro!, style: TextStyle(color: Theme.of(context).colorScheme.error)),
+              Text(_erro!,
+                  style: TextStyle(color: Theme.of(context).colorScheme.error)),
           ],
         ),
       ),
       actions: [
-        TextButton(onPressed: () => Navigator.of(context).pop(), child: const Text('Voltar')),
+        TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Text('Voltar')),
         FilledButton(onPressed: _confirmar, child: const Text('Registrar')),
       ],
     );

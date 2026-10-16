@@ -34,7 +34,8 @@ class TelaCrediario extends ConsumerWidget {
             return EstadoVazio(
               icone: Icons.badge_outlined,
               titulo: 'Preencha sua ficha',
-              mensagem: 'O crediário é liberado pela loja depois que ela analisar sua ficha de cadastro.',
+              mensagem:
+                  'O crediário é liberado pela loja depois que ela analisar sua ficha de cadastro.',
               rotuloAcao: 'Preencher ficha',
               aoAcionar: () => context.push('/ficha'),
             );
@@ -74,13 +75,16 @@ class _CartaoSituacao extends StatelessWidget {
     final tema = Theme.of(context);
     final String aviso;
     if (resumo.status == StatusFicha.pendente) {
-      aviso = 'Sua ficha está em análise. Quando for aprovada, o crediário aparece na hora de pagar.';
+      aviso =
+          'Sua ficha está em análise. Quando for aprovada, o crediário aparece na hora de pagar.';
     } else if (resumo.status == StatusFicha.recusada) {
-      aviso = 'Sua ficha não foi aprovada. Veja o motivo em "Minha ficha de cadastro".';
+      aviso =
+          'Sua ficha não foi aprovada. Veja o motivo em "Minha ficha de cadastro".';
     } else if (resumo.bloqueado) {
       aviso = 'Seu crediário está bloqueado. Fale com a loja.';
     } else {
-      aviso = 'Escolha "Crediário (fiado)" na hora de pagar. O valor entra na sua conta quando o pedido é entregue.';
+      aviso =
+          'Escolha "Crediário (fiado)" na hora de pagar. O valor entra na sua conta quando o pedido é entregue.';
     }
     return Card(
       child: Padding(
@@ -91,13 +95,20 @@ class _CartaoSituacao extends StatelessWidget {
             Text('Livre para comprar', style: tema.textTheme.bodyLarge),
             Text(
               resumo.disponivel.formatarEmReais(),
-              style: tema.textTheme.headlineMedium?.copyWith(fontWeight: FontWeight.w800),
+              style: tema.textTheme.headlineMedium
+                  ?.copyWith(fontWeight: FontWeight.w800),
             ),
             const Divider(height: 24),
-            LinhaValor(rotulo: 'Limite', valor: resumo.limite.formatarEmReais()),
-            LinhaValor(rotulo: 'Você deve', valor: resumo.devido.formatarEmReais(), destaque: true),
+            LinhaValor(
+                rotulo: 'Limite', valor: resumo.limite.formatarEmReais()),
+            LinhaValor(
+                rotulo: 'Você deve',
+                valor: resumo.devido.formatarEmReais(),
+                destaque: true),
             if (!resumo.reservado.ehZero)
-              LinhaValor(rotulo: 'Pedidos fiado a caminho', valor: resumo.reservado.formatarEmReais()),
+              LinhaValor(
+                  rotulo: 'Pedidos fiado a caminho',
+                  valor: resumo.reservado.formatarEmReais()),
             const SizedBox(height: 10),
             Text(aviso),
           ],
@@ -114,7 +125,8 @@ class _Extrato extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final extrato = ref.watch(provedorMeuExtrato);
     return extrato.when(
-      loading: () => const Padding(padding: EdgeInsets.all(24), child: Carregando()),
+      loading: () =>
+          const Padding(padding: EdgeInsets.all(24), child: Carregando()),
       error: (erro, _) => Text(mensagemDeErro(erro)),
       data: (lancamentos) {
         if (lancamentos.isEmpty) {

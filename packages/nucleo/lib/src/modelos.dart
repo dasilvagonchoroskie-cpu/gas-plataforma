@@ -83,7 +83,8 @@ final class Perfil {
         email: _textoOuNulo(json['email']),
         papel: PapelPerfil.deValor(_texto(json['papel'], 'cliente')),
         ativo: _logico(json['ativo'], true),
-        centralId: centralId ?? _textoOuNulo(_objeto(json['operadores_central'])?['central_id']),
+        centralId: centralId ??
+            _textoOuNulo(_objeto(json['operadores_central'])?['central_id']),
         criadoEm: Datas.lerInstante(json['criado_em']),
       );
 
@@ -610,9 +611,8 @@ final class Pedido {
   String get horario =>
       '${Datas.rotuloDia(dataEntrega)}, ${Datas.formatarIntervalo(horaInicio, horaFim)}';
 
-  String get resumoItens => itens
-      .map((i) => '${i.quantidade}x ${i.produtoNome}')
-      .join(', ');
+  String get resumoItens =>
+      itens.map((i) => '${i.quantidade}x ${i.produtoNome}').join(', ');
 
   /// Troco que o entregador precisa levar (só em dinheiro).
   Dinheiro get trocoALevar =>
@@ -852,8 +852,12 @@ final class RegistroAuditoria {
         tabela: _texto(json['tabela']),
         registroId: _textoOuNulo(json['registro_id']),
         quem: _textoOuNulo(_objeto(json['perfis'])?['nome']),
-        antes: json['antes'] is Map ? Map<String, dynamic>.from(json['antes'] as Map) : null,
-        depois: json['depois'] is Map ? Map<String, dynamic>.from(json['depois'] as Map) : null,
+        antes: json['antes'] is Map
+            ? Map<String, dynamic>.from(json['antes'] as Map)
+            : null,
+        depois: json['depois'] is Map
+            ? Map<String, dynamic>.from(json['depois'] as Map)
+            : null,
         criadoEm: Datas.lerInstante(json['criado_em']) ?? Datas.hoje(),
       );
 
@@ -945,7 +949,8 @@ final class FichaCliente {
     String? enderecoTexto;
     if (endereco != null) {
       final complemento = _textoOuNulo(endereco['complemento']);
-      enderecoTexto = '${_texto(endereco['logradouro'])}, ${_texto(endereco['numero'])}'
+      enderecoTexto =
+          '${_texto(endereco['logradouro'])}, ${_texto(endereco['numero'])}'
           '${complemento == null ? '' : ', $complemento'} - ${_texto(endereco['bairro'])}, '
           '${_texto(endereco['cidade'])}/${_texto(endereco['uf'])}';
     }
@@ -1171,7 +1176,8 @@ final class ResumoCredito {
   bool get temFicha => status != null;
 
   /// Pode escolher "Crediário" ao pedir (o servidor confere o valor).
-  bool get podeComprarFiado => status == StatusFicha.aprovada && !bloqueado && disponivel.centavos > 0;
+  bool get podeComprarFiado =>
+      status == StatusFicha.aprovada && !bloqueado && disponivel.centavos > 0;
 }
 
 /// Lançamento na conta do crediário (extrato).

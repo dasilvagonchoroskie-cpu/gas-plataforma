@@ -46,21 +46,28 @@ class _TelaFinalizarState extends ConsumerState<TelaFinalizar> {
     final endereco = ref.read(provedorEnderecoAtual).valueOrNull;
     final atendimento = ref.read(provedorAtendimento).valueOrNull;
     final horario = dados.horario;
-    if (endereco?.id == null || atendimento == null || horario == null || carrinho.vazio) {
-      mostrarMensagem(context, 'Faltam informações do pedido. Volte e confira.', erro: true);
+    if (endereco?.id == null ||
+        atendimento == null ||
+        horario == null ||
+        carrinho.vazio) {
+      mostrarMensagem(context, 'Faltam informações do pedido. Volte e confira.',
+          erro: true);
       return;
     }
 
     Dinheiro? troco;
-    if (dados.formaPagamento == FormaPagamento.dinheiro && _troco.text.trim().isNotEmpty) {
+    if (dados.formaPagamento == FormaPagamento.dinheiro &&
+        _troco.text.trim().isNotEmpty) {
       troco = Dinheiro.lerReais(_troco.text);
       final total = carrinho.subtotal + atendimento.taxaEntrega;
       if (troco == null) {
-        setState(() => _erroTroco = 'Digite só o valor, por exemplo 150 ou 150,00.');
+        setState(
+            () => _erroTroco = 'Digite só o valor, por exemplo 150 ou 150,00.');
         return;
       }
       if (troco < total) {
-        setState(() => _erroTroco = 'O valor para troco precisa ser maior que o total.');
+        setState(() =>
+            _erroTroco = 'O valor para troco precisa ser maior que o total.');
         return;
       }
     }
@@ -112,11 +119,17 @@ class _TelaFinalizarState extends ConsumerState<TelaFinalizar> {
     final credito = ref.watch(provedorMeuCredito).valueOrNull;
     final total = carrinho.subtotal + taxa;
     final mostrarFiado = credito?.status == StatusFicha.aprovada;
-    final fiadoLivre = mostrarFiado && credito!.podeComprarFiado && credito.disponivel >= total;
-    if (dados.formaPagamento == FormaPagamento.crediario && !fiadoLivre && credito != null) {
+    final fiadoLivre = mostrarFiado &&
+        credito!.podeComprarFiado &&
+        credito.disponivel >= total;
+    if (dados.formaPagamento == FormaPagamento.crediario &&
+        !fiadoLivre &&
+        credito != null) {
       // Ex.: repetiu um pedido fiado, mas agora o limite não cobre.
       WidgetsBinding.instance.addPostFrameCallback(
-        (_) => ref.read(provedorFinalizacao.notifier).escolherPagamento(FormaPagamento.dinheiro),
+        (_) => ref
+            .read(provedorFinalizacao.notifier)
+            .escolherPagamento(FormaPagamento.dinheiro),
       );
     }
     final formas = [
@@ -141,11 +154,15 @@ class _TelaFinalizarState extends ConsumerState<TelaFinalizar> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      Text('Falta a sua ficha de cadastro', style: tema.textTheme.titleMedium),
+                      Text('Falta a sua ficha de cadastro',
+                          style: tema.textTheme.titleMedium),
                       const SizedBox(height: 4),
-                      const Text('Ela é obrigatória para fazer o primeiro pedido. Leva poucos minutos.'),
+                      const Text(
+                          'Ela é obrigatória para fazer o primeiro pedido. Leva poucos minutos.'),
                       const SizedBox(height: 12),
-                      BotaoPrincipal(rotulo: 'Preencher ficha', aoPressionar: () => context.push('/ficha')),
+                      BotaoPrincipal(
+                          rotulo: 'Preencher ficha',
+                          aoPressionar: () => context.push('/ficha')),
                     ],
                   ),
                 ),
@@ -155,7 +172,9 @@ class _TelaFinalizarState extends ConsumerState<TelaFinalizar> {
             child: ListTile(
               leading: const Icon(Icons.place_outlined),
               title: Text(endereco?.apelido ?? 'Endereço'),
-              subtitle: Text(endereco == null ? '' : '${endereco.linhaPrincipal}\n${endereco.cidade}/${endereco.uf}'),
+              subtitle: Text(endereco == null
+                  ? ''
+                  : '${endereco.linhaPrincipal}\n${endereco.cidade}/${endereco.uf}'),
               isThreeLine: true,
             ),
           ),
@@ -169,7 +188,8 @@ class _TelaFinalizarState extends ConsumerState<TelaFinalizar> {
                     : '${Datas.rotuloDia(horario.data)}, ${horario.intervalo}',
               ),
               subtitle: Text(atendimento?.centralNome ?? ''),
-              trailing: TextButton(onPressed: () => context.pop(), child: const Text('Trocar')),
+              trailing: TextButton(
+                  onPressed: () => context.pop(), child: const Text('Trocar')),
             ),
           ),
           const TituloSecao('Como vai pagar?'),
@@ -177,7 +197,9 @@ class _TelaFinalizarState extends ConsumerState<TelaFinalizar> {
             Padding(
               padding: const EdgeInsets.only(bottom: 8),
               child: Card(
-                color: dados.formaPagamento == forma ? tema.colorScheme.primaryContainer : null,
+                color: dados.formaPagamento == forma
+                    ? tema.colorScheme.primaryContainer
+                    : null,
                 child: ListTile(
                   enabled: forma != FormaPagamento.crediario || fiadoLivre,
                   leading: Icon(
@@ -185,7 +207,8 @@ class _TelaFinalizarState extends ConsumerState<TelaFinalizar> {
                       FormaPagamento.dinheiro => Icons.payments_outlined,
                       FormaPagamento.cartaoNaEntrega => Icons.credit_card,
                       FormaPagamento.pixNaEntrega => Icons.qr_code_2,
-                      FormaPagamento.crediario => Icons.account_balance_wallet_outlined,
+                      FormaPagamento.crediario =>
+                        Icons.account_balance_wallet_outlined,
                     },
                   ),
                   title: Text(forma.rotulo),
@@ -198,8 +221,12 @@ class _TelaFinalizarState extends ConsumerState<TelaFinalizar> {
                                   ? 'Livre: ${credito.disponivel.formatarEmReais()}'
                                   : 'Livre: ${credito.disponivel.formatarEmReais()} — este pedido passa do limite.',
                         ),
-                  trailing: dados.formaPagamento == forma ? const Icon(Icons.check_circle) : null,
-                  onTap: () => ref.read(provedorFinalizacao.notifier).escolherPagamento(forma),
+                  trailing: dados.formaPagamento == forma
+                      ? const Icon(Icons.check_circle)
+                      : null,
+                  onTap: () => ref
+                      .read(provedorFinalizacao.notifier)
+                      .escolherPagamento(forma),
                 ),
               ),
             ),
@@ -207,8 +234,11 @@ class _TelaFinalizarState extends ConsumerState<TelaFinalizar> {
             const SizedBox(height: 4),
             TextField(
               controller: _troco,
-              keyboardType: const TextInputType.numberWithOptions(decimal: true),
-              inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'[0-9,.]'))],
+              keyboardType:
+                  const TextInputType.numberWithOptions(decimal: true),
+              inputFormatters: [
+                FilteringTextInputFormatter.allow(RegExp(r'[0-9,.]'))
+              ],
               decoration: InputDecoration(
                 labelText: 'Precisa de troco para quanto? (opcional)',
                 prefixText: 'R\$ ',
@@ -222,7 +252,8 @@ class _TelaFinalizarState extends ConsumerState<TelaFinalizar> {
             maxLength: 300,
             maxLines: 2,
             textCapitalization: TextCapitalization.sentences,
-            onChanged: (texto) => ref.read(provedorFinalizacao.notifier).definirObservacao(texto),
+            onChanged: (texto) =>
+                ref.read(provedorFinalizacao.notifier).definirObservacao(texto),
             decoration: const InputDecoration(
               labelText: 'Observação para o entregador (opcional)',
               hintText: 'Ex.: tocar a campainha, casa dos fundos',
@@ -234,7 +265,9 @@ class _TelaFinalizarState extends ConsumerState<TelaFinalizar> {
               rotulo: '${linha.quantidade}x ${linha.item.produto.nome}',
               valor: linha.total.formatarEmReais(),
             ),
-          LinhaValor(rotulo: 'Entrega', valor: taxa.ehZero ? 'Grátis' : taxa.formatarEmReais()),
+          LinhaValor(
+              rotulo: 'Entrega',
+              valor: taxa.ehZero ? 'Grátis' : taxa.formatarEmReais()),
           const Divider(),
           LinhaValor(
             rotulo: dados.formaPagamento == FormaPagamento.crediario
@@ -252,7 +285,9 @@ class _TelaFinalizarState extends ConsumerState<TelaFinalizar> {
             icone: Icons.check_circle_outline,
             rotulo: 'Confirmar pedido',
             carregando: _enviando,
-            aoPressionar: horario == null || carrinho.vazio || semFicha ? null : _confirmar,
+            aoPressionar: horario == null || carrinho.vazio || semFicha
+                ? null
+                : _confirmar,
           ),
         ),
       ),

@@ -10,7 +10,8 @@ const String enderecoTermos = String.fromEnvironment(
 );
 const String enderecoPrivacidade = String.fromEnvironment(
   'URL_PRIVACIDADE',
-  defaultValue: 'https://fortalezadigitalsecurity.com.br/gas-agua/privacidade.html',
+  defaultValue:
+      'https://fortalezadigitalsecurity.com.br/gas-agua/privacidade.html',
 );
 
 Future<void> abrirLink(BuildContext context, String endereco) async {
@@ -31,7 +32,8 @@ Future<void> abrirWhatsapp(
 }) async {
   final telefone = Validacoes.whatsappInternacional(numero);
   if (telefone.isEmpty) {
-    mostrarMensagem(context, 'Esta central ainda não cadastrou o WhatsApp.', erro: true);
+    mostrarMensagem(context, 'Esta central ainda não cadastrou o WhatsApp.',
+        erro: true);
     return;
   }
   final uri = Uri.https(

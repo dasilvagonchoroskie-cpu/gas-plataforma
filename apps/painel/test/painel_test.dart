@@ -11,7 +11,9 @@ import 'package:painel/funcionalidades/dono/secao_auditoria.dart';
 import 'package:painel/funcionalidades/dono/secao_relatorios.dart';
 import 'package:painel/funcionalidades/dono/secao_usuarios.dart';
 
-ResumoCentral _resumo(String nome, {int pedidos = 0, int entregues = 0, int faturamento = 0}) => ResumoCentral(
+ResumoCentral _resumo(String nome,
+        {int pedidos = 0, int entregues = 0, int faturamento = 0}) =>
+    ResumoCentral(
       centralId: nome,
       centralNome: nome,
       cidade: 'Goiatuba',
@@ -25,16 +27,19 @@ ResumoCentral _resumo(String nome, {int pedidos = 0, int entregues = 0, int fatu
     );
 
 void main() {
-  testWidgets('sem configuração do servidor, avisa em vez de quebrar', (tester) async {
+  testWidgets('sem configuração do servidor, avisa em vez de quebrar',
+      (tester) async {
     await tester.pumpWidget(const PainelSemConfiguracao());
 
     expect(find.text('Painel sem configuração'), findsOneWidget);
   });
 
-  testWidgets('login do painel pede e-mail e senha antes de enviar', (tester) async {
+  testWidgets('login do painel pede e-mail e senha antes de enviar',
+      (tester) async {
     await tester.pumpWidget(
       ProviderScope(
-        child: MaterialApp(theme: criarTemaPlataforma(), home: const TelaLogin()),
+        child:
+            MaterialApp(theme: criarTemaPlataforma(), home: const TelaLogin()),
       ),
     );
 
@@ -73,8 +78,13 @@ void main() {
   test('planilha não deixa nome virar fórmula nem quebrar colunas', () {
     final csv = relatorioEmCsv(
       (
-        centrais: [_resumo('=SOMA(A1);x', pedidos: 1, entregues: 1, faturamento: 11000)],
-        produtos: const [VendaProduto(produtoNome: 'Gás P13', quantidade: 1, valor: Dinheiro(11000))],
+        centrais: [
+          _resumo('=SOMA(A1);x', pedidos: 1, entregues: 1, faturamento: 11000)
+        ],
+        produtos: const [
+          VendaProduto(
+              produtoNome: 'Gás P13', quantidade: 1, valor: Dinheiro(11000))
+        ],
         dias: const [],
       ),
       '16/10/2026',

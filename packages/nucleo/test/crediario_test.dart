@@ -36,7 +36,8 @@ void main() {
     test('forma de pagamento fiado não é paga na entrega', () {
       expect(FormaPagamento.deValor('crediario'), FormaPagamento.crediario);
       expect(FormaPagamento.crediario.naEntrega, isFalse);
-      expect(FormaPagamento.paraReceber, isNot(contains(FormaPagamento.crediario)));
+      expect(FormaPagamento.paraReceber,
+          isNot(contains(FormaPagamento.crediario)));
     });
 
     test('resumo diz quando o cliente pode comprar fiado', () {

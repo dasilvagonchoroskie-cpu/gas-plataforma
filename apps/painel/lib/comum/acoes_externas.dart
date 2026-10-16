@@ -10,11 +10,13 @@ Future<void> _abrir(BuildContext context, Uri uri, String falha) async {
   }
 }
 
-Future<void> abrirWhatsapp(BuildContext context, String numero, {String mensagem = ''}) {
+Future<void> abrirWhatsapp(BuildContext context, String numero,
+    {String mensagem = ''}) {
   final telefone = Validacoes.whatsappInternacional(numero);
   return _abrir(
     context,
-    Uri.https('wa.me', '/$telefone', mensagem.isEmpty ? null : {'text': mensagem}),
+    Uri.https(
+        'wa.me', '/$telefone', mensagem.isEmpty ? null : {'text': mensagem}),
     'Não foi possível abrir o WhatsApp.',
   );
 }
@@ -26,7 +28,9 @@ Future<void> ligar(BuildContext context, String numero) => _abrir(
     );
 
 /// Abre a rota até o endereço no Google Maps (ou no app de mapas do celular).
-Future<void> abrirMapa(BuildContext context, double latitude, double longitude) => _abrir(
+Future<void> abrirMapa(
+        BuildContext context, double latitude, double longitude) =>
+    _abrir(
       context,
       Uri.https('www.google.com', '/maps/dir/', {
         'api': '1',

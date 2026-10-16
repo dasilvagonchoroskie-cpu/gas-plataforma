@@ -11,7 +11,8 @@ import '../../estado/provedores.dart';
 class TelaEnderecos extends ConsumerWidget {
   const TelaEnderecos({super.key});
 
-  Future<void> _excluir(BuildContext context, WidgetRef ref, Endereco endereco) async {
+  Future<void> _excluir(
+      BuildContext context, WidgetRef ref, Endereco endereco) async {
     final certeza = await confirmar(
       context,
       titulo: 'Apagar endereço?',
@@ -73,8 +74,12 @@ class TelaEnderecos extends ConsumerWidget {
               return Card(
                 child: ListTile(
                   leading: Icon(
-                    escolhido ? Icons.radio_button_checked : Icons.radio_button_unchecked,
-                    color: escolhido ? Theme.of(context).colorScheme.primary : null,
+                    escolhido
+                        ? Icons.radio_button_checked
+                        : Icons.radio_button_unchecked,
+                    color: escolhido
+                        ? Theme.of(context).colorScheme.primary
+                        : null,
                   ),
                   title: Text(endereco.apelido),
                   subtitle: Text(
@@ -83,7 +88,9 @@ class TelaEnderecos extends ConsumerWidget {
                   ),
                   isThreeLine: true,
                   onTap: () async {
-                    await ref.read(provedorIdEnderecoEscolhido.notifier).escolher(endereco.id);
+                    await ref
+                        .read(provedorIdEnderecoEscolhido.notifier)
+                        .escolher(endereco.id);
                     if (context.mounted) {
                       context.pop();
                     }

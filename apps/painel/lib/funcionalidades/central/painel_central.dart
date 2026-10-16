@@ -14,7 +14,8 @@ import 'secao_resumo.dart';
 
 /// Painel do operador de central.
 class PainelCentral extends ConsumerStatefulWidget {
-  const PainelCentral({required this.perfil, required this.centralId, super.key});
+  const PainelCentral(
+      {required this.perfil, required this.centralId, super.key});
 
   final Perfil perfil;
   final String centralId;
@@ -28,7 +29,8 @@ class _PainelCentralState extends ConsumerState<PainelCentral> {
 
   @override
   Widget build(BuildContext context) {
-    final centrais = ref.watch(provedorCentrais).valueOrNull ?? const <Central>[];
+    final centrais =
+        ref.watch(provedorCentrais).valueOrNull ?? const <Central>[];
     String? nomeCentral;
     for (final c in centrais) {
       if (c.id == widget.centralId) {
@@ -46,7 +48,8 @@ class _PainelCentralState extends ConsumerState<PainelCentral> {
             final certeza = await confirmar(
               context,
               titulo: 'Sair do painel?',
-              mensagem: 'Pedidos novos não vão tocar aviso enquanto ninguém estiver no painel.',
+              mensagem:
+                  'Pedidos novos não vão tocar aviso enquanto ninguém estiver no painel.',
               rotuloConfirmar: 'Sair',
             );
             if (certeza) {

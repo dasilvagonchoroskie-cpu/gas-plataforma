@@ -40,7 +40,8 @@ class CartaoProduto extends ConsumerWidget {
                     const SizedBox(height: 4),
                     Text(
                       'Tenha o vasilhame vazio para trocar',
-                      style: tema.textTheme.bodyMedium?.copyWith(color: tema.colorScheme.primary),
+                      style: tema.textTheme.bodyMedium
+                          ?.copyWith(color: tema.colorScheme.primary),
                     ),
                   ],
                   const SizedBox(height: 8),

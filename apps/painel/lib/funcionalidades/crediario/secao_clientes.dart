@@ -11,12 +11,17 @@ import 'tela_cliente_credito.dart';
 
 typedef _FiltroFichas = ({StatusFicha? status, String busca});
 
-final _provedorFichas = FutureProvider.autoDispose.family<List<ItemFicha>, _FiltroFichas>(
-  (ref, filtro) => ref.watch(provedorCredito).fichas(status: filtro.status, busca: filtro.busca),
+final _provedorFichas =
+    FutureProvider.autoDispose.family<List<ItemFicha>, _FiltroFichas>(
+  (ref, filtro) => ref
+      .watch(provedorCredito)
+      .fichas(status: filtro.status, busca: filtro.busca),
 );
 
-final _provedorDevedores = FutureProvider.autoDispose.family<List<Devedor>, String?>(
-  (ref, centralId) => ref.watch(provedorCredito).devedores(centralId: centralId),
+final _provedorDevedores =
+    FutureProvider.autoDispose.family<List<Devedor>, String?>(
+  (ref, centralId) =>
+      ref.watch(provedorCredito).devedores(centralId: centralId),
 );
 
 /// Clientes e crediário. No painel do dono (Super Central) mostra todas as
@@ -70,7 +75,8 @@ class _SecaoClientesState extends ConsumerState<SecaoClientes> {
   @override
   Widget build(BuildContext context) {
     final configuracoes = ref.watch(provedorConfiguracoes);
-    final centralAprova = configuracoes.valueOrNull?.centraisAprovamCredito ?? false;
+    final centralAprova =
+        configuracoes.valueOrNull?.centraisAprovamCredito ?? false;
     final verFichas = widget.ehDono || centralAprova;
     final mostrarDevedores = _verDevedores || !verFichas;
     return Column(
@@ -82,11 +88,19 @@ class _SecaoClientesState extends ConsumerState<SecaoClientes> {
               Expanded(
                 child: SegmentedButton<bool>(
                   segments: [
-                    if (verFichas) const ButtonSegment(value: false, icon: Icon(Icons.badge_outlined), label: Text('Fichas')),
-                    const ButtonSegment(value: true, icon: Icon(Icons.payments_outlined), label: Text('Quem deve')),
+                    if (verFichas)
+                      const ButtonSegment(
+                          value: false,
+                          icon: Icon(Icons.badge_outlined),
+                          label: Text('Fichas')),
+                    const ButtonSegment(
+                        value: true,
+                        icon: Icon(Icons.payments_outlined),
+                        label: Text('Quem deve')),
                   ],
                   selected: {mostrarDevedores},
-                  onSelectionChanged: (s) => setState(() => _verDevedores = s.first),
+                  onSelectionChanged: (s) =>
+                      setState(() => _verDevedores = s.first),
                 ),
               ),
             ],
@@ -109,7 +123,8 @@ class _SecaoClientesState extends ConsumerState<SecaoClientes> {
       child: ListView(
         padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
         children: [
-          if (widget.ehDono && configuracoes != null) _CartaoConfiguracoes(atual: configuracoes),
+          if (widget.ehDono && configuracoes != null)
+            _CartaoConfiguracoes(atual: configuracoes),
           TextField(
             controller: _campoBusca,
             textInputAction: TextInputAction.search,
@@ -149,18 +164,23 @@ class _SecaoClientesState extends ConsumerState<SecaoClientes> {
           ),
           const SizedBox(height: 8),
           ...fichas.when<List<Widget>>(
-            loading: () => const [Padding(padding: EdgeInsets.all(32), child: Carregando())],
+            loading: () => const [
+              Padding(padding: EdgeInsets.all(32), child: Carregando())
+            ],
             error: (erro, _) => [
               EstadoErro(
                 mensagem: mensagemDeErro(erro),
-                aoTentarNovamente: () => ref.invalidate(_provedorFichas(filtro)),
+                aoTentarNovamente: () =>
+                    ref.invalidate(_provedorFichas(filtro)),
               ),
             ],
             data: (lista) => lista.isEmpty
                 ? [
                     EstadoVazio(
                       icone: Icons.badge_outlined,
-                      titulo: _status == StatusFicha.pendente ? 'Nenhuma ficha esperando' : 'Nenhuma ficha aqui',
+                      titulo: _status == StatusFicha.pendente
+                          ? 'Nenhuma ficha esperando'
+                          : 'Nenhuma ficha aqui',
                     ),
                   ]
                 : [
@@ -169,7 +189,9 @@ class _SecaoClientesState extends ConsumerState<SecaoClientes> {
                         child: ListTile(
                           leading: Icon(switch (f.status) {
                             StatusFicha.pendente => Icons.hourglass_top,
-                            StatusFicha.aprovada => f.creditoBloqueado ? Icons.lock_outline : Icons.verified_outlined,
+                            StatusFicha.aprovada => f.creditoBloqueado
+                                ? Icons.lock_outline
+                                : Icons.verified_outlined,
                             StatusFicha.recusada => Icons.block,
                           }),
                           title: Text(f.nome),
@@ -179,7 +201,8 @@ class _SecaoClientesState extends ConsumerState<SecaoClientes> {
                               'CPF ${Validacoes.cpfMascarado(f.cpf)} · ${Validacoes.formatarTelefone(f.telefone)}',
                               if (f.status == StatusFicha.aprovada)
                                 'Limite ${f.limite.formatarEmReais()} · deve ${f.devido.formatarEmReais()}',
-                              if (widget.ehDono) f.centralNome ?? 'Fora da área das centrais',
+                              if (widget.ehDono)
+                                f.centralNome ?? 'Fora da área das centrais',
                             ].join('\n'),
                           ),
                           isThreeLine: true,
@@ -220,15 +243,19 @@ class _SecaoClientesState extends ConsumerState<SecaoClientes> {
             loading: () => const Carregando(),
             error: (erro, _) => EstadoErro(
               mensagem: mensagemDeErro(erro),
-              aoTentarNovamente: () => ref.invalidate(_provedorDevedores(_centralDevedores)),
+              aoTentarNovamente: () =>
+                  ref.invalidate(_provedorDevedores(_centralDevedores)),
             ),
             data: (lista) {
               if (lista.isEmpty) {
-                return const EstadoVazio(icone: Icons.check_circle_outline, titulo: 'Ninguém devendo no fiado');
+                return const EstadoVazio(
+                    icone: Icons.check_circle_outline,
+                    titulo: 'Ninguém devendo no fiado');
               }
               final total = lista.fold(Dinheiro.zero, (s, d) => s + d.devido);
               return RefreshIndicator(
-                onRefresh: () => ref.refresh(_provedorDevedores(_centralDevedores).future),
+                onRefresh: () =>
+                    ref.refresh(_provedorDevedores(_centralDevedores).future),
                 child: ListView(
                   padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
                   children: [
@@ -249,7 +276,9 @@ class _SecaoClientesState extends ConsumerState<SecaoClientes> {
                           ),
                           trailing: Text(
                             d.devido.formatarEmReais(),
-                            style: TextStyle(fontWeight: FontWeight.w800, color: Theme.of(context).colorScheme.error),
+                            style: TextStyle(
+                                fontWeight: FontWeight.w800,
+                                color: Theme.of(context).colorScheme.error),
                           ),
                           onTap: () => _abrir(
                             clienteId: d.clienteId,
@@ -277,12 +306,14 @@ class _CartaoConfiguracoes extends ConsumerStatefulWidget {
   final Configuracoes atual;
 
   @override
-  ConsumerState<_CartaoConfiguracoes> createState() => _CartaoConfiguracoesState();
+  ConsumerState<_CartaoConfiguracoes> createState() =>
+      _CartaoConfiguracoesState();
 }
 
 class _CartaoConfiguracoesState extends ConsumerState<_CartaoConfiguracoes> {
   late bool _liberado = widget.atual.centraisAprovamCredito;
-  late final _teto = TextEditingController(text: widget.atual.limiteMaximoCentral?.formatarParaEdicao() ?? '');
+  late final _teto = TextEditingController(
+      text: widget.atual.limiteMaximoCentral?.formatarParaEdicao() ?? '');
   bool _salvando = false;
   bool _aberto = false;
 
@@ -296,13 +327,16 @@ class _CartaoConfiguracoesState extends ConsumerState<_CartaoConfiguracoes> {
     final textoTeto = _teto.text.trim();
     final teto = textoTeto.isEmpty ? null : Dinheiro.lerReais(textoTeto);
     if (textoTeto.isNotEmpty && teto == null) {
-      mostrarMensagem(context, 'Digite o limite máximo em reais, ex.: 300,00 (ou deixe vazio).', erro: true);
+      mostrarMensagem(context,
+          'Digite o limite máximo em reais, ex.: 300,00 (ou deixe vazio).',
+          erro: true);
       return;
     }
     setState(() => _salvando = true);
     try {
       await ref.read(provedorCredito).salvarConfiguracoes(
-            Configuracoes(centraisAprovamCredito: _liberado, limiteMaximoCentral: teto),
+            Configuracoes(
+                centraisAprovamCredito: _liberado, limiteMaximoCentral: teto),
           );
       ref.invalidate(provedorConfiguracoes);
       if (mounted) {
@@ -349,13 +383,17 @@ class _CartaoConfiguracoesState extends ConsumerState<_CartaoConfiguracoes> {
                     onChanged: (v) => setState(() => _liberado = v),
                     contentPadding: EdgeInsets.zero,
                     title: const Text('As centrais também podem aprovar'),
-                    subtitle: const Text('Cada central aprova os clientes da região dela e vê a ficha completa.'),
+                    subtitle: const Text(
+                        'Cada central aprova os clientes da região dela e vê a ficha completa.'),
                   ),
                   if (_liberado)
                     TextField(
                       controller: _teto,
-                      keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                      inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'[0-9.,]'))],
+                      keyboardType:
+                          const TextInputType.numberWithOptions(decimal: true),
+                      inputFormatters: [
+                        FilteringTextInputFormatter.allow(RegExp(r'[0-9.,]'))
+                      ],
                       decoration: const InputDecoration(
                         labelText: 'Maior limite que a central pode liberar',
                         helperText: 'Deixe vazio para não ter teto.',
@@ -363,7 +401,10 @@ class _CartaoConfiguracoesState extends ConsumerState<_CartaoConfiguracoes> {
                       ),
                     ),
                   const SizedBox(height: 12),
-                  BotaoPrincipal(rotulo: 'Salvar', carregando: _salvando, aoPressionar: _salvar),
+                  BotaoPrincipal(
+                      rotulo: 'Salvar',
+                      carregando: _salvando,
+                      aoPressionar: _salvar),
                 ],
               ),
             ),

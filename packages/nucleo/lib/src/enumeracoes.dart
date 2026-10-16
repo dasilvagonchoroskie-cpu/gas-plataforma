@@ -173,7 +173,8 @@ enum TipoLancamento {
   final String valor;
   final String rotulo;
 
-  static TipoLancamento deValor(String valor) => TipoLancamento.values.firstWhere(
+  static TipoLancamento deValor(String valor) =>
+      TipoLancamento.values.firstWhere(
         (t) => t.valor == valor,
         orElse: () => throw FormatException('Lançamento desconhecido: $valor'),
       );

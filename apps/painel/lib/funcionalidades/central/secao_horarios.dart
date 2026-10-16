@@ -7,11 +7,13 @@ import 'package:nucleo/nucleo.dart';
 
 import '../../estado/provedores.dart';
 
-final _provedorJanelas = FutureProvider.autoDispose.family<List<JanelaEntrega>, String>(
+final _provedorJanelas =
+    FutureProvider.autoDispose.family<List<JanelaEntrega>, String>(
   (ref, centralId) => ref.watch(provedorGestao).janelas(centralId),
 );
 
-final _provedorBloqueios = FutureProvider.autoDispose.family<List<BloqueioAgenda>, String>(
+final _provedorBloqueios =
+    FutureProvider.autoDispose.family<List<BloqueioAgenda>, String>(
   (ref, centralId) => ref.watch(provedorGestao).bloqueios(centralId),
 );
 
@@ -25,7 +27,8 @@ class SecaoHorarios extends ConsumerWidget {
 
   final String centralId;
 
-  Future<void> _rodar(BuildContext context, WidgetRef ref, Future<void> Function() acao, String ok) async {
+  Future<void> _rodar(BuildContext context, WidgetRef ref,
+      Future<void> Function() acao, String ok) async {
     try {
       await acao();
       ref.invalidate(_provedorJanelas(centralId));
@@ -62,7 +65,8 @@ class SecaoHorarios extends ConsumerWidget {
     );
   }
 
-  Future<void> _mudarCapacidade(BuildContext context, WidgetRef ref, JanelaEntrega janela) async {
+  Future<void> _mudarCapacidade(
+      BuildContext context, WidgetRef ref, JanelaEntrega janela) async {
     final texto = await pedirTexto(
       context,
       titulo: 'Pedidos por horário',
@@ -80,12 +84,15 @@ class SecaoHorarios extends ConsumerWidget {
     await _rodar(
       context,
       ref,
-      () => ref.read(provedorGestao).atualizarJanela(janela.id, capacidade: capacidade),
+      () => ref
+          .read(provedorGestao)
+          .atualizarJanela(janela.id, capacidade: capacidade),
       'Capacidade atualizada.',
     );
   }
 
-  Future<void> _bloquear(BuildContext context, WidgetRef ref, List<JanelaEntrega> janelas) async {
+  Future<void> _bloquear(
+      BuildContext context, WidgetRef ref, List<JanelaEntrega> janelas) async {
     final hoje = Datas.hoje();
     final data = await showDatePicker(
       context: context,
@@ -98,7 +105,9 @@ class SecaoHorarios extends ConsumerWidget {
       return;
     }
     final dia = DateTime.utc(data.year, data.month, data.day);
-    final doDia = janelas.where((j) => j.diaSemana == Datas.diaDaSemana(dia) && j.ativa).toList();
+    final doDia = janelas
+        .where((j) => j.diaSemana == Datas.diaDaSemana(dia) && j.ativa)
+        .toList();
     final janelaId = await showDialog<String>(
       context: context,
       builder: (context) => SimpleDialog(
@@ -116,7 +125,8 @@ class SecaoHorarios extends ConsumerWidget {
               onPressed: () => Navigator.of(context).pop(j.id),
               child: Padding(
                 padding: const EdgeInsets.symmetric(vertical: 8),
-                child: Text('Só ${j.intervalo}', style: const TextStyle(fontSize: 18)),
+                child: Text('Só ${j.intervalo}',
+                    style: const TextStyle(fontSize: 18)),
               ),
             ),
         ],
@@ -130,7 +140,12 @@ class SecaoHorarios extends ConsumerWidget {
       titulo: 'Motivo do bloqueio',
       rotulo: 'Motivo',
       maximo: 200,
-      sugestoes: const ['Feriado', 'Sem entregador', 'Falta de produto', 'Manutenção'],
+      sugestoes: const [
+        'Feriado',
+        'Sem entregador',
+        'Falta de produto',
+        'Manutenção'
+      ],
     );
     if (motivo == null || !context.mounted) {
       return;
@@ -176,7 +191,8 @@ class SecaoHorarios extends ConsumerWidget {
                     label: const Text('Novo horário'),
                   ),
                 ),
-                const Text('O cliente só vê horários ativos que ainda têm vaga.'),
+                const Text(
+                    'O cliente só vê horários ativos que ainda têm vaga.'),
                 const SizedBox(height: 8),
                 for (var dia = 0; dia < 7; dia++) ...[
                   Padding(
@@ -199,14 +215,19 @@ class SecaoHorarios extends ConsumerWidget {
                             onChanged: (ativa) => _rodar(
                               context,
                               ref,
-                              () => ref.read(provedorGestao).atualizarJanela(janela.id, ativa: ativa),
-                              ativa ? 'Horário ativado.' : 'Horário desativado.',
+                              () => ref
+                                  .read(provedorGestao)
+                                  .atualizarJanela(janela.id, ativa: ativa),
+                              ativa
+                                  ? 'Horário ativado.'
+                                  : 'Horário desativado.',
                             ),
                           ),
                           trailing: IconButton(
                             tooltip: 'Mudar quantos pedidos cabem',
                             icon: const Icon(Icons.edit_outlined),
-                            onPressed: () => _mudarCapacidade(context, ref, janela),
+                            onPressed: () =>
+                                _mudarCapacidade(context, ref, janela),
                           ),
                         ),
                       ),
@@ -240,7 +261,9 @@ class SecaoHorarios extends ConsumerWidget {
                                   onPressed: () => _rodar(
                                     context,
                                     ref,
-                                    () => ref.read(provedorGestao).desbloquear(b.id),
+                                    () => ref
+                                        .read(provedorGestao)
+                                        .desbloquear(b.id),
                                     'Bloqueio removido.',
                                   ),
                                 ),
@@ -296,7 +319,8 @@ class _DialogoNovoHorarioState extends State<_DialogoNovoHorario> {
   }
 
   Future<void> _escolher(bool inicio) async {
-    final hora = await showTimePicker(context: context, initialTime: inicio ? _inicio : _fim);
+    final hora = await showTimePicker(
+        context: context, initialTime: inicio ? _inicio : _fim);
     if (hora == null) {
       return;
     }
@@ -320,7 +344,8 @@ class _DialogoNovoHorarioState extends State<_DialogoNovoHorario> {
     } else if (capacidade == null || capacidade < 1 || capacidade > 500) {
       setState(() => _erro = 'Pedidos por horário: de 1 a 500.');
     } else {
-      Navigator.of(context).pop(_NovoHorario(_dias.toList()..sort(), _inicio, _fim, capacidade));
+      Navigator.of(context)
+          .pop(_NovoHorario(_dias.toList()..sort(), _inicio, _fim, capacidade));
     }
   }
 
@@ -376,17 +401,21 @@ class _DialogoNovoHorarioState extends State<_DialogoNovoHorario> {
               controller: _capacidade,
               keyboardType: TextInputType.number,
               inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-              decoration: const InputDecoration(labelText: 'Quantos pedidos cabem nesse horário'),
+              decoration: const InputDecoration(
+                  labelText: 'Quantos pedidos cabem nesse horário'),
             ),
             if (_erro != null) ...[
               const SizedBox(height: 8),
-              Text(_erro!, style: TextStyle(color: Theme.of(context).colorScheme.error)),
+              Text(_erro!,
+                  style: TextStyle(color: Theme.of(context).colorScheme.error)),
             ],
           ],
         ),
       ),
       actions: [
-        TextButton(onPressed: () => Navigator.of(context).pop(), child: const Text('Voltar')),
+        TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Text('Voltar')),
         FilledButton(onPressed: _confirmar, child: const Text('Criar')),
       ],
     );

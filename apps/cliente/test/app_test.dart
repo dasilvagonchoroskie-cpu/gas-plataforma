@@ -23,11 +23,13 @@ const _gas = ItemCatalogo(
 );
 
 Widget _comTema(Widget filho) => ProviderScope(
-      child: MaterialApp(theme: criarTemaPlataforma(), home: Scaffold(body: filho)),
+      child: MaterialApp(
+          theme: criarTemaPlataforma(), home: Scaffold(body: filho)),
     );
 
 void main() {
-  testWidgets('sem configuração do servidor, avisa em vez de quebrar', (tester) async {
+  testWidgets('sem configuração do servidor, avisa em vez de quebrar',
+      (tester) async {
     await tester.pumpWidget(const AplicativoSemConfiguracao());
 
     expect(find.text('Aplicativo sem configuração'), findsOneWidget);
@@ -44,7 +46,8 @@ void main() {
     expect(find.text('Criar minha conta'), findsOneWidget);
   });
 
-  testWidgets('cartão do produto mostra preço e soma no carrinho', (tester) async {
+  testWidgets('cartão do produto mostra preço e soma no carrinho',
+      (tester) async {
     final container = ProviderContainer();
     addTearDown(container.dispose);
     await tester.pumpWidget(
@@ -70,7 +73,8 @@ void main() {
     expect(container.read(provedorCarrinho).subtotal, const Dinheiro(22000));
   });
 
-  testWidgets('ficha confere CPF, idade e referências antes de enviar', (tester) async {
+  testWidgets('ficha confere CPF, idade e referências antes de enviar',
+      (tester) async {
     tester.view.physicalSize = const Size(800, 2400);
     tester.view.devicePixelRatio = 1;
     addTearDown(tester.view.reset);
@@ -80,19 +84,23 @@ void main() {
           provedorMinhaFicha.overrideWith((ref) async => null),
           provedorEnderecos.overrideWith((ref) async => const <Endereco>[]),
         ],
-        child: MaterialApp(theme: criarTemaPlataforma(), home: const TelaFicha()),
+        child:
+            MaterialApp(theme: criarTemaPlataforma(), home: const TelaFicha()),
       ),
     );
     await tester.pumpAndSettle();
 
-    await tester.enterText(find.widgetWithText(TextFormField, 'CPF'), '123.456.789-00');
-    await tester.enterText(find.widgetWithText(TextFormField, 'Data de nascimento'), '01012015');
+    await tester.enterText(
+        find.widgetWithText(TextFormField, 'CPF'), '123.456.789-00');
+    await tester.enterText(
+        find.widgetWithText(TextFormField, 'Data de nascimento'), '01012015');
     await tester.ensureVisible(find.text('Enviar ficha'));
     await tester.tap(find.text('Enviar ficha'));
     await tester.pump();
 
     expect(find.text('CPF inválido. Confira os números.'), findsOneWidget);
-    expect(find.text('O cadastro é só para maiores de 18 anos.'), findsOneWidget);
+    expect(
+        find.text('O cadastro é só para maiores de 18 anos.'), findsOneWidget);
     expect(find.text('01/01/2015'), findsOneWidget);
     expect(find.text('Cadastrar meu endereço'), findsOneWidget);
   });

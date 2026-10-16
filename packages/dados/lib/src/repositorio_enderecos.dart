@@ -108,11 +108,13 @@ class RepositorioEnderecos {
     if (dados is Map<String, dynamic>) {
       return dados;
     }
-    throw const ErroDeNegocio('O serviço de endereços não respondeu. Tente de novo.');
+    throw const ErroDeNegocio(
+        'O serviço de endereços não respondeu. Tente de novo.');
   }
 
   Future<DadosCep> buscarCep(String cep) async {
-    final r = await _chamar({'acao': 'cep', 'cep': Validacoes.somenteDigitos(cep)});
+    final r =
+        await _chamar({'acao': 'cep', 'cep': Validacoes.somenteDigitos(cep)});
     return DadosCep(
       cep: '${r['cep'] ?? ''}',
       logradouro: '${r['logradouro'] ?? ''}',

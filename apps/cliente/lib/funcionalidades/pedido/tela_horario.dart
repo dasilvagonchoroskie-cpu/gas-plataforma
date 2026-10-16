@@ -7,7 +7,8 @@ import 'package:nucleo/nucleo.dart';
 
 import '../../estado/provedores.dart';
 
-final _provedorAgenda = FutureProvider.autoDispose<List<HorarioDisponivel>>((ref) async {
+final _provedorAgenda =
+    FutureProvider.autoDispose<List<HorarioDisponivel>>((ref) async {
   final atendimento = await ref.watch(provedorAtendimento.future);
   if (atendimento == null) {
     return const [];
@@ -34,7 +35,8 @@ class _TelaHorarioState extends ConsumerState<TelaHorario> {
     return Scaffold(
       appBar: AppBar(title: const Text('Quando entregar?')),
       body: agenda.when(
-        loading: () => const Carregando(mensagem: 'Buscando horários livres...'),
+        loading: () =>
+            const Carregando(mensagem: 'Buscando horários livres...'),
         error: (erro, _) => EstadoErro(
           mensagem: mensagemDeErro(erro),
           aoTentarNovamente: () => ref.invalidate(_provedorAgenda),
@@ -44,7 +46,8 @@ class _TelaHorarioState extends ConsumerState<TelaHorario> {
             return EstadoVazio(
               icone: Icons.event_busy_outlined,
               titulo: 'Sem horários livres',
-              mensagem: 'A central não tem horários disponíveis nos próximos dias. '
+              mensagem:
+                  'A central não tem horários disponíveis nos próximos dias. '
                   'Fale com ela pelo WhatsApp.',
               rotuloAcao: 'Tentar de novo',
               aoAcionar: () => ref.invalidate(_provedorAgenda),
@@ -69,7 +72,8 @@ class _TelaHorarioState extends ConsumerState<TelaHorario> {
                 child: ListView.separated(
                   scrollDirection: Axis.horizontal,
                   itemCount: dias.length,
-                  separatorBuilder: (context, indice) => const SizedBox(width: 8),
+                  separatorBuilder: (context, indice) =>
+                      const SizedBox(width: 8),
                   itemBuilder: (context, indice) {
                     final d = dias[indice];
                     return ChoiceChip(
@@ -89,11 +93,13 @@ class _TelaHorarioState extends ConsumerState<TelaHorario> {
                   child: Card(
                     child: ListTile(
                       leading: Icon(
-                        escolhido?.janelaId == horario.janelaId && escolhido?.data == horario.data
+                        escolhido?.janelaId == horario.janelaId &&
+                                escolhido?.data == horario.data
                             ? Icons.radio_button_checked
                             : Icons.schedule,
                       ),
-                      title: Text(horario.intervalo, style: Theme.of(context).textTheme.titleMedium),
+                      title: Text(horario.intervalo,
+                          style: Theme.of(context).textTheme.titleMedium),
                       subtitle: Text(
                         horario.vagas <= 3
                             ? 'Últimas ${horario.vagas} vagas'
@@ -101,7 +107,9 @@ class _TelaHorarioState extends ConsumerState<TelaHorario> {
                       ),
                       trailing: const Icon(Icons.chevron_right),
                       onTap: () {
-                        ref.read(provedorFinalizacao.notifier).escolherHorario(horario);
+                        ref
+                            .read(provedorFinalizacao.notifier)
+                            .escolherHorario(horario);
                         context.push('/finalizar');
                       },
                     ),

@@ -14,11 +14,14 @@ typedef _DadosCliente = ({
   List<LancamentoCredito> extrato,
 });
 
-final _provedorCliente = FutureProvider.autoDispose.family<_DadosCliente, ({String id, bool comFicha})>(
+final _provedorCliente = FutureProvider.autoDispose
+    .family<_DadosCliente, ({String id, bool comFicha})>(
   (ref, chave) async {
     final credito = ref.watch(provedorCredito);
     final resultados = await Future.wait<Object?>([
-      chave.comFicha ? credito.fichaCompleta(chave.id) : Future<Object?>.value(),
+      chave.comFicha
+          ? credito.fichaCompleta(chave.id)
+          : Future<Object?>.value(),
       credito.resumo(chave.id),
       credito.extrato(chave.id),
     ]);
@@ -54,7 +57,8 @@ class TelaClienteCredito extends ConsumerStatefulWidget {
 }
 
 class _TelaClienteCreditoState extends ConsumerState<TelaClienteCredito> {
-  ({String id, bool comFicha}) get _chave => (id: widget.clienteId, comFicha: widget.podeAnalisar);
+  ({String id, bool comFicha}) get _chave =>
+      (id: widget.clienteId, comFicha: widget.podeAnalisar);
 
   Future<void> _executar(Future<void> Function() acao, String sucesso) async {
     try {
@@ -74,16 +78,22 @@ class _TelaClienteCreditoState extends ConsumerState<TelaClienteCredito> {
   }
 
   Future<void> _aprovar(FichaCliente ficha) async {
-    final teto = ref.read(provedorConfiguracoes).valueOrNull?.limiteMaximoCentral;
+    final teto =
+        ref.read(provedorConfiguracoes).valueOrNull?.limiteMaximoCentral;
     final limite = await showDialog<Dinheiro>(
       context: context,
       builder: (_) => _DialogoValor(
-        titulo: ficha.status == StatusFicha.aprovada ? 'Mudar limite' : 'Aprovar ficha',
+        titulo: ficha.status == StatusFicha.aprovada
+            ? 'Mudar limite'
+            : 'Aprovar ficha',
         rotulo: 'Limite do crediário',
         inicial: ficha.status == StatusFicha.aprovada ? ficha.limite : null,
-        ajuda: !widget.ehDono && teto != null ? 'A central pode liberar até ${teto.formatarEmReais()}.' : null,
+        ajuda: !widget.ehDono && teto != null
+            ? 'A central pode liberar até ${teto.formatarEmReais()}.'
+            : null,
         permiteZero: true,
-        rotuloConfirmar: ficha.status == StatusFicha.aprovada ? 'Salvar limite' : 'Aprovar',
+        rotuloConfirmar:
+            ficha.status == StatusFicha.aprovada ? 'Salvar limite' : 'Aprovar',
       ),
     );
     if (limite == null) {
@@ -111,7 +121,9 @@ class _TelaClienteCreditoState extends ConsumerState<TelaClienteCredito> {
     if (motivo == null || motivo.isEmpty) {
       return;
     }
-    await _executar(() => ref.read(provedorCredito).recusar(widget.clienteId, motivo), 'Ficha recusada.');
+    await _executar(
+        () => ref.read(provedorCredito).recusar(widget.clienteId, motivo),
+        'Ficha recusada.');
   }
 
   Future<void> _bloquear(bool bloquear) async {
@@ -122,20 +134,26 @@ class _TelaClienteCreditoState extends ConsumerState<TelaClienteCredito> {
         titulo: 'Bloquear o fiado',
         rotulo: 'Motivo',
         rotuloConfirmar: 'Bloquear',
-        sugestoes: const ['Pagamento atrasado', 'Pedido do cliente', 'Em análise'],
+        sugestoes: const [
+          'Pagamento atrasado',
+          'Pedido do cliente',
+          'Em análise'
+        ],
       );
       if (motivo == null || motivo.isEmpty) {
         return;
       }
     }
     await _executar(
-      () => ref.read(provedorCredito).definirBloqueio(widget.clienteId, bloqueado: bloquear, motivo: motivo),
+      () => ref.read(provedorCredito).definirBloqueio(widget.clienteId,
+          bloqueado: bloquear, motivo: motivo),
       bloquear ? 'Fiado bloqueado.' : 'Fiado liberado.',
     );
   }
 
   Future<void> _receber(ResumoCredito resumo) async {
-    final pagamento = await showDialog<({Dinheiro valor, FormaPagamento forma, String observacao})>(
+    final pagamento = await showDialog<
+        ({Dinheiro valor, FormaPagamento forma, String observacao})>(
       context: context,
       builder: (_) => _DialogoPagamento(devido: resumo.devido),
     );
@@ -162,7 +180,10 @@ class _TelaClienteCreditoState extends ConsumerState<TelaClienteCredito> {
       return;
     }
     await _executar(
-      () => ref.read(provedorCredito).ajustar(clienteId: widget.clienteId, valor: ajuste.valor, motivo: ajuste.motivo),
+      () => ref.read(provedorCredito).ajustar(
+          clienteId: widget.clienteId,
+          valor: ajuste.valor,
+          motivo: ajuste.motivo),
       'Ajuste registrado.',
     );
   }
@@ -183,7 +204,9 @@ class _TelaClienteCreditoState extends ConsumerState<TelaClienteCredito> {
                 title: Text(titulo),
                 automaticallyImplyLeading: false,
                 actions: [
-                  IconButton(onPressed: () => Navigator.of(contexto).pop(), icon: const Icon(Icons.close)),
+                  IconButton(
+                      onPressed: () => Navigator.of(contexto).pop(),
+                      icon: const Icon(Icons.close)),
                 ],
               ),
               Flexible(
@@ -191,8 +214,10 @@ class _TelaClienteCreditoState extends ConsumerState<TelaClienteCredito> {
                   child: Image.network(
                     link,
                     fit: BoxFit.contain,
-                    loadingBuilder: (_, filho, progresso) =>
-                        progresso == null ? filho : const Padding(padding: EdgeInsets.all(40), child: Carregando()),
+                    loadingBuilder: (_, filho, progresso) => progresso == null
+                        ? filho
+                        : const Padding(
+                            padding: EdgeInsets.all(40), child: Carregando()),
                     errorBuilder: (_, __, ___) => const Padding(
                       padding: EdgeInsets.all(40),
                       child: Text('Não foi possível abrir a foto.'),
@@ -285,13 +310,22 @@ class _TelaClienteCreditoState extends ConsumerState<TelaClienteCredito> {
                     ),
                   ),
                   Text('Deve ${resumo.devido.formatarEmReais()}',
-                      style: tema.textTheme.titleMedium?.copyWith(color: resumo.devido.ehZero ? null : tema.colorScheme.error)),
+                      style: tema.textTheme.titleMedium?.copyWith(
+                          color: resumo.devido.ehZero
+                              ? null
+                              : tema.colorScheme.error)),
                 ],
               ),
               const Divider(),
-              LinhaValor(rotulo: 'Limite', valor: resumo.limite.formatarEmReais()),
-              LinhaValor(rotulo: 'Pedidos fiado a caminho', valor: resumo.reservado.formatarEmReais()),
-              LinhaValor(rotulo: 'Livre para comprar', valor: resumo.disponivel.formatarEmReais(), destaque: true),
+              LinhaValor(
+                  rotulo: 'Limite', valor: resumo.limite.formatarEmReais()),
+              LinhaValor(
+                  rotulo: 'Pedidos fiado a caminho',
+                  valor: resumo.reservado.formatarEmReais()),
+              LinhaValor(
+                  rotulo: 'Livre para comprar',
+                  valor: resumo.disponivel.formatarEmReais(),
+                  destaque: true),
               const SizedBox(height: 12),
               Wrap(
                 spacing: 8,
@@ -324,7 +358,8 @@ class _TelaClienteCreditoState extends ConsumerState<TelaClienteCredito> {
       if (!widget.podeAnalisar)
         const Padding(
           padding: EdgeInsets.only(top: 16),
-          child: Text('Os dados da ficha (CPF, renda, fotos) ficam só com a Super Central.'),
+          child: Text(
+              'Os dados da ficha (CPF, renda, fotos) ficam só com a Super Central.'),
         ),
       const TituloSecao('Extrato'),
       if (d.extrato.isEmpty) const Text('Nenhum lançamento ainda.'),
@@ -336,7 +371,8 @@ class _TelaClienteCreditoState extends ConsumerState<TelaClienteCredito> {
     return [
       TituloSecao(
         'Ficha de cadastro',
-        acao: Chip(label: Text(f.status.rotulo), visualDensity: VisualDensity.compact),
+        acao: Chip(
+            label: Text(f.status.rotulo), visualDensity: VisualDensity.compact),
       ),
       if (f.motivo != null)
         Padding(
@@ -368,8 +404,10 @@ class _TelaClienteCreditoState extends ConsumerState<TelaClienteCredito> {
           if (f.status == StatusFicha.aprovada)
             OutlinedButton.icon(
               onPressed: () => _bloquear(!f.creditoBloqueado),
-              icon: Icon(f.creditoBloqueado ? Icons.lock_open : Icons.lock_outline),
-              label: Text(f.creditoBloqueado ? 'Liberar fiado' : 'Bloquear fiado'),
+              icon: Icon(
+                  f.creditoBloqueado ? Icons.lock_open : Icons.lock_outline),
+              label:
+                  Text(f.creditoBloqueado ? 'Liberar fiado' : 'Bloquear fiado'),
             ),
         ],
       ),
@@ -384,20 +422,35 @@ class _TelaClienteCreditoState extends ConsumerState<TelaClienteCredito> {
               LinhaValor(rotulo: 'RG', valor: f.rg),
               LinhaValor(
                 rotulo: 'Nascimento',
-                valor: '${Datas.formatarData(f.dataNascimento)} (${Datas.idade(f.dataNascimento)} anos)',
+                valor:
+                    '${Datas.formatarData(f.dataNascimento)} (${Datas.idade(f.dataNascimento)} anos)',
               ),
               LinhaValor(rotulo: 'Mãe', valor: f.nomeMae),
-              if (f.email != null) LinhaValor(rotulo: 'E-mail', valor: f.email!),
+              if (f.email != null)
+                LinhaValor(rotulo: 'E-mail', valor: f.email!),
               LinhaValor(rotulo: 'Mora em', valor: f.enderecoTexto ?? '-'),
-              LinhaValor(rotulo: 'Central da região', valor: f.centralNome ?? 'Nenhuma atende'),
+              LinhaValor(
+                  rotulo: 'Central da região',
+                  valor: f.centralNome ?? 'Nenhuma atende'),
               const Divider(),
-              LinhaValor(rotulo: 'Trabalho', valor: '${f.profissao} · ${f.empresa}'),
+              LinhaValor(
+                  rotulo: 'Trabalho', valor: '${f.profissao} · ${f.empresa}'),
               if (f.telefoneTrabalho.isNotEmpty)
-                LinhaValor(rotulo: 'Telefone do trabalho', valor: Validacoes.formatarTelefone(f.telefoneTrabalho)),
-              LinhaValor(rotulo: 'Renda por mês', valor: f.rendaMensal.formatarEmReais()),
+                LinhaValor(
+                    rotulo: 'Telefone do trabalho',
+                    valor: Validacoes.formatarTelefone(f.telefoneTrabalho)),
+              LinhaValor(
+                  rotulo: 'Renda por mês',
+                  valor: f.rendaMensal.formatarEmReais()),
               const Divider(),
-              _Referencia(nome: f.referencia1Nome, telefone: f.referencia1Telefone, relacao: f.referencia1Relacao),
-              _Referencia(nome: f.referencia2Nome, telefone: f.referencia2Telefone, relacao: f.referencia2Relacao),
+              _Referencia(
+                  nome: f.referencia1Nome,
+                  telefone: f.referencia1Telefone,
+                  relacao: f.referencia1Relacao),
+              _Referencia(
+                  nome: f.referencia2Nome,
+                  telefone: f.referencia2Telefone,
+                  relacao: f.referencia2Relacao),
               const Divider(),
               Wrap(
                 spacing: 8,
@@ -409,7 +462,8 @@ class _TelaClienteCreditoState extends ConsumerState<TelaClienteCredito> {
                     label: const Text('Ver documento'),
                   ),
                   OutlinedButton.icon(
-                    onPressed: () => _verFoto('Comprovante de endereço', f.comprovanteCaminho),
+                    onPressed: () => _verFoto(
+                        'Comprovante de endereço', f.comprovanteCaminho),
                     icon: const Icon(Icons.receipt_outlined),
                     label: const Text('Ver comprovante'),
                   ),
@@ -431,7 +485,8 @@ class _TelaClienteCreditoState extends ConsumerState<TelaClienteCredito> {
 }
 
 class _Referencia extends StatelessWidget {
-  const _Referencia({required this.nome, required this.telefone, required this.relacao});
+  const _Referencia(
+      {required this.nome, required this.telefone, required this.relacao});
 
   final String nome;
   final String telefone;
@@ -476,7 +531,8 @@ class _DialogoValor extends StatefulWidget {
 }
 
 class _DialogoValorState extends State<_DialogoValor> {
-  late final _valor = TextEditingController(text: widget.inicial?.formatarParaEdicao() ?? '');
+  late final _valor =
+      TextEditingController(text: widget.inicial?.formatarParaEdicao() ?? '');
   String? _erro;
 
   @override
@@ -506,8 +562,11 @@ class _DialogoValorState extends State<_DialogoValor> {
             controller: _valor,
             autofocus: true,
             keyboardType: const TextInputType.numberWithOptions(decimal: true),
-            inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'[0-9.,]'))],
-            decoration: InputDecoration(labelText: widget.rotulo, prefixText: 'R\$ ', errorText: _erro),
+            inputFormatters: [
+              FilteringTextInputFormatter.allow(RegExp(r'[0-9.,]'))
+            ],
+            decoration: InputDecoration(
+                labelText: widget.rotulo, prefixText: 'R\$ ', errorText: _erro),
             onSubmitted: (_) => _confirmar(),
           ),
           if (widget.ajuda != null) ...[
@@ -517,8 +576,11 @@ class _DialogoValorState extends State<_DialogoValor> {
         ],
       ),
       actions: [
-        TextButton(onPressed: () => Navigator.of(context).pop(), child: const Text('Voltar')),
-        FilledButton(onPressed: _confirmar, child: Text(widget.rotuloConfirmar)),
+        TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Text('Voltar')),
+        FilledButton(
+            onPressed: _confirmar, child: Text(widget.rotuloConfirmar)),
       ],
     );
   }
@@ -553,10 +615,12 @@ class _DialogoPagamentoState extends State<_DialogoPagamento> {
       return;
     }
     if (valor > widget.devido) {
-      setState(() => _erro = 'O cliente deve ${widget.devido.formatarEmReais()}.');
+      setState(
+          () => _erro = 'O cliente deve ${widget.devido.formatarEmReais()}.');
       return;
     }
-    Navigator.of(context).pop((valor: valor, forma: _forma, observacao: _observacao.text));
+    Navigator.of(context)
+        .pop((valor: valor, forma: _forma, observacao: _observacao.text));
   }
 
   @override
@@ -573,14 +637,21 @@ class _DialogoPagamentoState extends State<_DialogoPagamento> {
             TextField(
               controller: _valor,
               autofocus: true,
-              keyboardType: const TextInputType.numberWithOptions(decimal: true),
-              inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'[0-9.,]'))],
-              decoration: InputDecoration(labelText: 'Valor recebido', prefixText: 'R\$ ', errorText: _erro),
+              keyboardType:
+                  const TextInputType.numberWithOptions(decimal: true),
+              inputFormatters: [
+                FilteringTextInputFormatter.allow(RegExp(r'[0-9.,]'))
+              ],
+              decoration: InputDecoration(
+                  labelText: 'Valor recebido',
+                  prefixText: 'R\$ ',
+                  errorText: _erro),
             ),
             Align(
               alignment: Alignment.centerLeft,
               child: TextButton(
-                onPressed: () => setState(() => _valor.text = widget.devido.formatarParaEdicao()),
+                onPressed: () => setState(
+                    () => _valor.text = widget.devido.formatarParaEdicao()),
                 child: const Text('Pagou tudo'),
               ),
             ),
@@ -601,13 +672,16 @@ class _DialogoPagamentoState extends State<_DialogoPagamento> {
             TextField(
               controller: _observacao,
               maxLength: 300,
-              decoration: const InputDecoration(labelText: 'Observação (opcional)'),
+              decoration:
+                  const InputDecoration(labelText: 'Observação (opcional)'),
             ),
           ],
         ),
       ),
       actions: [
-        TextButton(onPressed: () => Navigator.of(context).pop(), child: const Text('Voltar')),
+        TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Text('Voltar')),
         FilledButton(onPressed: _confirmar, child: const Text('Registrar')),
       ],
     );
@@ -644,7 +718,10 @@ class _DialogoAjusteState extends State<_DialogoAjuste> {
       setState(() => _erro = 'Informe o motivo.');
       return;
     }
-    Navigator.of(context).pop((valor: _aumenta ? valor : Dinheiro(-valor.centavos), motivo: _motivo.text));
+    Navigator.of(context).pop((
+      valor: _aumenta ? valor : Dinheiro(-valor.centavos),
+      motivo: _motivo.text
+    ));
   }
 
   @override
@@ -667,22 +744,30 @@ class _DialogoAjusteState extends State<_DialogoAjuste> {
             const SizedBox(height: 12),
             TextField(
               controller: _valor,
-              keyboardType: const TextInputType.numberWithOptions(decimal: true),
-              inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'[0-9.,]'))],
-              decoration: const InputDecoration(labelText: 'Valor', prefixText: 'R\$ '),
+              keyboardType:
+                  const TextInputType.numberWithOptions(decimal: true),
+              inputFormatters: [
+                FilteringTextInputFormatter.allow(RegExp(r'[0-9.,]'))
+              ],
+              decoration:
+                  const InputDecoration(labelText: 'Valor', prefixText: 'R\$ '),
             ),
             const SizedBox(height: 8),
             TextField(
               controller: _motivo,
               maxLength: 300,
-              decoration: InputDecoration(labelText: 'Motivo (fica na auditoria)', errorText: _erro),
+              decoration: InputDecoration(
+                  labelText: 'Motivo (fica na auditoria)', errorText: _erro),
             ),
           ],
         ),
       ),
       actions: [
-        TextButton(onPressed: () => Navigator.of(context).pop(), child: const Text('Voltar')),
-        FilledButton(onPressed: _confirmar, child: const Text('Registrar ajuste')),
+        TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Text('Voltar')),
+        FilledButton(
+            onPressed: _confirmar, child: const Text('Registrar ajuste')),
       ],
     );
   }

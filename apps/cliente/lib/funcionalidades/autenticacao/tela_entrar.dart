@@ -35,7 +35,9 @@ class _TelaEntrarState extends ConsumerState<TelaEntrar> {
     }
     setState(() => _carregando = true);
     try {
-      await ref.read(provedorConta).entrar(email: _email.text, senha: _senha.text);
+      await ref
+          .read(provedorConta)
+          .entrar(email: _email.text, senha: _senha.text);
     } catch (erro) {
       if (mounted) {
         mostrarMensagem(context, mensagemDeErro(erro), erro: true);
@@ -63,12 +65,14 @@ class _TelaEntrarState extends ConsumerState<TelaEntrar> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      Icon(Icons.local_fire_department_rounded, size: 64, color: tema.colorScheme.primary),
+                      Icon(Icons.local_fire_department_rounded,
+                          size: 64, color: tema.colorScheme.primary),
                       const SizedBox(height: 12),
                       Text(
                         nomeDoApp,
                         textAlign: TextAlign.center,
-                        style: tema.textTheme.headlineMedium?.copyWith(fontWeight: FontWeight.w800),
+                        style: tema.textTheme.headlineMedium
+                            ?.copyWith(fontWeight: FontWeight.w800),
                       ),
                       const SizedBox(height: 4),
                       const Text(
@@ -98,9 +102,14 @@ class _TelaEntrarState extends ConsumerState<TelaEntrar> {
                           labelText: 'Senha',
                           prefixIcon: const Icon(Icons.lock_outline),
                           suffixIcon: IconButton(
-                            tooltip: _mostrarSenha ? 'Esconder senha' : 'Mostrar senha',
-                            icon: Icon(_mostrarSenha ? Icons.visibility_off : Icons.visibility),
-                            onPressed: () => setState(() => _mostrarSenha = !_mostrarSenha),
+                            tooltip: _mostrarSenha
+                                ? 'Esconder senha'
+                                : 'Mostrar senha',
+                            icon: Icon(_mostrarSenha
+                                ? Icons.visibility_off
+                                : Icons.visibility),
+                            onPressed: () =>
+                                setState(() => _mostrarSenha = !_mostrarSenha),
                           ),
                         ),
                         validator: (valor) =>
@@ -119,7 +128,8 @@ class _TelaEntrarState extends ConsumerState<TelaEntrar> {
                         child: const Text('Esqueci minha senha'),
                       ),
                       const Divider(height: 32),
-                      const Text('Ainda não tem conta?', textAlign: TextAlign.center),
+                      const Text('Ainda não tem conta?',
+                          textAlign: TextAlign.center),
                       const SizedBox(height: 8),
                       BotaoPrincipal(
                         rotulo: 'Criar minha conta',

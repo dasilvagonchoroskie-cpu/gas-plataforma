@@ -155,7 +155,8 @@ class _DialogoTextoState extends State<_DialogoTexto> {
               maxLength: widget.maximo,
               maxLines: 3,
               minLines: 1,
-              decoration: InputDecoration(labelText: widget.rotulo, errorText: _erro),
+              decoration:
+                  InputDecoration(labelText: widget.rotulo, errorText: _erro),
             ),
           ],
         ),
@@ -165,7 +166,8 @@ class _DialogoTextoState extends State<_DialogoTexto> {
           onPressed: () => Navigator.of(context).pop(),
           child: const Text('Voltar'),
         ),
-        FilledButton(onPressed: _confirmar, child: Text(widget.rotuloConfirmar)),
+        FilledButton(
+            onPressed: _confirmar, child: Text(widget.rotuloConfirmar)),
       ],
     );
   }
