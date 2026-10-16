@@ -26,6 +26,7 @@ const _tabelas = <String?, String>{
   'fichas_cliente': 'Fichas',
   'lancamentos_credito': 'Crediário',
   'configuracoes': 'Configurações',
+  'segredos': 'Notificações',
 };
 
 const _acoes = {
@@ -41,6 +42,7 @@ const _acoes = {
   'bloquear_credito': 'bloqueou o fiado',
   'liberar_credito': 'liberou o fiado',
   'ajustar_credito': 'ajustou o crediário',
+  'configurar_notificacoes': 'enviou a chave do Firebase',
 };
 
 const _campos = {

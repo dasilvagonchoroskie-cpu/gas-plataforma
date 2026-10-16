@@ -1,19 +1,30 @@
-import 'package:flutter/material.dart';
+import 'dart:async';
 
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+import '../estado/provedores.dart';
 import 'catalogo/aba_inicio.dart';
 import 'historico/aba_pedidos.dart';
 import 'perfil/aba_perfil.dart';
 
 /// Tela principal com as três abas: Início, Pedidos e Perfil.
-class TelaPrincipal extends StatefulWidget {
+class TelaPrincipal extends ConsumerStatefulWidget {
   const TelaPrincipal({super.key});
 
   @override
-  State<TelaPrincipal> createState() => _TelaPrincipalState();
+  ConsumerState<TelaPrincipal> createState() => _TelaPrincipalState();
 }
 
-class _TelaPrincipalState extends State<TelaPrincipal> {
+class _TelaPrincipalState extends ConsumerState<TelaPrincipal> {
   int _aba = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    // Logado: liga os avisos de pedido (pede permissão na primeira vez).
+    unawaited(ref.read(provedorNotificacoes).ativar());
+  }
 
   @override
   Widget build(BuildContext context) {

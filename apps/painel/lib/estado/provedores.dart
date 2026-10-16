@@ -6,6 +6,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:nucleo/nucleo.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import '../tipo_painel.dart';
+
 final provedorCliente = Provider<SupabaseClient>((ref) => clienteBackend);
 
 final provedorConta = Provider<RepositorioConta>(
@@ -16,6 +18,28 @@ final provedorPedidos = Provider<RepositorioPedidos>(
 
 final provedorGestao = Provider<RepositorioGestao>(
     (ref) => RepositorioGestao(ref.watch(provedorCliente)));
+
+final provedorNotificacoesConfig = Provider<RepositorioNotificacoes>(
+    (ref) => RepositorioNotificacoes(ref.watch(provedorCliente)));
+
+/// Identificadores dos dois apps no Firebase (vêm do build; vazio = sem push).
+const _firebaseAppSuperCentral =
+    String.fromEnvironment('FIREBASE_APP_SUPERCENTRAL');
+const _firebaseAppCentral = String.fromEnvironment('FIREBASE_APP_CENTRAL');
+
+final provedorNotificacoes = Provider<ServicoNotificacoes>((ref) {
+  final tipo = ref.watch(provedorTipoPainel);
+  final servico = ServicoNotificacoes(
+    ref.watch(provedorCliente),
+    ConfiguracaoFirebase.doAmbiente(
+      appId: tipo == TipoPainel.superCentral
+          ? _firebaseAppSuperCentral
+          : _firebaseAppCentral,
+    ),
+  );
+  ref.onDispose(servico.dispose);
+  return servico;
+});
 
 final provedorEnderecos = Provider<RepositorioEnderecos>(
     (ref) => RepositorioEnderecos(ref.watch(provedorCliente)));

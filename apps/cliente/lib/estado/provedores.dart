@@ -28,6 +28,16 @@ final provedorRepositorioCredito = Provider<RepositorioCredito>(
   (ref) => RepositorioCredito(ref.watch(provedorCliente)),
 );
 
+/// Identificador deste app no Firebase (vem do build; vazio = sem push).
+const _firebaseAppCliente = String.fromEnvironment('FIREBASE_APP_CLIENTE');
+
+final provedorNotificacoes = Provider<ServicoNotificacoes>((ref) {
+  final servico = ServicoNotificacoes(ref.watch(provedorCliente),
+      ConfiguracaoFirebase.doAmbiente(appId: _firebaseAppCliente));
+  ref.onDispose(servico.dispose);
+  return servico;
+});
+
 // ---------------------------------------------------------------------------
 // Login
 // ---------------------------------------------------------------------------

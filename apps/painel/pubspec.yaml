@@ -12,6 +12,7 @@ dependencies:
     path: ../../packages/dados
   design_system:
     path: ../../packages/design_system
+  file_selector: ^1.1.0
   flutter:
     sdk: flutter
   flutter_localizations:

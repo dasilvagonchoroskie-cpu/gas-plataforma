@@ -7,6 +7,7 @@ import '../../estado/provedores.dart';
 import '../crediario/secao_clientes.dart';
 import 'secao_auditoria.dart';
 import 'secao_centrais.dart';
+import 'secao_notificacoes.dart';
 import 'secao_pedidos_dono.dart';
 import 'secao_precos.dart';
 import 'secao_produtos.dart';
@@ -80,6 +81,10 @@ class PainelDono extends ConsumerWidget {
             rotulo: 'Relatórios',
             icone: Icons.insights_outlined,
             conteudo: SecaoRelatorios()),
+        const SecaoPainel(
+            rotulo: 'Notificações',
+            icone: Icons.notifications_outlined,
+            conteudo: SecaoNotificacoes()),
         const SecaoPainel(
             rotulo: 'Auditoria',
             icone: Icons.history,

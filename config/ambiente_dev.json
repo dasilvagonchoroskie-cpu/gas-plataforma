@@ -1,5 +1,11 @@
 {
   "SUPABASE_URL": "https://cytxdxnansmzptzhnrfq.supabase.co",
   "SUPABASE_ANON_KEY": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImN5dHhkeG5hbnNtenB0emhucmZxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTIxMjk3NDcsImV4cCI6MjEwNzcwNTc0N30.U3tviMiI3WYffGPC4-IbjjkU8IZuyLWMRBF8r0ShAiQ",
-  "NOME_APP": "Gás e Água"
+  "NOME_APP": "Gás e Água",
+  "FIREBASE_PROJETO": "",
+  "FIREBASE_REMETENTE": "",
+  "FIREBASE_CHAVE_API": "",
+  "FIREBASE_APP_CLIENTE": "",
+  "FIREBASE_APP_SUPERCENTRAL": "",
+  "FIREBASE_APP_CENTRAL": ""
 }

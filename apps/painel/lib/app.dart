@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:dados/dados.dart';
 import 'package:design_system/design_system.dart';
 import 'package:flutter/material.dart';
@@ -62,16 +64,38 @@ class RaizPainel extends ConsumerWidget {
           return _SemAcesso(mensagem: motivo);
         }
         if (tipo == TipoPainel.superCentral) {
-          return PainelDono(perfil: p);
+          return _ComNotificacoes(child: PainelDono(perfil: p));
         }
         if (centralId != null) {
-          return PainelCentral(perfil: p, centralId: centralId);
+          return _ComNotificacoes(
+              child: PainelCentral(perfil: p, centralId: centralId));
         }
         return const _SemAcesso(
             mensagem: 'Sua conta ainda não está ligada a uma loja.');
       },
     );
   }
+}
+
+/// Liga os avisos de pedido neste aparelho assim que o acesso é liberado.
+class _ComNotificacoes extends ConsumerStatefulWidget {
+  const _ComNotificacoes({required this.child});
+
+  final Widget child;
+
+  @override
+  ConsumerState<_ComNotificacoes> createState() => _ComNotificacoesState();
+}
+
+class _ComNotificacoesState extends ConsumerState<_ComNotificacoes> {
+  @override
+  void initState() {
+    super.initState();
+    unawaited(ref.read(provedorNotificacoes).ativar());
+  }
+
+  @override
+  Widget build(BuildContext context) => widget.child;
 }
 
 class _SemAcesso extends ConsumerWidget {
