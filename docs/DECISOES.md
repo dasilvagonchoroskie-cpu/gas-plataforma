@@ -6,7 +6,7 @@
 
 - Uma única revenda de gás e água (não é marketplace). Piloto em Goiatuba.
 - O dono controla todas as centrais e pode abrir **quantas quiser, em qualquer cidade**, pelo painel. Centrais são dados no banco, nunca código.
-- Flutter para o app do cliente (Android/iOS) e um painel único para dono e central (web e Android).
+- Flutter para o app do cliente (Android/iOS) e para o painel de dono e centrais (web e Android). Atualizado em 16/10/2026: o painel sai em dois aplicativos (ver abaixo).
 - Supabase é o backend único; Firebase Cloud Messaging serve somente para notificações push.
 - Permissões aplicadas no banco com RLS; `service_role` nunca vai para os apps.
 - Dinheiro em centavos inteiros; datas em UTC no banco e exibidas no horário de Brasília.
@@ -35,3 +35,9 @@
 - **Crediário (fiado) com limite:** limite livre = limite − o que deve − pedidos fiado ainda não entregues. A compra entra na conta quando o pedido é entregue. Dono e centrais registram pagamentos; ajustes manuais só o dono, com motivo (vai para a auditoria).
 - **LGPD:** CPF, RG, renda e fotos ficam só com o cliente, o dono e a central que analisa (quando liberado). Fotos num bucket privado, abertas por link temporário. A auditoria não copia CPF. O cliente com valor em aberto não exclui a conta; ao excluir, a ficha e as fotos são apagadas.
 - **Exclusão de dados pela Edge Function:** como a tela de confirmação de comandos de exclusão não abre para o Evandro (nem no celular nem pela web), as funções do banco não apagam linhas; quem apaga ficha, endereços, aparelhos e fotos na exclusão de conta é a Edge Function `excluir-conta`, com a chave do servidor. Aparelhos inválidos continuam sendo removidos pela função `notificar`.
+
+## Decisões de 16/10/2026 (noite, pedido do Evandro)
+
+- **Três aplicativos:** o do cliente, a **Super Central** (só o dono entra) e a **Central** (só o funcionário da loja entra). Os dois painéis saem do mesmo código (`apps/painel`), como dois sabores Android (`supercentral` e `central`) e dois builds web (`PAINEL=supercentral` e `PAINEL=central`), cada um com nome e identificador próprios.
+- A Super Central mantém o identificador do painel antigo (`…gasagua.painel`), para instalar por cima no celular do dono; a Central usa `…gasagua.central`. O projeto Firebase, quando for criado, precisa ter os três identificadores.
+- Cada aplicativo recusa a conta do outro tipo com uma mensagem clara. Isso só escolhe a tela: o que cada conta pode ver e mudar continua decidido no banco (RLS). Sem tipo definido no build, vale o Central (menos acesso).

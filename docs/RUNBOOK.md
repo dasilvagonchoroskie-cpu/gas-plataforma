@@ -10,9 +10,9 @@ Não contém nem deve receber senhas, tokens ou chaves secretas.
 
 ## 2. Esteira (GitHub Actions)
 
-- Todo envio ao `main` roda **Verificações Flutter**: formatação automática, análise, testes; depois gera os APKs assinados e o painel web.
+- Todo envio ao `main` roda **Verificações Flutter**: formatação automática, análise, testes; depois gera os três APKs assinados (cliente, Super Central e Central) e os dois painéis web.
 - Relatórios em português: ramo `ci-relatorio` (Flutter) e `ci-relatorio-banco` (banco).
-- Entregas: ramo `entregas` (`gas-agua-cliente.apk`, `gas-agua-painel.apk`, `painel-web.tar.gz`, `SHA256SUMS.txt`, `LEIA-ME.txt`).
+- Entregas: ramo `entregas` (`gas-agua-cliente.apk`, `gas-agua-super-central.apk`, `gas-agua-central.apk`, `painel-web-super-central.tar.gz`, `painel-web-central.tar.gz`, `SHA256SUMS.txt`, `LEIA-ME.txt`).
 
 ## 3. Chave de assinatura dos APKs
 

@@ -14,6 +14,10 @@
 > fichas e define um **limite de crediário (fiado)**, podendo liberar as
 > centrais para aprovar também, com teto; o sistema controla **quem deve**,
 > as compras fiado e os pagamentos.
+>
+> Ajuste da versão 3 (16/10/2026, pedido do Evandro): o painel sai em **dois
+> aplicativos** do mesmo código — **Super Central** (só o dono entra) e
+> **Central** (só o funcionário da loja entra) —, além do app do cliente.
 
 ## 1. Leia primeiro (instruções para o Claude Code)
 
@@ -42,8 +46,8 @@ Princípio de qualidade: sólido e simples. Um backend só (sem microsserviços)
 
 ### Entra no piloto
 
-- Painel do dono (web): centrais, produtos, preços por central, usuários, visão geral e relatórios.
-- Painel da central (web e Android): fila de pedidos em tempo real, mudança de status, transferência do pedido para outra central, janelas de entrega e capacidade, estoque, disponibilidade dos produtos e cadastro de entregadores.
+- Super Central — painel do dono (web e Android, aplicativo próprio): centrais, produtos, preços por central, usuários, visão geral e relatórios.
+- Central — painel da loja (web e Android, aplicativo próprio): fila de pedidos em tempo real, mudança de status, transferência do pedido para outra central, janelas de entrega e capacidade, estoque, disponibilidade dos produtos e cadastro de entregadores.
 - App do cliente (Android e iOS): cadastro, endereço (CEP, mapa ou GPS), catálogo da central mais próxima, carrinho, escolha de data e horário, pedido, acompanhamento, histórico e repetir o último pedido.
 - Notificações push a cada mudança de status.
 - Pagamento na entrega: dinheiro (com troco), cartão na maquininha ou Pix na entrega.
@@ -210,7 +214,9 @@ gas-plataforma/
 ├── scripts/                  testes do banco local e esteira
 └── apps/
     ├── cliente/              Flutter mobile (Android e iOS)
-    └── painel/               Flutter Web e Android (dono e central)
+    └── painel/               Flutter Web e Android: gera a Super Central
+                              (dono) e a Central (loja), cada uma com
+                              nome e identificador próprios
 ```
 
 Dentro de cada app, organizar por funcionalidade: `lib/funcionalidades/<nome>/` com telas, estado e repositório.

@@ -5,9 +5,9 @@ Plataforma de uma única revenda de gás e água mineral. O dono abre quantas ce
 ## O que tem aqui
 
 - **App do cliente** (`apps/cliente`, Android e iOS): cadastro, endereço no mapa, catálogo, carrinho, horário, pagamento na entrega, acompanhamento ao vivo, histórico e repetir pedido.
-- **Painel** (`apps/painel`, web e Android): o dono vê e controla todas as centrais; o operador cuida da fila de pedidos da sua central.
+- **Super Central e Central** (`apps/painel`, web e Android): dois aplicativos do mesmo código. Na Super Central o dono vê e controla todas as lojas; na Central o funcionário cuida da fila de pedidos da sua loja.
 - **Servidor** (`supabase/`): banco com regras de segurança (RLS), funções de negócio, testes e Edge Functions.
-- **Esteira** (`.github/workflows/`): análise, testes, APKs assinados e painel web a cada envio.
+- **Esteira** (`.github/workflows/`): análise, testes, os três APKs assinados e os dois painéis web a cada envio.
 
 ## Documentos
 

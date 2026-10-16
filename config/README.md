@@ -10,5 +10,8 @@ Os builds usam o arquivo assim:
 
     flutter build apk --dart-define-from-file=../../config/ambiente_dev.json
 
+No painel, junte também o tipo do aplicativo (`--flavor supercentral
+--dart-define=PAINEL=supercentral` ou `--flavor central --dart-define=PAINEL=central`).
+
 Para produção, crie `ambiente_producao.json` com o endereço e a chave `anon`
 do projeto de produção (fase prevista na arquitetura).

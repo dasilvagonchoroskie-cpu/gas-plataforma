@@ -9,7 +9,7 @@ Ponto de retomada. **A fonte principal é `docs/ARQUITETURA.md` (versão 2); lei
 - `supabase/functions/` — Edge Functions (Deno, imports `npm:`).
 - `packages/nucleo`, `packages/design_system`, `packages/dados` — código compartilhado.
 - `apps/cliente` — app do cliente (go_router).
-- `apps/painel` — painel do dono e da central (escolhe a interface pelo papel do perfil).
+- `apps/painel` — gera dois aplicativos: Super Central (dono) e Central (loja). O tipo vem do build (`--flavor` no Android, `PAINEL` no web); cada um aceita só o seu tipo de conta (`lib/tipo_painel.dart`).
 - `scripts/ci/validar_flutter.sh` e `.github/workflows/` — esteira.
 
 ## Como validar
