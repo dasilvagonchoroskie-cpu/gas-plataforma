@@ -4,84 +4,203 @@ on:
   push:
     branches: [main]
     paths:
-      - '.fvmrc'
       - 'apps/**'
       - 'packages/**'
+      - 'config/**'
+      - 'scripts/ci/**'
       - '.github/workflows/validacao.yml'
   pull_request:
     branches: [main]
     paths:
-      - '.fvmrc'
       - 'apps/**'
       - 'packages/**'
+      - 'scripts/ci/**'
       - '.github/workflows/validacao.yml'
+  workflow_dispatch:
 
 permissions:
   contents: read
 
 concurrency:
-  group: verificacoes-${{ github.workflow }}-${{ github.ref }}
+  group: verificacoes-${{ github.ref }}
   cancel-in-progress: true
+
+env:
+  VERSAO_FLUTTER: 3.47.7
 
 jobs:
   flutter:
     name: Análise e testes Dart/Flutter
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 30
+    permissions:
+      contents: write
     steps:
-      - name: Baixar o código sem manter credenciais do Git
+      - name: Baixar o código
         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
-          persist-credentials: false
-
-      - name: Verificar se há pacotes Flutter
-        id: pacotes
-        shell: bash
-        run: |
-          pastas=()
-          for raiz in apps packages; do
-            if [[ -d "$raiz" ]]; then
-              pastas+=("$raiz")
-            fi
-          done
-          if [[ ${#pastas[@]} -gt 0 ]] && find "${pastas[@]}" -type f -name pubspec.yaml -print -quit | grep -q .; then
-            echo 'existem=true' >> "$GITHUB_OUTPUT"
-          else
-            echo 'existem=false' >> "$GITHUB_OUTPUT"
-          fi
+          # Credenciais só quando o próprio repositório vai receber a formatação.
+          persist-credentials: ${{ github.event_name != 'pull_request' }}
 
       - name: Instalar Flutter fixado pelo projeto
-        if: steps.pacotes.outputs.existem == 'true'
         uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2
         with:
-          flutter-version: 3.47.7
+          flutter-version: ${{ env.VERSAO_FLUTTER }}
           cache: true
 
-      - name: Analisar e testar cada pacote
-        if: steps.pacotes.outputs.existem == 'true'
+      - name: Preparar, corrigir estilo, analisar e testar
+        id: validacao
+        continue-on-error: true
+        run: bash scripts/ci/validar_flutter.sh "$RUNNER_TEMP/relatorio.txt"
+
+      - name: Registrar formatação automática e lockfiles
+        if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
         shell: bash
         run: |
           set -euo pipefail
-          pastas=()
-          for raiz in apps packages; do
-            if [[ -d "$raiz" ]]; then
-              pastas+=("$raiz")
-            fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -- '*.dart' '*pubspec.lock'
+          if git diff --cached --quiet; then
+            echo 'Nada para registrar.'
+            exit 0
+          fi
+          git commit -m 'estilo: formatação e correções automáticas do Dart'
+          if git pull --rebase origin main && git push origin HEAD:main; then
+            echo 'Formatação registrada.'
+          else
+            echo '::warning::Não foi possível registrar a formatação (houve outro envio ao mesmo tempo).'
+          fi
+
+      - name: Publicar o relatório no ramo ci-relatorio
+        if: always() && github.event_name != 'pull_request'
+        shell: bash
+        env:
+          TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          pasta="$(mktemp -d)"
+          cp "$RUNNER_TEMP/relatorio.txt" "$pasta/relatorio.txt" 2>/dev/null || echo 'Relatório não gerado.' > "$pasta/relatorio.txt"
+          echo "${{ steps.validacao.outcome }}" > "$pasta/resultado.txt"
+          cd "$pasta"
+          git init -q -b ci-relatorio
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add relatorio.txt resultado.txt
+          git commit -q -m "relatório da validação de ${GITHUB_SHA::7}"
+          git push -q --force "https://x-access-token:${TOKEN}@github.com/${GITHUB_REPOSITORY}.git" ci-relatorio
+
+      - name: Encerrar com o resultado da validação
+        if: steps.validacao.outcome != 'success'
+        run: |
+          echo '::error::A análise ou os testes falharam. Veja o relatório no ramo ci-relatorio.'
+          exit 1
+
+  apks:
+    name: APKs Android e painel web
+    needs: flutter
+    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    permissions:
+      contents: write
+      # Token OIDC: prova ao servidor que este é o build oficial do ramo main,
+      # para ele liberar a chave de assinatura. Nenhum segredo fica no GitHub.
+      id-token: write
+    steps:
+      - name: Baixar o código mais recente do main
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          ref: main
+          persist-credentials: false
+
+      - name: Instalar Flutter fixado pelo projeto
+        uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2
+        with:
+          flutter-version: ${{ env.VERSAO_FLUTTER }}
+          cache: true
+
+      - name: Obter a chave de assinatura da revenda
+        id: chave
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [[ -z "${ACTIONS_ID_TOKEN_REQUEST_URL:-}" ]]; then
+            echo 'disponivel=false' >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          endereco="$(jq -r '.SUPABASE_URL' config/ambiente_dev.json)/functions/v1/assinatura-android"
+          oidc="$(curl -sSf -H "Authorization: bearer $ACTIONS_ID_TOKEN_REQUEST_TOKEN" \
+            "$ACTIONS_ID_TOKEN_REQUEST_URL&audience=gas-plataforma-assinatura" | jq -r '.value')"
+          echo "::add-mask::$oidc"
+          if ! resposta="$(curl -sSf -X POST -H "Authorization: Bearer $oidc" "$endereco")"; then
+            echo '::warning::Chave de assinatura indisponível; os APKs sairão com a chave de teste.'
+            echo 'disponivel=false' >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          senha="$(jq -r '.senha' <<< "$resposta")"
+          echo "::add-mask::$senha"
+          jq -r '.keystore_base64' <<< "$resposta" | base64 -d > "$RUNNER_TEMP/revenda.jks"
+          for app in cliente painel; do
+            {
+              echo "storeFile=$RUNNER_TEMP/revenda.jks"
+              echo "storePassword=$senha"
+              echo "keyAlias=$(jq -r '.alias' <<< "$resposta")"
+              echo "keyPassword=$senha"
+            } > "apps/$app/android/key.properties"
           done
-          mapfile -d '' manifestos < <(find "${pastas[@]}" -type f -name pubspec.yaml -print0 | sort -z)
-          for arquivo in "${manifestos[@]}"; do
-            pasta="$(dirname "$arquivo")"
-            echo "::group::Validando $pasta"
+          echo 'disponivel=true' >> "$GITHUB_OUTPUT"
+
+      - name: Gerar os APKs (cliente e painel)
+        shell: bash
+        run: |
+          set -euo pipefail
+          for app in cliente painel; do
+            echo "::group::APK $app"
             (
-              cd "$pasta"
+              cd "apps/$app"
               flutter pub get
-              dart format --output=none --set-exit-if-changed .
-              flutter analyze --fatal-infos
-              flutter test
+              flutter build apk --release \
+                --dart-define-from-file=../../config/ambiente_dev.json \
+                --build-number="${{ github.run_number }}"
             )
             echo '::endgroup::'
           done
 
-      - name: Informar que a estrutura dos apps ainda será criada
-        if: steps.pacotes.outputs.existem != 'true'
-        run: echo '::notice::A verificação automática está pronta; os testes Flutter serão executados quando os pacotes forem adicionados.'
+      - name: Gerar o painel web
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd apps/painel
+          flutter build web --release --dart-define-from-file=../../config/ambiente_dev.json
+
+      - name: Apagar a chave do runner
+        if: always()
+        run: rm -f "$RUNNER_TEMP/revenda.jks" apps/*/android/key.properties
+
+      - name: Publicar no ramo entregas
+        shell: bash
+        env:
+          TOKEN: ${{ github.token }}
+          ASSINADO: ${{ steps.chave.outputs.disponivel }}
+        run: |
+          set -euo pipefail
+          pasta="$(mktemp -d)"
+          versao="$(grep '^version:' apps/cliente/pubspec.yaml | awk '{print $2}' | cut -d+ -f1)"
+          cp apps/cliente/build/app/outputs/flutter-apk/app-release.apk "$pasta/gas-agua-cliente.apk"
+          cp apps/painel/build/app/outputs/flutter-apk/app-release.apk "$pasta/gas-agua-painel.apk"
+          (cd apps/painel/build/web && tar -czf "$pasta/painel-web.tar.gz" .)
+          cd "$pasta"
+          sha256sum gas-agua-cliente.apk gas-agua-painel.apk painel-web.tar.gz > SHA256SUMS.txt
+          {
+            echo "Versão: $versao (build ${{ github.run_number }})"
+            echo "Commit: ${GITHUB_SHA}"
+            echo "Assinado com a chave da revenda: ${ASSINADO}"
+            echo "Gerado em (UTC): $(date -u '+%Y-%m-%d %H:%M')"
+          } > LEIA-ME.txt
+          git init -q -b entregas
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add .
+          git commit -q -m "entregas do build ${{ github.run_number }}"
+          git push -q --force "https://x-access-token:${TOKEN}@github.com/${GITHUB_REPOSITORY}.git" entregas
