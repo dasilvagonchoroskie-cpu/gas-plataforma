@@ -108,3 +108,9 @@ begin
   where id = v_usuario;
 end;
 $$;
+
+-- Permissões: só quem está logado chama (cada função confere o próprio usuário).
+revoke all on function public.registrar_dispositivo(text, text) from public, anon, authenticated;
+revoke all on function public.anonimizar_minha_conta() from public, anon, authenticated;
+grant execute on function public.registrar_dispositivo(text, text) to authenticated, service_role;
+grant execute on function public.anonimizar_minha_conta() to authenticated, service_role;

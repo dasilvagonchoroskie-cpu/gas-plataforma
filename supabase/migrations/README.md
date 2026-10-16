@@ -12,12 +12,12 @@ histórico local e o do servidor baterem.
 | `…112603_funcoes_de_negocio` | Central mais próxima, agenda, pedido, status, transferência, estoque, criar central |
 | `…112700_relatorios` | Resumo por central, por produto e por dia |
 | `…115107_segredos_do_servidor` | Leitura de segredos do Vault só pelas Edge Functions |
-| `…130000_funcoes_de_conta` | Aparelhos para notificação e exclusão de conta (LGPD) |
-| `…130100_realtime_storage_notificacoes` | Tempo real, fotos dos produtos, aviso de eventos e travas finais |
+| `…115737_realtime_storage_notificacoes` | Tempo real, fotos dos produtos, aviso de eventos e travas das funções |
+| `…140000_funcoes_de_conta` | Aparelhos para notificação e exclusão de conta (LGPD) |
 
-Os dois últimos ainda **aguardam aprovação** para serem aplicados no projeto de
-desenvolvimento (contêm comandos de exclusão, que pedem confirmação). Quando
-aplicados, o arquivo é renomeado para o número registrado no servidor.
+O último ainda **aguarda aprovação** para ser aplicado no projeto de
+desenvolvimento (contém comandos de exclusão de dados, que pedem confirmação).
+Quando aplicado, o arquivo é renomeado para o número registrado no servidor.
 
 Regras: nunca alterar o banco direto; toda mudança nova vira um arquivo aqui;
 segredos nunca entram em migrations (ficam no Vault, cadastrados à parte).

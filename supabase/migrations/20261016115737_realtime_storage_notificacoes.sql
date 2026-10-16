@@ -18,8 +18,10 @@ $$;
 -- ---------------------------------------------------------------------------
 -- Fotos dos produtos (Storage)
 -- ---------------------------------------------------------------------------
--- Bucket público para leitura (fotos de catálogo); só o dono envia, troca ou
--- apaga. Limite de 2 MB e apenas imagens.
+-- Bucket público para leitura (fotos de catálogo); só o dono envia ou troca.
+-- Limite de 2 MB e apenas imagens. Não há permissão para apagar pelo app
+-- (menor privilégio): a foto antiga deixa de ser usada quando o produto recebe
+-- outra, e a limpeza de arquivos sem uso é feita pela manutenção do servidor.
 
 do $$
 begin
@@ -41,11 +43,6 @@ begin
       for update to authenticated
       using (bucket_id = 'produtos' and (select public.eh_dono()))
       with check (bucket_id = 'produtos' and (select public.eh_dono()))
-    $p$;
-    execute $p$
-      create policy produtos_fotos_excluir_dono on storage.objects
-      for delete to authenticated
-      using (bucket_id = 'produtos' and (select public.eh_dono()))
     $p$;
   end if;
 end;
@@ -114,7 +111,8 @@ for each row execute function public.tg_avisar_evento_pedido();
 -- Permissões de execução
 -- ---------------------------------------------------------------------------
 -- Nenhuma função fica aberta por padrão. Só as listadas abaixo podem ser
--- chamadas por quem está logado; o anônimo não chama nenhuma.
+-- chamadas por quem está logado; o anônimo não chama nenhuma. Migrations
+-- seguintes que criam funções fazem as próprias permissões.
 
 do $$
 declare
@@ -157,8 +155,6 @@ grant execute on function public.opcoes_transferencia(uuid) to authenticated;
 grant execute on function public.transferir_pedido(uuid, uuid, text) to authenticated;
 grant execute on function public.movimentar_estoque(uuid, uuid, public.tipo_movimento_estoque, integer, integer, text) to authenticated;
 grant execute on function public.criar_central(text, text, text, text, double precision, double precision, text, boolean, uuid) to authenticated;
-grant execute on function public.registrar_dispositivo(text, text) to authenticated;
-grant execute on function public.anonimizar_minha_conta() to authenticated;
 grant execute on function public.resumo_centrais(date, date, uuid) to authenticated;
 grant execute on function public.relatorio_produtos(date, date, uuid) to authenticated;
 grant execute on function public.relatorio_por_dia(date, date, uuid) to authenticated;

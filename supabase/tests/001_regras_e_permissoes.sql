@@ -770,6 +770,18 @@ select ok(
   and not has_function_privilege('anon', 'public.segredo_do_servidor(text)', 'execute'),
   'Apps (anon e authenticated) não têm acesso à função de segredos'
 );
+select ok(
+  not has_function_privilege('anon', 'public.criar_pedido(uuid, date, uuid, public.forma_pagamento, jsonb, uuid, integer, text)', 'execute')
+  and not has_function_privilege('anon', 'public.anonimizar_minha_conta()', 'execute')
+  and not has_function_privilege('anon', 'public.tg_auditar()', 'execute'),
+  'Visitante não executa nenhuma função do sistema'
+);
+select ok(
+  has_function_privilege('authenticated', 'public.registrar_dispositivo(text, text)', 'execute')
+  and has_function_privilege('authenticated', 'public.anonimizar_minha_conta()', 'execute')
+  and not has_function_privilege('authenticated', 'public.tg_auditar()', 'execute'),
+  'Logado só executa as funções liberadas'
+);
 
 select * from finish();
 rollback;
