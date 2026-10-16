@@ -1,33 +1,16 @@
-import 'package:design_system/design_system.dart';
+import 'package:dados/dados.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-void main() => runApp(const AplicativoPainel());
+import 'app.dart';
 
-class AplicativoPainel extends StatelessWidget {
-  const AplicativoPainel({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Painel de pedidos de gás e água',
-      theme: criarTemaPlataforma(),
-      home: const PaginaInicialPainel(),
-    );
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  final configuracao = ConfiguracaoBackend.doAmbiente();
+  if (!configuracao.completa) {
+    runApp(const PainelSemConfiguracao());
+    return;
   }
-}
-
-class PaginaInicialPainel extends StatelessWidget {
-  const PaginaInicialPainel({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('Painel de pedidos de gás e água')),
-      body: const EstadoModuloEmPreparacao(
-        titulo: 'Painel unificado',
-        descricao:
-            'O acesso por perfil e os fluxos de gestão serão habilitados nas fases 2 e 3, após a preparação segura do backend.',
-      ),
-    );
-  }
+  await iniciarBackend(configuracao);
+  runApp(const ProviderScope(child: AplicativoPainel()));
 }
