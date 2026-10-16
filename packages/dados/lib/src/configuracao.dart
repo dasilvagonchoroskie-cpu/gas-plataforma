@@ -24,7 +24,7 @@ final class ConfiguracaoBackend {
 Future<void> iniciarBackend(ConfiguracaoBackend configuracao) async {
   await Supabase.initialize(
     url: configuracao.url,
-    anonKey: configuracao.chavePublica,
+    publishableKey: configuracao.chavePublica,
   );
 }
 
