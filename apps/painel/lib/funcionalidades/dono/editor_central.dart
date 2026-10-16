@@ -134,9 +134,12 @@ class _EditorCentralState extends ConsumerState<EditorCentral> {
       _moverPara(LatLng(local.latitude, local.longitude));
       mostrarMensagem(
         context,
-        local.aproximada
-            ? 'Achamos só a cidade. Toque no mapa no ponto exato da central.'
-            : 'Localização encontrada. Confira o pino no mapa.',
+        switch (local.precisao) {
+          'cidade' =>
+            'Achamos só a cidade. Toque no mapa no ponto exato da central.',
+          'rua' => 'Achamos a rua. Toque no mapa no ponto exato da central.',
+          _ => 'Localização encontrada. Confira o pino no mapa.',
+        },
       );
     } catch (erro) {
       if (mounted) {

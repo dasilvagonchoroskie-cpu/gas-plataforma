@@ -34,6 +34,7 @@ class _TelaEditarEnderecoState extends ConsumerState<TelaEditarEndereco> {
   final _referencia = TextEditingController();
 
   Localizacao? _localizacao;
+  double _zoomMapa = 17;
   bool _pinoAjustadoAMao = false;
   bool _buscandoCep = false;
   bool _usandoGps = false;
@@ -148,41 +149,58 @@ class _TelaEditarEnderecoState extends ConsumerState<TelaEditarEndereco> {
           timeLimit: Duration(seconds: 20),
         ),
       );
-      final achado =
-          await _repositorio.enderecoDoGps(posicao.latitude, posicao.longitude);
+      // O ponto do GPS vale mesmo se o serviço não achar o nome da rua: a
+      // pessoa completa o endereço à mão.
+      final achado = await _repositorio
+          .enderecoDoGps(posicao.latitude, posicao.longitude)
+          .then<EnderecoDoGps?>((e) => e, onError: (Object _) => null);
       if (!mounted) {
         return;
       }
       setState(() {
-        _localizacao = achado.localizacao;
+        _localizacao = Localizacao(
+            latitude: posicao.latitude, longitude: posicao.longitude);
+        _zoomMapa = 17;
         _pinoAjustadoAMao = true;
-        if (achado.cep.length == 8) {
-          _cep.text = Validacoes.formatarCep(achado.cep);
-        }
-        if (achado.logradouro.isNotEmpty) {
-          _logradouro.text = achado.logradouro;
-        }
-        if (achado.numero.isNotEmpty && _numero.text.isEmpty) {
-          _numero.text = achado.numero;
-        }
-        if (achado.bairro.isNotEmpty) {
-          _bairro.text = achado.bairro;
-        }
-        if (achado.cidade.isNotEmpty) {
-          _cidade.text = achado.cidade;
-        }
-        if (achado.uf.length == 2) {
-          _uf.text = achado.uf;
+        if (achado != null) {
+          _preencherDoGps(achado);
         }
       });
-      mostrarMensagem(context,
-          'Localização encontrada. Confira o número e o pino no mapa.');
+      mostrarMensagem(
+        context,
+        achado == null || achado.logradouro.isEmpty
+            ? 'Marcamos sua localização no mapa. Preencha a rua, o número e o '
+                'bairro.'
+            : 'Localização encontrada. Confira o número e o pino no mapa.',
+      );
     } catch (erro) {
       _erro(erro);
     } finally {
       if (mounted) {
         setState(() => _usandoGps = false);
       }
+    }
+  }
+
+  /// Preenche os campos com o que o serviço achou (chamar dentro de setState).
+  void _preencherDoGps(EnderecoDoGps achado) {
+    if (achado.cep.length == 8) {
+      _cep.text = Validacoes.formatarCep(achado.cep);
+    }
+    if (achado.logradouro.isNotEmpty) {
+      _logradouro.text = achado.logradouro;
+    }
+    if (achado.numero.isNotEmpty && _numero.text.isEmpty) {
+      _numero.text = achado.numero;
+    }
+    if (achado.bairro.isNotEmpty) {
+      _bairro.text = achado.bairro;
+    }
+    if (achado.cidade.isNotEmpty) {
+      _cidade.text = achado.cidade;
+    }
+    if (achado.uf.length == 2) {
+      _uf.text = achado.uf;
     }
   }
 
@@ -194,22 +212,43 @@ class _TelaEditarEnderecoState extends ConsumerState<TelaEditarEndereco> {
     try {
       var localizacao = _localizacao;
       if (localizacao == null) {
-        localizacao = await _repositorio.localizar(
-          logradouro: _logradouro.text,
-          numero: _numero.text,
-          bairro: _bairro.text,
-          cidade: _cidade.text,
-          uf: _uf.text,
-        );
+        try {
+          localizacao = await _repositorio.localizar(
+            logradouro: _logradouro.text,
+            numero: _numero.text,
+            bairro: _bairro.text,
+            cidade: _cidade.text,
+            uf: _uf.text,
+            cep: _cep.text,
+          );
+        } catch (_) {
+          throw const ErroDeNegocio(
+            'Não conseguimos achar o endereço no mapa agora. Toque em "Usar '
+            'minha localização agora" ou tente de novo em instantes.',
+          );
+        }
         if (!mounted) {
           return;
         }
-        setState(() => _localizacao = localizacao);
-        if (localizacao.aproximada) {
-          // Mostra o pino para a pessoa conferir antes de salvar.
+        final achada = localizacao;
+        setState(() {
+          _localizacao = achada;
+          _zoomMapa = switch (achada.precisao) {
+            'cidade' => 14,
+            'rua' => 16,
+            _ => 17,
+          };
+        });
+        if (achada.precisaConferir) {
+          // Mostra o pino para a pessoa conferir antes de salvar: com mais de
+          // uma loja na cidade, o ponto certo decide quem entrega.
           mostrarMensagem(
             context,
-            'Achamos só a cidade. Toque no mapa no lugar da sua casa e salve de novo.',
+            achada.aproximada
+                ? 'Achamos só a cidade. Toque no mapa no lugar da sua casa e '
+                    'toque em Salvar de novo.'
+                : 'Achamos a rua. Se o pino não estiver na sua casa, toque no '
+                    'lugar certo do mapa. Depois toque em Salvar de novo.',
           );
           return;
         }
@@ -407,6 +446,7 @@ class _TelaEditarEnderecoState extends ConsumerState<TelaEditarEndereco> {
                 MapaEndereco(
                   latitude: localizacao.latitude,
                   longitude: localizacao.longitude,
+                  zoom: _zoomMapa,
                   aoMover: (lat, lon) => setState(() {
                     _localizacao = Localizacao(latitude: lat, longitude: lon);
                     _pinoAjustadoAMao = true;

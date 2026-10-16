@@ -9,6 +9,7 @@ class MapaEndereco extends StatefulWidget {
     required this.longitude,
     required this.aoMover,
     this.altura = 240,
+    this.zoom = 17,
     super.key,
   });
 
@@ -16,6 +17,10 @@ class MapaEndereco extends StatefulWidget {
   final double longitude;
   final void Function(double latitude, double longitude) aoMover;
   final double altura;
+
+  /// Aproximação inicial: 17 para a casa, menos quando só achou a rua ou a
+  /// cidade (para a pessoa ver em volta e tocar no lugar certo).
+  final double zoom;
 
   @override
   State<MapaEndereco> createState() => _MapaEnderecoState();
@@ -29,9 +34,9 @@ class _MapaEnderecoState extends State<MapaEndereco> {
     super.didUpdateWidget(antigo);
     final mudou = antigo.latitude != widget.latitude ||
         antigo.longitude != widget.longitude;
-    if (mudou) {
-      _controle.move(
-          LatLng(widget.latitude, widget.longitude), _controle.camera.zoom);
+    if (mudou || antigo.zoom != widget.zoom) {
+      _controle.move(LatLng(widget.latitude, widget.longitude),
+          antigo.zoom != widget.zoom ? widget.zoom : _controle.camera.zoom);
     }
   }
 
@@ -46,7 +51,7 @@ class _MapaEnderecoState extends State<MapaEndereco> {
           mapController: _controle,
           options: MapOptions(
             initialCenter: ponto,
-            initialZoom: 17,
+            initialZoom: widget.zoom,
             onTap: (_, posicao) =>
                 widget.aoMover(posicao.latitude, posicao.longitude),
           ),

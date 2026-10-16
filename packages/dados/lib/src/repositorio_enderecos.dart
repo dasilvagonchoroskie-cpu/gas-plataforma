@@ -35,6 +35,10 @@ final class Localizacao {
   final String precisao;
 
   bool get aproximada => precisao == 'cidade';
+
+  /// Achou o ponto exato (endereço) ou só a rua/cidade, que a pessoa precisa
+  /// conferir no mapa antes de salvar.
+  bool get precisaConferir => precisao != 'endereco';
 }
 
 /// Endereço preenchido a partir do GPS.
@@ -130,6 +134,7 @@ class RepositorioEnderecos {
     required String bairro,
     required String cidade,
     required String uf,
+    String cep = '',
   }) async {
     final r = await _chamar({
       'acao': 'localizar',
@@ -138,6 +143,7 @@ class RepositorioEnderecos {
       'bairro': bairro,
       'cidade': cidade,
       'uf': uf,
+      'cep': Validacoes.somenteDigitos(cep),
     });
     return Localizacao(
       latitude: (r['latitude'] as num).toDouble(),
