@@ -1,8 +1,12 @@
 // Exclusão da conta pelo próprio cliente (exigida pelas lojas e pela LGPD).
 //
-// 1. Anonimiza o perfil e os pedidos (função do banco, chamada como o próprio
-//    usuário, que confere as regras — por exemplo, pedido em andamento).
-// 2. Apaga o login.
+// 1. Confere as regras e anonimiza o perfil e os pedidos (função do banco,
+//    chamada como o próprio usuário: pedido em andamento ou fiado em aberto
+//    impedem a exclusão).
+// 2. Apaga a ficha de cadastro, os endereços, os aparelhos e as fotos da ficha.
+// 3. Apaga o login.
+//
+// Pode ser chamada de novo se algo falhar no meio: cada passo é repetível.
 import { createClient } from "npm:@supabase/supabase-js@2";
 
 const CORS = {
@@ -32,6 +36,7 @@ Deno.serve(async (req) => {
   });
   const { data: usuario, error: erroUsuario } = await admin.auth.getUser(token);
   if (erroUsuario || !usuario?.user) return resposta(401, { erro: "Faça login novamente." });
+  const id = usuario.user.id;
 
   // Cliente com o token do próprio usuário: as regras do banco valem para ele.
   const comoUsuario = createClient(url, Deno.env.get("SUPABASE_ANON_KEY")!, {
@@ -44,7 +49,34 @@ Deno.serve(async (req) => {
     return resposta(400, { erro: erroAnonimizar.message || "Não foi possível excluir a conta." });
   }
 
-  const { error: erroExcluir } = await admin.auth.admin.deleteUser(usuario.user.id);
+  // Dados pessoais que não ficam nem anonimizados: são apagados.
+  for (const [tabela, coluna] of [
+    ["fichas_cliente", "cliente_id"],
+    ["enderecos", "cliente_id"],
+    ["dispositivos_push", "perfil_id"],
+  ] as const) {
+    const { error } = await admin.from(tabela).delete().eq(coluna, id);
+    if (error) {
+      console.error(`excluir-conta: falha ao apagar ${tabela}:`, error.message);
+      return resposta(500, { erro: "Não foi possível apagar todos os seus dados agora. Tente de novo." });
+    }
+  }
+
+  // Fotos da ficha (pasta do cliente no bucket privado).
+  const { data: fotos, error: erroLista } = await admin.storage.from("fichas").list(id, { limit: 100 });
+  if (erroLista) {
+    console.error("excluir-conta: falha ao listar fotos:", erroLista.message);
+    return resposta(500, { erro: "Não foi possível apagar todos os seus dados agora. Tente de novo." });
+  }
+  if (fotos && fotos.length > 0) {
+    const { error: erroFotos } = await admin.storage.from("fichas").remove(fotos.map((f) => `${id}/${f.name}`));
+    if (erroFotos) {
+      console.error("excluir-conta: falha ao apagar fotos:", erroFotos.message);
+      return resposta(500, { erro: "Não foi possível apagar todos os seus dados agora. Tente de novo." });
+    }
+  }
+
+  const { error: erroExcluir } = await admin.auth.admin.deleteUser(id);
   if (erroExcluir) {
     console.error("Falha ao apagar login:", erroExcluir.message);
     return resposta(500, { erro: "Seus dados foram removidos, mas o login não foi apagado. Tente de novo." });
