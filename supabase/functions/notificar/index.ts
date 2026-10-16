@@ -3,13 +3,17 @@
 // Quem chama é o próprio banco (gatilho em historico_status, via pg_net), com o
 // cabeçalho x-segredo-notificacao, conferido com o segredo notificar_segredo do
 // Vault (lido pela função segredo_do_servidor, só com a chave service_role).
-// Segredo da função (cadastrado no painel do Supabase, nunca no código):
-//   FCM_CONTA_SERVICO  — JSON da conta de serviço do Firebase (só envio de push)
-// Sem FCM_CONTA_SERVICO a função responde "sem configuração" e nada é enviado.
+// Chave do Firebase: JSON da conta de serviço, guardado no Vault como
+// fcm_conta_servico pelo próprio dono (Super Central → Notificações, pela função
+// configurar-notificacoes). O segredo FCM_CONTA_SERVICO da função ainda vale
+// como reserva. Sem chave, a função responde "sem configuração" e nada é enviado.
+//
+// Evento de teste (chamado por configurar-notificacoes):
+//   { "evento": "teste", "perfil_id": "..." } → avisa os aparelhos desse perfil.
 import { createClient, type SupabaseClient } from "npm:@supabase/supabase-js@2";
 
 type ContaServico = { project_id: string; client_email: string; private_key: string };
-type Evento = { pedido_id?: string; status?: string; evento?: string; central_id?: string };
+type Evento = { pedido_id?: string; status?: string; evento?: string; central_id?: string; perfil_id?: string };
 type Mensagem = { titulo: string; corpo: string };
 
 function resposta(status: number, corpo: Record<string, unknown>): Response {
@@ -38,6 +42,18 @@ function base64Url(bytes: ArrayBuffer | Uint8Array): string {
 
 let tokenEmCache: { valor: string; expiraEm: number } | null = null;
 let segredoEmCache: { valor: string; lidoEm: number } | null = null;
+let contaEmCache: { valor: string; lidoEm: number } | null = null;
+
+/** JSON da conta de serviço do Firebase (Vault, cache de 5 minutos). */
+async function contaDoFirebase(admin: SupabaseClient): Promise<string> {
+  if (contaEmCache && Date.now() - contaEmCache.lidoEm < 5 * 60 * 1000) return contaEmCache.valor;
+  const { data, error } = await admin.rpc("segredo_do_servidor", { p_nome: "fcm_conta_servico" });
+  if (error) console.error("notificar: não foi possível ler a chave do Firebase:", error.message);
+  const valor = (typeof data === "string" && data) ? data : (Deno.env.get("FCM_CONTA_SERVICO") ?? "");
+  if (valor && valor !== contaEmCache?.valor) tokenEmCache = null; // chave nova: pede acesso novo ao Google
+  if (valor) contaEmCache = { valor, lidoEm: Date.now() };
+  return valor;
+}
 
 /** Segredo esperado no cabeçalho, guardado no Vault (cache de 5 minutos). */
 async function segredoEsperado(admin: SupabaseClient): Promise<string> {
@@ -171,18 +187,39 @@ Deno.serve(async (req) => {
     return resposta(401, { erro: "Não autorizado." });
   }
 
-  const contaTexto = Deno.env.get("FCM_CONTA_SERVICO");
+  const contaTexto = await contaDoFirebase(admin);
   if (!contaTexto) return resposta(200, { enviado: false, motivo: "sem configuração do Firebase" });
 
   let conta: ContaServico;
   try {
     conta = JSON.parse(contaTexto);
   } catch {
-    console.error("FCM_CONTA_SERVICO não é um JSON válido.");
+    console.error("A chave do Firebase não é um JSON válido.");
     return resposta(200, { enviado: false, motivo: "configuração inválida" });
   }
 
   const evento = await req.json().catch(() => ({})) as Evento;
+
+  if (evento.evento === "teste") {
+    if (!evento.perfil_id) return resposta(400, { erro: "Teste sem perfil." });
+    try {
+      const tokens = await tokensDe(admin, [evento.perfil_id]);
+      if (tokens.length === 0) return resposta(200, { enviado: false, motivo: "nenhum aparelho registrado" });
+      const quantidade = await enviar(
+        admin,
+        conta,
+        tokens,
+        { titulo: "Notificações funcionando", corpo: "Este aparelho vai receber os avisos de pedidos." },
+        { tipo: "teste" },
+        "novos_pedidos",
+      );
+      return resposta(200, { enviado: quantidade > 0, quantidade });
+    } catch (erro) {
+      console.error("notificar (teste):", erro);
+      return resposta(500, { erro: "Falha ao enviar." });
+    }
+  }
+
   if (!evento.pedido_id) return resposta(400, { erro: "Evento sem pedido." });
 
   const { data: pedido, error } = await admin

@@ -787,6 +787,34 @@ select ok(
   and not has_function_privilege('anon', 'public.segredo_do_servidor(text)', 'execute'),
   'Apps (anon e authenticated) não têm acesso à função de segredos'
 );
+
+-- Chave do Firebase: o dono envia pela Super Central e só o servidor grava.
+select testes.como('a0000000-0000-4000-8000-000000000001');
+select throws_ok(
+  $$ select public.guardar_segredo_do_servidor('fcm_conta_servico', repeat('x', 300), null) $$,
+  '42501',
+  null,
+  'Nem o dono grava segredos direto pelo app (só pela função do servidor)'
+);
+select testes.como_admin();
+select throws_ok(
+  $$ select public.guardar_segredo_do_servidor('android_chave_senha', repeat('x', 300), null) $$,
+  '42501',
+  null,
+  'O servidor só troca a chave do Firebase (a chave dos APKs não muda por aqui)'
+);
+select throws_ok(
+  $$ select public.guardar_segredo_do_servidor('fcm_conta_servico', 'curto', null) $$,
+  '22023',
+  null,
+  'O conteúdo da chave é conferido antes de gravar'
+);
+select ok(
+  has_function_privilege('service_role', 'public.guardar_segredo_do_servidor(text, text, uuid)', 'execute')
+  and not has_function_privilege('authenticated', 'public.guardar_segredo_do_servidor(text, text, uuid)', 'execute')
+  and not has_function_privilege('anon', 'public.guardar_segredo_do_servidor(text, text, uuid)', 'execute'),
+  'Só o servidor (service_role) grava a chave do Firebase'
+);
 select ok(
   not has_function_privilege('anon', 'public.criar_pedido(uuid, date, uuid, public.forma_pagamento, jsonb, uuid, integer, text)', 'execute')
   and not has_function_privilege('anon', 'public.anonimizar_minha_conta()', 'execute')
