@@ -4,18 +4,25 @@
 
 ## Decisões fechadas
 
-- Uma revenda atende Goiatuba, Itumbiara e Bom Jesus de Goiás; no piloto, somente Goiatuba fica ativa.
-- O dono controla todas as centrais. Municípios e centrais são dados configuráveis, não nomes fixos no código.
-- Flutter para o app de cliente Android/iOS e painel web único para dono e central.
+- Uma única revenda de gás e água (não é marketplace). Piloto em Goiatuba.
+- O dono controla todas as centrais e pode abrir **quantas quiser, em qualquer cidade**, pelo painel. Centrais são dados no banco, nunca código.
+- Flutter para o app do cliente (Android/iOS) e um painel único para dono e central (web e Android).
 - Supabase é o backend único; Firebase Cloud Messaging serve somente para notificações push.
-- Permissões são aplicadas no banco com RLS; `service_role` nunca vai para os apps.
-- Dinheiro é armazenado em centavos inteiros; datas ficam em UTC no banco.
-- Mudanças de banco passam por migrations versionadas. Produção nunca é alterada manualmente.
-- Seguir a ordem das fases de `docs/ARQUITETURA.md`; assinatura e publicação ficam para a etapa final.
+- Permissões aplicadas no banco com RLS; `service_role` nunca vai para os apps.
+- Dinheiro em centavos inteiros; datas em UTC no banco e exibidas no horário de Brasília.
+- Mudanças de banco só por migrations versionadas. Produção nunca é alterada manualmente.
 
-## Estado atual
+## Decisões de 16/10/2026 (pedido do Evandro)
 
-- Evandro informou que vinculou o Supabase ao GitHub. Ainda falta confirmar qual projeto está ligado e revisar as opções de implantação.
-- A conexão deve apontar para o projeto gratuito de desenvolvimento, em organização separada. Não habilitar implantação automática em produção.
-- Produção não existe e não deve ser criada nesta etapa.
-- Nenhuma migration, função de negócio ou seed com dados de negócio foi criada. A Fase 1 ainda não começou.
+- **Central mais próxima:** o pedido cai na central ativa mais próxima do ponto do endereço do cliente no mapa. Não existe mais "escolher a cidade".
+- **Faixas de entrega por distância** (`faixas_entrega`) substituem as áreas por bairro: cada central define "até X km, taxa Y". A maior faixa é o alcance; fora dele a central não atende.
+- **Transferência entre centrais:** a central que não tem a mercadoria passa o pedido para outra central ativa. O preço combinado com o cliente não muda, o pedido volta para "novo" na central nova e o cliente é avisado. Limite de 5 transferências por pedido.
+- **Número do pedido único da revenda** (a partir de 1001), para não repetir quando o pedido muda de central.
+- **Entregadores** ficam numa tabela própria da central (nome e telefone), sem precisar de login; o app do entregador continua fora do piloto.
+- **Cadastro do cliente** feito pela Edge Function `cadastro`, que cria a conta já confirmada (o e-mail gratuito do Supabase tem limite baixo). A recuperação de senha por e-mail depende de configurar um SMTP próprio; até lá, o dono cria senha nova pelo painel.
+- **Mapas e endereços sem chave paga:** OpenStreetMap no app, ViaCEP e Nominatim pela Edge Function `endereco`.
+- **Segredos do servidor no Vault** do Supabase (`notificar_url`, `notificar_segredo`, `android_chave_*`), lidos só pelas Edge Functions pela função `segredo_do_servidor` (restrita à `service_role`).
+- **Assinatura dos APKs sem segredo no GitHub:** a chave da revenda fica no Vault; a Edge Function `assinatura-android` só a entrega ao build oficial (token OIDC do GitHub, ramo `main`, fluxo `validacao.yml`). Cópia da chave e senha entregues ao Evandro para guardar.
+- **Fotos dos produtos:** só o dono envia ou troca; não há exclusão pelo app (menor privilégio).
+- **Funções que os logados podem chamar** são as RPC de negócio, que conferem quem chamou por dentro; o visitante (anon) não executa nenhuma função.
+- Aviso do Supabase sobre `pg_net` no esquema `public` é só cosmético (nenhum objeto dele fica em `public`); será ajustado na criação da produção.

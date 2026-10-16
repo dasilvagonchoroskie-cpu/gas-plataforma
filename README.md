@@ -1,19 +1,19 @@
 # Plataforma de pedidos de gás e água
 
-Plataforma para uma única revenda de gás e água, com centrais em Goiatuba, Itumbiara e Bom Jesus de Goiás. O piloto ativa somente a central de Goiatuba. O escopo e as decisões aprovadas estão em [`docs/ARQUITETURA.md`](docs/ARQUITETURA.md).
+Plataforma de uma única revenda de gás e água mineral. O dono abre quantas centrais quiser, em qualquer cidade; o cliente pede pelo app e o pedido cai na **central ativa mais próxima**. Se faltar mercadoria, a central **transfere o pedido** para outra. O piloto começa em Goiatuba.
 
-## Estado da Fase 0
+## O que tem aqui
 
-A arquitetura versão 1 foi registrada. O projeto prepara um app Flutter do cliente, um painel Flutter Web unificado para dono e central e o pacote compartilhado `packages/nucleo`. Há CI no GitHub Actions. Evandro informou que vinculou o Supabase ao GitHub; ainda falta confirmar o projeto e as opções dessa integração. Não há produção nem migrations de negócio.
+- **App do cliente** (`apps/cliente`, Android e iOS): cadastro, endereço no mapa, catálogo, carrinho, horário, pagamento na entrega, acompanhamento ao vivo, histórico e repetir pedido.
+- **Painel** (`apps/painel`, web e Android): o dono vê e controla todas as centrais; o operador cuida da fila de pedidos da sua central.
+- **Servidor** (`supabase/`): banco com regras de segurança (RLS), funções de negócio, testes e Edge Functions.
+- **Esteira** (`.github/workflows/`): análise, testes, APKs assinados e painel web a cada envio.
 
-Há shells de interface de uma preparação anterior; eles não substituem a arquitetura versão 1. Os APKs de prévia dessa etapa anterior são somente artefatos técnicos privados e não fazem parte da distribuição de produção. Novas implementações devem seguir a ordem das fases da arquitetura e não antecipar funções fora do escopo.
+## Documentos
 
-## Documentos principais
-
-- [`CLAUDE.md`](CLAUDE.md): regras da seção 1 da arquitetura e fluxo de aprovação.
-- [`docs/ARQUITETURA.md`](docs/ARQUITETURA.md): escopo, stack, segurança, dados, estrutura e ordem das fases.
-- [`docs/DECISOES.md`](docs/DECISOES.md): resumo das decisões fechadas e estado dos ambientes.
+- [`docs/ARQUITETURA.md`](docs/ARQUITETURA.md): escopo, dados, segurança e ordem das fases (versão 2).
 - [`docs/PROGRESSO.md`](docs/PROGRESSO.md): o que foi feito, o que falta e o próximo passo.
+- [`docs/DECISOES.md`](docs/DECISOES.md): decisões importantes, em poucas linhas.
+- [`docs/RUNBOOK.md`](docs/RUNBOOK.md): operação, chave dos APKs, backup e contingência.
 - [`docs/IMPLEMENTACAO_E_HANDOFF.md`](docs/IMPLEMENTACAO_E_HANDOFF.md): ponto de retomada para o Claude Code.
-- [`docs/RUNBOOK.md`](docs/RUNBOOK.md): preparação de backup, restauração, troca de chaves e contingência.
-- [`apps/README.md`](apps/README.md): estrutura do app cliente e painel unificado.
+- [`CLAUDE.md`](CLAUDE.md): regras de trabalho.

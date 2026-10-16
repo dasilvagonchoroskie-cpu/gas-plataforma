@@ -1,42 +1,57 @@
 # Runbook — operação e recuperação
 
-**Estado:** esqueleto inicial da Fase 0. Evandro informou que vinculou o Supabase ao GitHub; ainda falta confirmar o projeto e as opções da integração. Não há ambiente de produção.
+Não contém nem deve receber senhas, tokens ou chaves secretas.
 
-Este documento será completado e testado antes do piloto. Não contém nem deve receber senhas, tokens ou chaves secretas.
+## 1. Ambientes
 
-## 1. Identificação dos ambientes
+- **Desenvolvimento:** Supabase `cytxdxnansmzptzhnrfq` (conta da plataforma, plano gratuito). Dados só de teste.
+- **Produção:** ainda não existe. Será criada no nome do dono (Supabase Pro), aplicando as mesmas migrations em ordem.
+- Configuração pública dos apps: `config/ambiente_dev.json` (endereço e chave `anon`).
 
-- Desenvolvimento: projeto Supabase gratuito em organização separada; Evandro informou que conectou o Supabase ao GitHub, mas o projeto de destino ainda precisa ser confirmado.
-- Produção: ainda não existe; não provisionar nesta etapa.
-- Registrar o projeto e o ambiente corretos quando confirmados, sem incluir senhas ou chaves secretas.
+## 2. Esteira (GitHub Actions)
 
-## 2. Falha do app ou painel
+- Todo envio ao `main` roda **Verificações Flutter**: formatação automática, análise, testes; depois gera os APKs assinados e o painel web.
+- Relatórios em português: ramo `ci-relatorio` (Flutter) e `ci-relatorio-banco` (banco).
+- Entregas: ramo `entregas` (`gas-agua-cliente.apk`, `gas-agua-painel.apk`, `painel-web.tar.gz`, `SHA256SUMS.txt`, `LEIA-ME.txt`).
 
-1. Registrar horário, ambiente, tela e mensagem visível; não incluir nome, telefone, endereço ou tokens em logs públicos.
-2. Conferir os alertas de execução do Supabase e GitHub Actions pelos acessos autorizados.
-3. Manter o atendimento por WhatsApp em paralelo durante o piloto, conforme a arquitetura.
-4. Não aplicar mudanças manuais no banco. Corrigir por código revisado, testes e migration autorizada.
+## 3. Chave de assinatura dos APKs
 
-## 3. Backups e restauração
+- Arquivo `gas-agua-revenda.jks`, apelido `revenda`. Cópia guardada pelo Evandro (arquivo e senha entregues em 16/10/2026) e no Vault do Supabase (`android_chave_base64`, `android_chave_senha`, `android_chave_apelido`).
+- A Edge Function `assinatura-android` só entrega a chave ao build oficial (token OIDC do GitHub: repositório, ramo `main`, fluxo `validacao.yml`).
+- **Perder a chave impede atualizar o app já instalado.** Na Google Play, ativar a "Assinatura de apps do Google Play" e usar esta chave como chave de upload.
+- Se a chave vazar: gerar outra, trocar os três segredos no Vault e, na Play, pedir a troca da chave de upload.
 
-- Antes do piloto: confirmar a política de backup diário do plano Supabase Pro, preparar exportação semanal fora do Supabase e testar a restauração em ambiente isolado.
-- Registrar responsável, frequência, destino protegido, retenção e data do último teste de restauração quando esses itens forem configurados.
+## 4. Primeiro administrador
+
+O primeiro dono não tem como ser criado pelo painel. Procedimento usado no desenvolvimento:
+
+1. Criar a conta pela Edge Function `cadastro` (nasce como cliente).
+2. Promover pelo SQL do projeto: `update public.perfis set papel = 'dono' where email = '<e-mail>';` (fica registrado na auditoria).
+3. Os demais usuários (operadores e outros administradores) são criados pelo próprio dono no painel → Usuários.
+
+## 5. Falha do app ou painel
+
+1. Registrar horário, tela e mensagem visível; não colocar nome, telefone, endereço ou tokens em logs públicos.
+2. Conferir os logs das Edge Functions e do banco no painel do Supabase.
+3. Durante o piloto, manter o atendimento por WhatsApp em paralelo.
+4. Nunca corrigir dados direto no banco de produção: corrigir por código, testes e migration.
+
+## 6. Senha esquecida
+
+Enquanto não houver SMTP próprio, o e-mail de recuperação é limitado. O dono entra no painel → Usuários → (pessoa) → "Criar senha nova" e passa a senha provisória.
+
+## 7. Backups e restauração
+
+- Antes do piloto: confirmar o backup diário do plano Pro, preparar exportação semanal fora do Supabase e testar a restauração num projeto separado.
 - Nunca testar restauração sobre produção.
-- Procedimento detalhado e comandos serão adicionados após escolha/configuração do ambiente e testados antes de declarar prontos.
 
-## 4. Troca de chaves
+## 8. Troca de chaves
 
-- Trocar credenciais somente no painel oficial do provedor e nos armazenamentos seguros correspondentes.
-- Nunca enviar segredos por chat, commit, print, log ou APK.
-- A chave `service_role` permanece exclusivamente no servidor/ambiente seguro; não entra em aplicativos.
-- Registrar data, responsável e serviços afetados, sem registrar o valor da chave.
+- Trocar credenciais só no painel oficial do provedor (Supabase, Firebase, Google Play) ou no Vault.
+- Nunca enviar segredos por commit, print, log ou APK. A `service_role` fica só no servidor.
 
-## 5. Indisponibilidade do banco
+## 9. Banco fora do ar
 
-- Usar o atendimento atual por WhatsApp; não simular confirmação de pedido, pagamento ou estoque.
-- Não repetir operações críticas sem confirmar o resultado, para evitar pedidos duplicados.
-- Retomar a operação digital somente após confirmar a saúde do serviço e a reconciliação dos pedidos recebidos fora do app.
-
-## 6. Informações pendentes
-
-Os projetos, responsáveis, alertas, comandos de exportação e restauração, política de retenção e contatos serão preenchidos depois que os ambientes forem criados. Este runbook não autoriza provisionamento nem alterações de banco.
+- Usar o WhatsApp; não confirmar pedido, pagamento ou estoque sem o sistema.
+- Não repetir operações sem confirmar o resultado (o pedido tem chave contra duplicação, mas confira).
+- Ao voltar, conferir os pedidos recebidos fora do app.
