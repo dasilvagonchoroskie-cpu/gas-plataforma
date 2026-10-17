@@ -1,0 +1,96 @@
+Testes do banco — commit 4e67c14d6b59f662d97648fa6cca110ab1d8514f
+Resultado: success
+
+### Início do Supabase
+Seeding globals from roles.sql...
+Applying migration 20261016112043_tipos_e_tabelas.sql...
+Applying migration 20261016112129_funcoes_auxiliares_e_gatilhos.sql...
+Applying migration 20261016112208_permissoes_e_rls.sql...
+Applying migration 20261016112603_funcoes_de_negocio.sql...
+Applying migration 20261016112700_relatorios.sql...
+Applying migration 20261016115107_segredos_do_servidor.sql...
+Applying migration 20261016115737_realtime_storage_notificacoes.sql...
+Applying migration 20261016155152_forma_pagamento_crediario.sql...
+Applying migration 20261016155401_crediario.sql...
+Applying migration 20261016160132_funcoes_de_conta.sql...
+Applying migration 20261016222759_chave_do_firebase.sql...
+Seeding data from supabase/seed.sql...
+Starting containers...
+Waiting for health checks...
+Started supabase local development setup.
+
+╭──────────────────────────────────────╮
+│ 🔧 Development Tools                 │
+├─────────┬────────────────────────────┤
+│ Studio  │ http://127.0.0.1:54323     │
+│ Mailpit │ http://127.0.0.1:54324     │
+│ MCP     │ http://127.0.0.1:54321/mcp │
+╰─────────┴────────────────────────────╯
+
+╭──────────────────────────────────────────────────────╮
+│ 🌐 APIs                                              │
+├────────────────┬─────────────────────────────────────┤
+│ Project URL    │ http://127.0.0.1:54321              │
+│ REST           │ http://127.0.0.1:54321/rest/v1      │
+│ GraphQL        │ http://127.0.0.1:54321/graphql/v1   │
+│ Edge Functions │ http://127.0.0.1:54321/functions/v1 │
+╰────────────────┴─────────────────────────────────────╯
+
+╭───────────────────────────────────────────────────────────────╮
+│ ⛁ Database                                                    │
+├─────┬─────────────────────────────────────────────────────────┤
+│ URL │ postgresql://postgres:postgres@127.0.0.1:54322/postgres │
+╰─────┴─────────────────────────────────────────────────────────╯
+
+╭──────────────────────────────────────────────────────────────╮
+│ 🔑 Authentication Keys                                       │
+├─────────────┬────────────────────────────────────────────────┤
+│ Publishable │ sb_publishable_ACJWlzQHlZjBrEguHvfOxg_3BJgxAaH │
+│ Secret      │ sb_secret_N7UND0UgjKTVK-Uodkm0Hg_xSvEMPvz      │
+╰─────────────┴────────────────────────────────────────────────╯
+
+╭───────────────────────────────────────────────────────────────────────────────╮
+│ 📦 Storage (S3)                                                               │
+├────────────┬──────────────────────────────────────────────────────────────────┤
+│ URL        │ http://127.0.0.1:54321/storage/v1/s3                             │
+│ Access Key │ 625729a08b95bf1b7ff351a663f3a23c                                 │
+│ Secret Key │ 850181e4652dd023b7a98c58ae0d2d34bd487ee0cc3254aed6eda37307425907 │
+│ Region     │ local                                                            │
+╰────────────┴──────────────────────────────────────────────────────────────────╯
+Local dev security notice
+All services bind to 0.0.0.0 (network-accessible, not just localhost)
+API keys and JWT secrets are shared defaults. Do not use in production
+Studio, pgMeta (/pg/*), and analytics have no authentication
+
+
+### Testes
+Connecting to local database...
+3.36: Pulling from supabase/pg_prove
+toomanyrequests: Rate exceeded
+Retrying after 4s: public.ecr.aws/supabase/pg_prove:3.36
+3.36: Pulling from supabase/pg_prove
+dcccee43ad5d: Pulling fs layer
+06d62d0de6d7: Pulling fs layer
+a22cb17b3b93: Pulling fs layer
+4f4fb700ef54: Pulling fs layer
+4f4fb700ef54: Waiting
+a22cb17b3b93: Verifying Checksum
+a22cb17b3b93: Download complete
+dcccee43ad5d: Verifying Checksum
+dcccee43ad5d: Download complete
+4f4fb700ef54: Verifying Checksum
+4f4fb700ef54: Download complete
+06d62d0de6d7: Verifying Checksum
+06d62d0de6d7: Download complete
+dcccee43ad5d: Pull complete
+06d62d0de6d7: Pull complete
+a22cb17b3b93: Pull complete
+4f4fb700ef54: Pull complete
+Digest: sha256:eda7c5e68719e9c8287e78c017118407b48df904a51c935f5ab6098b8c0bc6bc
+Status: Downloaded newer image for public.ecr.aws/supabase/pg_prove:3.36
+public.ecr.aws/supabase/pg_prove:3.36
+/home/runner/work/_temp/supabase-banco-teste.sRYmkL/supabase/tests/001_regras_e_permissoes.sql .. ok
+/home/runner/work/_temp/supabase-banco-teste.sRYmkL/supabase/tests/002_crediario.sql ............ ok
+All tests successful.
+Files=2, Tests=159,  0 wallclock secs ( 0.01 usr  0.01 sys +  0.01 cusr  0.00 csys =  0.03 CPU)
+Result: PASS
