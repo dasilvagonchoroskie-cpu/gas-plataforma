@@ -1,0 +1,5 @@
+44bcc3bae6e06badce5d86a22248eb7ef48560451b77f480ba599cb8925133ce  gas-agua-central.apk
+458662e8342fe24428cbdca052d6f15f32de06af731c9dbaeccabcc425616330  gas-agua-cliente.apk
+538de5f8481f4332963096e9edec1c2ca26970bab25ca1f17909c807240ec64f  gas-agua-super-central.apk
+a3e5a5f0691793e73bc9d2d81f3f4bfc6cd7ec4260f2fca60fb058d06381761d  painel-web-central.tar.gz
+800f1d16340cf1c36288d43e9cae19e26b5245adf837a3973d3192c3f0ab8957  painel-web-super-central.tar.gz

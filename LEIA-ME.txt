@@ -1,0 +1,9 @@
+Versão: 1.0.0 (build 25)
+Commit: f324db0b8f0584b4667b8a7f3f198ccaa0bce2a4
+Assinado com a chave da revenda: true
+Gerado em (UTC): 2026-10-17 07:12
+
+gas-agua-cliente.apk        app de pedidos do cliente
+gas-agua-super-central.apk  Super Central (só o dono entra)
+gas-agua-central.apk        Central (só o funcionário da loja entra)
+painel-web-*.tar.gz         as mesmas duas versões para o navegador
