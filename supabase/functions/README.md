@@ -1,7 +1,19 @@
 # Edge Functions
 
-Nenhuma Edge Function foi criada. As funções previstas na arquitetura, como tarefas de notificação, só serão implementadas na fase correspondente e após a Fase 1 preparar e proteger o banco.
+Funções do servidor (Deno). Todas conferem quem chamou por dentro (por isso
+`verify_jwt` fica desligado), validam a entrada e devolvem só o necessário.
+Segredos ficam no Vault ou nos segredos do Supabase; `service_role` nunca vai
+para os apps nem para o repositório.
 
-Toda função futura deverá validar entradas no servidor, aplicar as permissões adequadas, limitar os dados retornados, proteger dados pessoais e tratar repetição de operações críticas. Segredos ficam somente nos ambientes seguros do servidor; `service_role` nunca entra em apps ou no repositório.
+| Função | Quem chama | O que faz |
+|---|---|---|
+| `cadastro` | App do cliente (visitante) | Cria a conta já confirmada |
+| `admin-usuarios` | Dono (Super Central) | Cria operador/administrador, muda papel, desativa, senha nova |
+| `endereco` | Apps logados | CEP (ViaCEP → BrasilAPI), localização no mapa e endereço do GPS (Nominatim → Photon → BrasilAPI), conferindo a rua e a cidade |
+| `excluir-conta` | Cliente | Anonimiza pelo banco e apaga ficha, endereços, aparelhos, fotos e o login |
+| `notificar` | Banco (gatilho, com segredo) | Push do Firebase a cada evento do pedido; lê a chave do Vault |
+| `configurar-notificacoes` | Dono (Super Central) | Recebe a chave do Firebase, confere com o Google e guarda no Vault; envia aviso de teste |
+| `assinatura-android` | Esteira do GitHub (token OIDC) | Entrega a chave de assinatura dos APKs só ao build oficial |
 
-Não antecipar funções de pedidos, pagamentos ou outras fases. Seguir `docs/ARQUITETURA.md` e registrar mudanças como parte da etapa aprovada.
+Publicação: pelas ferramentas do Supabase (MCP) no projeto de desenvolvimento;
+na produção, na fase prevista na arquitetura.

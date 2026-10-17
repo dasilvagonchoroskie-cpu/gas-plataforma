@@ -95,7 +95,9 @@ Apps (Flutter)                   Backend (Supabase, um projeto só)
 - App do cliente: Flutter (Android e iOS), com Riverpod para estado, go_router para navegação e supabase_flutter para falar com o backend.
 - Painel web: Flutter Web, no mesmo repositório (monorepo), compartilhando o pacote `nucleo` (modelos e regras).
 - Backend: Supabase (Postgres, Auth, Realtime, Storage e Edge Functions). Produção em uma organização no nome do dono, no plano Pro. Desenvolvimento em um projeto gratuito, em organização separada, para não pagar projeto extra (projeto `cytxdxnansmzptzhnrfq`, conta da plataforma).
-- Mapas e endereços: OpenStreetMap (mapa no app), ViaCEP (CEP) e Nominatim (localização), chamados pela Edge Function `endereco`, sem chave de terceiros nos apps.
+- Mapas e endereços: OpenStreetMap (mapa no app), ViaCEP e BrasilAPI (CEP) e Nominatim com Photon de reserva (localização, ambos com dados do OpenStreetMap), chamados pela Edge Function `endereco`, sem chave de terceiros nos apps. Quando só a rua ou a cidade é achada, o cliente confere o pino no mapa antes de salvar.
+- Notificações: Firebase Cloud Messaging. Os dados públicos do projeto Firebase vão na configuração do build; a chave secreta de envio é enviada pelo dono na Super Central e fica no Vault.
+- Marca trocável: nome, frase, cores, ícone e logo ficam na pasta `marca/`; a esteira aplica antes de gerar os apps.
 - Push: Firebase Cloud Messaging, só para notificações (nenhum outro serviço do Firebase).
 - Hospedagem do painel web: hospedagem estática (por exemplo, Cloudflare Pages), com domínio próprio.
 - Pix automático (módulo futuro): gateway (por exemplo, Asaas ou Mercado Pago) com webhook em uma Edge Function.

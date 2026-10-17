@@ -16,6 +16,7 @@ histórico local e o do servidor baterem.
 | `…155152_forma_pagamento_crediario` | Nova forma de pagamento "crediário" (fiado) |
 | `…155401_crediario` | Configurações, ficha do cliente, conta do crediário, regras do fiado e fotos privadas |
 | `…160132_funcoes_de_conta` | Aparelhos para notificação e exclusão de conta (LGPD) |
+| `…222759_chave_do_firebase` | Chave do Firebase gravada no Vault só pela função do servidor |
 
 Todos já estão aplicados no projeto de desenvolvimento. As funções do banco
 não apagam linhas: na exclusão de conta, quem apaga ficha, endereços, aparelhos

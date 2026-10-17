@@ -6,7 +6,8 @@ Não contém nem deve receber senhas, tokens ou chaves secretas.
 
 - **Desenvolvimento:** Supabase `cytxdxnansmzptzhnrfq` (conta da plataforma, plano gratuito). Dados só de teste.
 - **Produção:** ainda não existe. Será criada no nome do dono (Supabase Pro), aplicando as mesmas migrations em ordem.
-- Configuração pública dos apps: `config/ambiente_dev.json` (endereço e chave `anon`).
+- Configuração pública dos apps: `config/ambiente_dev.json` (endereço, chave `anon` e dados públicos do Firebase).
+- Marca da revenda: pasta `marca/` (veja `marca/LEIA-ME.md`).
 
 ## 2. Esteira (GitHub Actions)
 
@@ -45,12 +46,19 @@ Enquanto não houver SMTP próprio, o e-mail de recuperação é limitado. O don
 - Antes do piloto: confirmar o backup diário do plano Pro, preparar exportação semanal fora do Supabase e testar a restauração num projeto separado.
 - Nunca testar restauração sobre produção.
 
-## 8. Troca de chaves
+## 8. Notificações (Firebase)
+
+1. No console do Firebase, o projeto tem três apps Android: `…gasagua.cliente`, `…gasagua.painel` (Super Central) e `…gasagua.central`.
+2. Os dados públicos (do `google-services.json`) vão em `config/ambiente_*.json` (`FIREBASE_*`).
+3. A chave secreta: Project settings ("Configurações do projeto") → Service accounts ("Contas de serviço") → Generate new private key ("Gerar nova chave privada"). O dono envia o arquivo pela Super Central → Notificações e testa no próprio celular. Depois, apagar o arquivo do celular.
+4. Para trocar a chave (vazamento ou troca de conta): gerar outra no Firebase, enviar do mesmo jeito e apagar a antiga no console do Google Cloud. Fica registrado na auditoria.
+
+## 9. Troca de chaves
 
 - Trocar credenciais só no painel oficial do provedor (Supabase, Firebase, Google Play) ou no Vault.
 - Nunca enviar segredos por commit, print, log ou APK. A `service_role` fica só no servidor.
 
-## 9. Banco fora do ar
+## 10. Banco fora do ar
 
 - Usar o WhatsApp; não confirmar pedido, pagamento ou estoque sem o sistema.
 - Não repetir operações sem confirmar o resultado (o pedido tem chave contra duplicação, mas confira).
