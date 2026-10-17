@@ -15,8 +15,9 @@ abstract final class Marca {
       defaultValue: 'Peça gás e água sem sair de casa.');
 
   /// Nome do aplicativo do dono.
-  static const String nomeSuperCentral =
-      String.fromEnvironment('NOME_SUPER_CENTRAL', defaultValue: 'Super Central');
+  static const String nomeSuperCentral = String.fromEnvironment(
+      'NOME_SUPER_CENTRAL',
+      defaultValue: 'Super Central');
 
   /// Nome do aplicativo das lojas.
   static const String nomeCentral =
