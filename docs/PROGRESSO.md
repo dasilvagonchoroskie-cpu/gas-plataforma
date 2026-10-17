@@ -1,6 +1,6 @@
 # Progresso
 
-**Atualizado:** 2026-10-16
+**Atualizado:** 2026-10-17
 **Etapa:** Fases 1 a 5 construídas no ambiente de desenvolvimento, com ficha de cadastro e crediário (arquitetura versão 3); começando a Fase 6 (fechamento).
 
 ## Objetivo
@@ -17,22 +17,26 @@ Plataforma de pedidos de uma revenda de gás e água mineral: app do cliente (An
 - **Painel do dono — Super Central (Fase 2):** visão geral, pedidos de qualquer central, centrais ilimitadas com mapa e faixas, produtos com foto, preços por central, usuários, relatórios com cópia para planilha e auditoria.
 - **Painel da central (Fase 3):** fila em tempo real com som, detalhe do pedido, transferência, entregadores, horários e bloqueios, estoque, disponibilidade e resumo do dia.
 - **App do cliente (Fase 4):** cadastro, endereços (CEP, mapa, GPS), catálogo da central mais próxima, carrinho, horário, pagamento na entrega, acompanhamento ao vivo, histórico, repetir pedido, perfil e exclusão de conta.
-- **Fase 5:** relatórios do dono prontos; notificações push prontas no servidor, aguardando o projeto Firebase.
+- **Fase 5:** relatórios do dono prontos. Notificações prontas nos 3 apps e no servidor: falta só o projeto Firebase (dados públicos no build e a chave enviada pelo dono na Super Central → Notificações).
+- **Localização corrigida:** o Nominatim recusava o servidor; agora há reservas (Photon e BrasilAPI), a rua achada é conferida e o cliente confere o pino quando só a rua ou a cidade foi achada. O GPS marca o ponto mesmo sem o nome da rua.
+- **Marca trocável:** nome, frase, cores, ícone e logo na pasta `marca/`; a esteira aplica antes de gerar os apps. Marca provisória até a revenda mandar a dela.
 - **Esteira (GitHub Actions):** formatação automática, análise estática sem avisos e testes de todos os pacotes; relatório em português no ramo `ci-relatorio`; testes do banco no ramo `ci-relatorio-banco`; APKs assinados e painel web no ramo `entregas`.
 - **Ambiente de desenvolvimento:** dados de teste carregados (3 centrais — só Goiatuba ativa —, 5 produtos, preços, horários e faixas) e conta de administrador criada (`platformadevendas2026@gmail.com`).
 
-## Resultado da última validação (16/10/2026, build 22)
+## Resultado da última validação (17/10/2026, build 25)
 
 - Análise estática: nenhum aviso em nenhum pacote.
-- Testes Flutter: 63 passando (nucleo 39, design_system 5, dados 6, cliente 4, painel 9).
-- Testes do banco: 155 passando (local e no Supabase completo do GitHub).
-- Três APKs assinados com a chave da revenda (a mesma do build 21, conferido): `gas-agua-cliente.apk`, `gas-agua-super-central.apk` (instala por cima do painel antigo) e `gas-agua-central.apk`. Painéis web com os nomes certos.
+- Testes Flutter: 67 passando (nucleo 39, design_system 6, dados 9, cliente 4, painel 9).
+- Testes do banco: 159 passando (local e no Supabase completo do GitHub).
+- Função `endereco` testada no servidor: endereço digitado, GPS, CEP, rua inexistente (cai para "só a cidade") e outra cidade.
+- Função `configurar-notificacoes` testada: só o dono, arquivo errado recusado, chave falsa recusada pelo Google, teste sem chave avisa o motivo.
+- Três APKs assinados com a chave da revenda (a mesma de antes), Android 7 ou mais novo, com permissão de avisos e o logo da marca.
 
 ## Falta
 
-1. Projeto Firebase (no nome do dono) para as notificações: cadastrar o segredo `FCM_CONTA_SERVICO` no painel do Supabase e incluir o `google-services.json` nos apps (com os três identificadores: `…gasagua.cliente`, `…gasagua.painel` e `…gasagua.central`).
+1. Projeto Firebase (desenvolvimento: conta da plataforma; produção: conta do dono) com os três apps Android (`…gasagua.cliente`, `…gasagua.painel` e `…gasagua.central`). O Evandro manda o `google-services.json` (dados públicos) e o dono envia a chave pela Super Central → Notificações.
 2. SMTP próprio (e-mail de recuperação de senha) e domínio.
-3. Nome, logotipo e cores da revenda (hoje: "Gás e Água", cor padrão).
+3. Nome, logotipo e cores da revenda: trocar os arquivos da pasta `marca/` (hoje: marca provisória "Gás e Água").
 4. Política de privacidade e termos publicados (`/gas-agua/privacidade.html` e `/gas-agua/termos.html`), incluindo a ficha de cadastro e o crediário (dados: razão social, CNPJ e e-mail da revenda).
 5. Publicar os dois painéis web (Super Central e Central, hospedagem estática) e testar de ponta a ponta com o operador.
 6. Fase 6: backup e restauração testados, ícones e telas das lojas, Google Play (teste fechado de 14 dias) e TestFlight.
@@ -40,4 +44,4 @@ Plataforma de pedidos de uma revenda de gás e água mineral: app do cliente (An
 
 ## Próximo passo
 
-Evandro testa os três APKs (build 22) no celular: ficha no app do cliente, aprovação na Super Central, pedido no fiado e entrega e pagamento na Central. Depois, seguir os itens de "Falta" na ordem.
+Evandro cria o projeto Firebase e manda o `google-services.json`; com ele sai o build com as notificações ligadas. Enquanto isso, testar os três APKs (build 25): endereço digitado e pelo GPS, ficha, aprovação na Super Central, pedido no fiado, entrega e pagamento na Central. Depois, seguir os itens de "Falta" na ordem.
