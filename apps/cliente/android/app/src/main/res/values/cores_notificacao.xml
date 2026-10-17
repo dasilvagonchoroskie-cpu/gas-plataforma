@@ -1,5 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <!-- Cor dos avisos (troca junto com a marca: config/marca.json). -->
-    <color name="cor_notificacao">#0B5C7A</color>
-</resources>

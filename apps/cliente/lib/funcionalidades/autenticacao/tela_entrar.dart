@@ -65,8 +65,7 @@ class _TelaEntrarState extends ConsumerState<TelaEntrar> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      Icon(Icons.local_fire_department_rounded,
-                          size: 64, color: tema.colorScheme.primary),
+                      const Center(child: LogoMarca(tamanho: 80)),
                       const SizedBox(height: 12),
                       Text(
                         nomeDoApp,
@@ -75,10 +74,7 @@ class _TelaEntrarState extends ConsumerState<TelaEntrar> {
                             ?.copyWith(fontWeight: FontWeight.w800),
                       ),
                       const SizedBox(height: 4),
-                      const Text(
-                        'Peça gás e água sem sair de casa.',
-                        textAlign: TextAlign.center,
-                      ),
+                      const Text(Marca.slogan, textAlign: TextAlign.center),
                       const SizedBox(height: 32),
                       TextFormField(
                         controller: _email,

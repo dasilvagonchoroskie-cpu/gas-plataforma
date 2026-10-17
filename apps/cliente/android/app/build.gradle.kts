@@ -9,6 +9,15 @@ val propriedadesChave = Properties().apply {
     }
 }
 
+// Marca da revenda (marca/marca.json, na raiz do repositório): nomes dos apps.
+@Suppress("UNCHECKED_CAST")
+val marca: Map<String, Any?> = rootProject.file("../../../marca/marca.json").let { arquivo ->
+    if (arquivo.exists()) groovy.json.JsonSlurper().parse(arquivo) as Map<String, Any?> else emptyMap()
+}
+
+fun nomeDaMarca(chave: String, padrao: String): String =
+    (marca[chave] as? String)?.trim()?.takeIf { it.isNotEmpty() } ?: padrao
+
 plugins {
     id("com.android.application")
     // The Flutter Gradle Plugin must be applied after the Android and Kotlin Gradle plugins.
@@ -38,6 +47,7 @@ android {
         // flag during build.
         versionCode = flutter.versionCode
         versionName = flutter.versionName
+        manifestPlaceholders["nomeApp"] = nomeDaMarca("NOME_APP", "Gás e Água")
     }
 
     signingConfigs {

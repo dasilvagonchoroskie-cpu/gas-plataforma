@@ -101,12 +101,7 @@ class _TelaLoginState extends ConsumerState<TelaLogin> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
-                          Icon(
-                              tipo == TipoPainel.superCentral
-                                  ? Icons.hub_outlined
-                                  : Icons.storefront_outlined,
-                              size: 56,
-                              color: tema.colorScheme.primary),
+                          const Center(child: LogoMarca(tamanho: 64)),
                           const SizedBox(height: 12),
                           Text(
                             tipo.nome,

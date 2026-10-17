@@ -1,3 +1,4 @@
+import 'package:design_system/design_system.dart' show Marca;
 import 'package:flutter/services.dart' show appFlavor;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:nucleo/nucleo.dart';
@@ -13,12 +14,12 @@ import 'package:nucleo/nucleo.dart';
 enum TipoPainel {
   superCentral(
     valor: 'supercentral',
-    nome: 'Super Central',
+    nome: Marca.nomeSuperCentral,
     descricao: 'Acesso do dono: todas as lojas',
   ),
   central(
     valor: 'central',
-    nome: 'Central',
+    nome: Marca.nomeCentral,
     descricao: 'Acesso da loja: pedidos e entregas',
   );
 

@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Gerado por scripts/aplicar_marca.py a partir de marca/marca.json. -->
+<resources>
+    <color name="ic_launcher_background">#FF0B5C7A</color>
+    <color name="cor_notificacao">#FF0B5C7A</color>
+</resources>

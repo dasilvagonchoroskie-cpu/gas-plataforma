@@ -9,6 +9,15 @@ val propriedadesChave = Properties().apply {
     }
 }
 
+// Marca da revenda (marca/marca.json, na raiz do repositório): nomes dos apps.
+@Suppress("UNCHECKED_CAST")
+val marca: Map<String, Any?> = rootProject.file("../../../marca/marca.json").let { arquivo ->
+    if (arquivo.exists()) groovy.json.JsonSlurper().parse(arquivo) as Map<String, Any?> else emptyMap()
+}
+
+fun nomeDaMarca(chave: String, padrao: String): String =
+    (marca[chave] as? String)?.trim()?.takeIf { it.isNotEmpty() } ?: padrao
+
 plugins {
     id("com.android.application")
     // The Flutter Gradle Plugin must be applied after the Android and Kotlin Gradle plugins.
@@ -49,12 +58,12 @@ android {
             // Mesmo identificador do painel antigo: instala por cima no celular
             // do dono, sem perder o login.
             applicationId = "br.com.fortalezadigitalsecurity.gasagua.painel"
-            manifestPlaceholders["nomeApp"] = "Super Central"
+            manifestPlaceholders["nomeApp"] = nomeDaMarca("NOME_SUPER_CENTRAL", "Super Central")
         }
         create("central") {
             dimension = "painel"
             applicationId = "br.com.fortalezadigitalsecurity.gasagua.central"
-            manifestPlaceholders["nomeApp"] = "Central"
+            manifestPlaceholders["nomeApp"] = nomeDaMarca("NOME_CENTRAL", "Central")
         }
     }
 

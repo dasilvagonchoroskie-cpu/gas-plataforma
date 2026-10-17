@@ -7,7 +7,9 @@ on:
       - 'apps/**'
       - 'packages/**'
       - 'config/**'
+      - 'marca/**'
       - 'scripts/ci/**'
+      - 'scripts/aplicar_marca.py'
       - '.github/workflows/validacao.yml'
   pull_request:
     branches: [main]
@@ -120,6 +122,14 @@ jobs:
           flutter-version: ${{ env.VERSAO_FLUTTER }}
           cache: true
 
+      - name: Aplicar a marca da revenda (ícones, cores e logo)
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m pip install --quiet pillow 2>/dev/null \
+            || python3 -m pip install --quiet --break-system-packages pillow
+          python3 scripts/aplicar_marca.py
+
       - name: Obter a chave de assinatura da revenda
         id: chave
         shell: bash
@@ -161,6 +171,7 @@ jobs:
             flutter pub get
             flutter build apk --release \
               --dart-define-from-file=../../config/ambiente_dev.json \
+              --dart-define-from-file=../../marca/marca.json \
               --build-number="${{ github.run_number }}"
           )
           echo '::endgroup::'
@@ -172,6 +183,7 @@ jobs:
               flutter pub get
               flutter build apk --release --flavor "$tipo" \
                 --dart-define-from-file=../../config/ambiente_dev.json \
+                --dart-define-from-file=../../marca/marca.json \
                 --dart-define=PAINEL="$tipo" \
                 --build-number="${{ github.run_number }}"
             )
@@ -184,9 +196,11 @@ jobs:
           set -euo pipefail
           cd apps/painel
           for tipo in supercentral central; do
-            nome="$([[ $tipo == supercentral ]] && echo 'Super Central' || echo 'Central')"
+            chave="$([[ $tipo == supercentral ]] && echo NOME_SUPER_CENTRAL || echo NOME_CENTRAL)"
+            nome="$(jq -r ".$chave" ../../marca/marca.json | sed 's/[&/\]/\\&/g')"
             flutter build web --release \
               --dart-define-from-file=../../config/ambiente_dev.json \
+              --dart-define-from-file=../../marca/marca.json \
               --dart-define=PAINEL="$tipo"
             sed -i "s/Painel Gás e Água/$nome/g" build/web/index.html build/web/manifest.json
             rm -rf "build/web-$tipo"

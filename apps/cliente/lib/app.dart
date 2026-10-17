@@ -18,10 +18,8 @@ import 'funcionalidades/pedido/tela_finalizar.dart';
 import 'funcionalidades/pedido/tela_horario.dart';
 import 'funcionalidades/tela_principal.dart';
 
-/// Nome que aparece no app. Pode ser trocado na compilação para a marca da
-/// revenda (--dart-define=NOME_APP=...).
-const String nomeDoApp =
-    String.fromEnvironment('NOME_APP', defaultValue: 'Gás e Água');
+/// Nome que aparece no app: vem da marca da revenda (marca/marca.json).
+const String nomeDoApp = Marca.nome;
 
 const _rotasSemLogin = {'/entrar', '/cadastro', '/recuperar-senha'};
 

@@ -5,6 +5,16 @@ import 'package:nucleo/nucleo.dart';
 
 void main() {
   group('Componentes visuais compartilhados', () {
+    test('marca lê a cor do build e tem nomes padrão', () {
+      expect(Marca.lerCor('#0B5C7A'), const Color(0xFF0B5C7A));
+      expect(Marca.lerCor('0b5c7a'), const Color(0xFF0B5C7A));
+      expect(Marca.lerCor('azul'), isNull);
+      expect(Marca.lerCor(''), isNull);
+      expect(Marca.corPrincipal, corPadraoPlataforma);
+      expect(Marca.nome, 'Gás e Água');
+      expect(Marca.nomeSuperCentral, 'Super Central');
+    });
+
     test('cria tema Material 3 com botões grandes', () {
       final tema = criarTemaPlataforma();
 

@@ -1,17 +1,20 @@
 import 'package:flutter/material.dart';
 
-/// Cor principal padrão (azul petróleo da revenda). Pode ser trocada pelo
-/// parâmetro `corPrimaria` sem mudar o resto do tema.
+import 'marca.dart';
+
+/// Cor principal padrão (azul petróleo). A cor da revenda vem de
+/// `marca/marca.json` (Marca.corPrincipal); o parâmetro `corPrimaria` troca
+/// só para um caso específico.
 const Color corPadraoPlataforma = Color(0xFF0B5C7A);
 
 /// Tema comum aos apps: textos e botões grandes (muitos clientes são idosos),
 /// bom contraste e campos fáceis de tocar.
 ThemeData criarTemaPlataforma({
-  Color corPrimaria = corPadraoPlataforma,
+  Color? corPrimaria,
   Brightness brilho = Brightness.light,
 }) {
-  final cores =
-      ColorScheme.fromSeed(seedColor: corPrimaria, brightness: brilho);
+  final cores = ColorScheme.fromSeed(
+      seedColor: corPrimaria ?? Marca.corPrincipal, brightness: brilho);
   final base = ThemeData(colorScheme: cores, useMaterial3: true);
   final textos = base.textTheme.copyWith(
     bodyLarge: base.textTheme.bodyLarge?.copyWith(fontSize: 18, height: 1.35),
